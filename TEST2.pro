@@ -13,15 +13,13 @@ SOURCES += \
     main.cpp \
     MainWindow.cpp \
     CryptoUtils.cpp \
-    qaesencryption.cpp \
-    FileOperation.cpp
+    qaesencryption.cpp
 
 HEADERS += \
     FileOperation.h \
     MainWindow.h \
     CryptoUtils.h \
-    qaesencryption.h \
-    FileOperation.h
+    qaesencryption.h
 
 FORMS +=
 
