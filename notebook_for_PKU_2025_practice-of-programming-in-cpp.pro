@@ -1,24 +1,41 @@
-QT       += core gui
+QT += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
+TARGET = BackEnd
+TEMPLATE = app
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# 添加QAESEncryption
+include(Qt-AES/QAESEncryption.pri)
 
 SOURCES += \
+    FileOperation.cpp \
+    application.cpp \
+    dailypromptwindow.cpp \
+    diarydetailwindow.cpp \
+    loginwindow.cpp \
     main.cpp \
-    widget.cpp
+    MainWindow.cpp \
+    CryptoUtils.cpp \
+    qaesencryption.cpp
 
 HEADERS += \
-    widget.h
+    FileOperation.h \
+    MainWindow.h \
+    CryptoUtils.h \
+    application.h \
+    dailypromptwindow.h \
+    diarydetailwindow.h \
+    loginwindow.h \
+    qaesencryption.h
 
-FORMS += \
-    widget.ui
+FORMS +=
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+# 发布版本优化
+CONFIG += c++11
+CONFIG(release, debug|release) {
+    DEFINES += QT_NO_DEBUG_OUTPUT
+}
+
+RESOURCES += \
+    Resources.qrc
