@@ -1,7 +1,7 @@
 #include "loginwindow.h"
 
-LoginWindow::LoginWindow(QWidget *parent)
-    : QWidget{parent}
+LoginWindow::LoginWindow(MyWidget *parent)
+    : MyWidget{parent}
 {
     /*
     loginButton=new QPushButton(this);
@@ -10,25 +10,22 @@ LoginWindow::LoginWindow(QWidget *parent)
     */
     setupUI();
     setupStyle();
-    setWindowTitle("LOG IN");
+    setupConnection();
 }
 
 void LoginWindow::checkLogState(){
 
-    //emit loggedIn();
+    emit loggedIn(this);
 }
 
-void LoginWindow::setupUI() {//登陆窗口的UI设置，可以调整位置和组成构件
-    setWindowTitle("用户登录");
-    setFixedSize(400, 600); // 固定窗口大小
-
-    // 创建组件
+void LoginWindow::setupUI() {
+    setFixedSize(400, 600);
     usernameEdit = new QLineEdit(this);
     usernameEdit->setPlaceholderText("请输入用户名");
 
     passwordEdit = new QLineEdit(this);
     passwordEdit->setPlaceholderText("请输入密码");
-    passwordEdit->setEchoMode(QLineEdit::Password); // 密码模式
+    passwordEdit->setEchoMode(QLineEdit::Password);
 
     loginButton = new QPushButton("登录", this);
     rememberCheck = new QCheckBox("记住密码", this);
@@ -38,9 +35,8 @@ void LoginWindow::setupUI() {//登陆窗口的UI设置，可以调整位置和�
     regiLabel = new QLabel("新用户将自动注册",this);
     logo = new QLabel(this);
     logo->setPixmap(QPixmap(":/images/logo.png").scaled(450,300,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-    // 布局管理
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(logo);//此处可以插入一个logo图片替代空格
+    mainLayout->addWidget(logo);
     mainLayout->addSpacing(20);
     mainLayout->addWidget(usernameEdit);
     mainLayout->addSpacing(20);
@@ -107,3 +103,18 @@ void LoginWindow::setupStyle() {//登录窗口的样式表，影响登录窗口�
         )");
     errorLabel->setObjectName("errorLabel");
 }
+
+void LoginWindow::setupConnection(){
+    connect(loginButton,&QPushButton::released,this,&LoginWindow::logging);
+}
+
+void LoginWindow::logging(){
+    if(false){
+        emit loggedIn(this);
+    }else{
+        emit registIn(this);
+    }
+    return;
+}
+
+

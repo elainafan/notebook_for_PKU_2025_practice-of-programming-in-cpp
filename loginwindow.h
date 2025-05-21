@@ -1,17 +1,10 @@
 #ifndef LOGINWINDOW_H
 #define LOGINWINDOW_H
 
-#include <QWidget>
-#include<QPushButton>
-#include<QLineEdit>
-#include<QCheckBox>
-#include<QLabel>
-#include<QVBoxLayout>
-#include<QHBoxLayout>
-#include<QFontDatabase>
-#include<QPixmap>
+#include"Headers.h"
+#include "mywidget.h"
 
-class LoginWindow : public QWidget
+class LoginWindow : public MyWidget
 {
     Q_OBJECT
     QLineEdit *usernameEdit;   // 用户名输入框
@@ -23,14 +16,18 @@ class LoginWindow : public QWidget
     QLabel *regiLabel;
     QLabel *logo;
 public:
-    explicit LoginWindow(QWidget *parent = nullptr);
+    explicit LoginWindow(MyWidget *parent = nullptr);
 
-    void checkLogState();
+    void checkLogState();//最初判断一下是否处于自动登录状态
     void setupUI();
     void setupConnection();
     void setupStyle();
+    void logging();//按下按钮，判断是注册还是登录
 signals:
-    void loggedIn();
+    void loggedIn(MyWidget *fromwhere);
+    void registIn(MyWidget *fromwhere);
+
+public slots:
 };
 
 #endif // LOGINWINDOW_H

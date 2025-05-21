@@ -13,20 +13,25 @@ SOURCES += \
     application.cpp \
     dailypromptwindow.cpp \
     diarydetailwindow.cpp \
+    guiderwindow.cpp \
     loginwindow.cpp \
     main.cpp \
     MainWindow.cpp \
     CryptoUtils.cpp \
+    mywidget.cpp \
     qaesencryption.cpp
 
 HEADERS += \
     FileOperation.h \
+    Headers.h \
     MainWindow.h \
     CryptoUtils.h \
     application.h \
     dailypromptwindow.h \
     diarydetailwindow.h \
+    guiderwindow.h \
     loginwindow.h \
+    mywidget.h \
     qaesencryption.h
 
 FORMS +=

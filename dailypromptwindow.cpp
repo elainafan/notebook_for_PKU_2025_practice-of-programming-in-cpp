@@ -1,8 +1,25 @@
 #include "dailypromptwindow.h"
 
-DailyPromptWindow::DailyPromptWindow(QWidget *parent)
-    : QWidget{parent}
+DailyPromptWindow::DailyPromptWindow(MyWidget *parent)
+    : MyWidget{parent}
 {
-    setWindowTitle("Remember the day when...");
-    resize(600,900);
+    setupUI();
+    setupStyle();
+    setupConnection();
 }
+
+
+void DailyPromptWindow::setupUI(){
+    setFixedSize(600,900);
+
+
+}
+
+void DailyPromptWindow::setupStyle(){
+
+}
+
+void DailyPromptWindow::setupConnection(){
+
+}
+

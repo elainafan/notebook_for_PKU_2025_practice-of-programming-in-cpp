@@ -6,6 +6,7 @@
 #include"QStackedWidget.h"
 #include"dailypromptwindow.h"
 #include"diarydetailwindow.h"
+#include"guiderwindow.h"
 
 class Application: public QApplication
 {
@@ -18,13 +19,16 @@ private:
     DailyPromptWindow *promptWindow;
     MainWindow *mainWindow;
     DiaryDetailWindow *detailWindow;
+    Guider *newGuider;
 
-public:
+    void setupConnection();
+public slots:
     // 界面导航函数
     void navigateToLogin();
-    void navigateToDailyPrompt();
+    void navigateToDailyPrompt(MyWidget *fromwhere);
     void navigateToMainWindow();
     void navigateToDiaryDetail();
+    void navigateToGuider(MyWidget *fromwhere);
 };
 
 #endif // APPLICATION_H

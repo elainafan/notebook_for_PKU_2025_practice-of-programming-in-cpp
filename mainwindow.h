@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "Headers.h"
 #include <QMainWindow>
 
 class QLineEdit;

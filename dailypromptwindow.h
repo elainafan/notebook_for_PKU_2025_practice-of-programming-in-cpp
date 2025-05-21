@@ -2,13 +2,16 @@
 #define DAILYPROMPTWINDOW_H
 
 #include <QWidget>
-
-class DailyPromptWindow : public QWidget
+#include "Headers.h"
+#include "mywidget.h"
+class DailyPromptWindow : public MyWidget
 {
     Q_OBJECT
 public:
-    explicit DailyPromptWindow(QWidget *parent = nullptr);
-
+    explicit DailyPromptWindow(MyWidget *parent = nullptr);
+    void setupUI();
+    void setupStyle();
+    void setupConnection();
 signals:
 };
 
