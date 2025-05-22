@@ -9,6 +9,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <QHBoxLayout>
+#include <QDir>
+#include <QFileInfo>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -22,15 +25,27 @@ Widget::Widget(QWidget *parent)
     splitter->addWidget(textEdit);
     splitter->addWidget(preview);
     splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 1);
+    splitter->setStretchFactor(1, 3);
 
     layout->addWidget(splitter);
 
+    QPushButton *openButton = new QPushButton("打开 .md 文件", this);
     QPushButton *saveButton = new QPushButton("保存为 .md 文件", this);
-    layout->addWidget(saveButton);
+    QPushButton *pdfButton = new QPushButton("导出为 PDF", this);
+    QPushButton *imageButton = new QPushButton("插入图片", this);
 
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addWidget(openButton);
+    buttonLayout->addWidget(saveButton);
+    buttonLayout->addWidget(pdfButton);
+    buttonLayout->addWidget(imageButton);
+    layout->addLayout(buttonLayout);
+
+    connect(openButton, &QPushButton::clicked, this, &Widget::openMdFile);
     connect(saveButton, &QPushButton::clicked, this, &Widget::saveToFile);
+    connect(pdfButton, &QPushButton::clicked, this, &Widget::exportToPdf);
     connect(textEdit, &QTextEdit::textChanged, this, &Widget::updatePreview);
+    connect(imageButton, &QPushButton::clicked, this, &Widget::insertImage);
 
     updatePreview();
 }
@@ -47,6 +62,63 @@ void Widget::saveToFile()
         }
     }
 }
+
+void Widget::exportToPdf()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "PDF 文件 (*.pdf)");
+    if (!fileName.isEmpty()) {
+        preview->page()->printToPdf(fileName);
+    }
+}
+
+void Widget::insertImage()
+{
+    QString sourcePath = QFileDialog::getOpenFileName(this, "选择图片", "", "Images (*.png *.jpg *.jpeg *.bmp *.gif)");
+    if (sourcePath.isEmpty())
+        return;
+
+    QString exeDir = QCoreApplication::applicationDirPath();
+    QDir dir(exeDir);
+
+    if (!dir.cdUp() || !dir.cdUp() || !dir.cdUp()) {
+        return;
+    }
+    QString projectRootPath = dir.absolutePath();
+
+    QString imagesDirPath = dir.filePath("images");
+
+    QDir imagesDir(imagesDirPath);
+    if (!imagesDir.exists()) {
+        imagesDir.mkpath(".");
+    }
+
+    QFileInfo fileInfo(sourcePath);
+    QString baseName = fileInfo.fileName();
+
+    QString targetPath = imagesDirPath + "/" + baseName;
+
+    if (QFile::exists(targetPath)) {
+        QFile::remove(targetPath);
+    }
+
+    if (!QFile::copy(sourcePath, targetPath)) {
+        return;
+    }
+
+    QString markdownHtmlPath = exeDir + "/markdown.html";
+    QFileInfo mdHtmlFileInfo(markdownHtmlPath);
+    QString mdHtmlDir = mdHtmlFileInfo.absolutePath();
+
+    QDir mdHtmlDirPath(mdHtmlDir);
+    QString relativeImagePath = mdHtmlDirPath.relativeFilePath(targetPath);
+
+    QString markdownImage = QString("\n\n![图片](%1)\n\n").arg(relativeImagePath);
+
+    textEdit->insertPlainText(markdownImage);
+    updatePreview();
+}
+
+
 
 void Widget::updatePreview()
 {
@@ -65,4 +137,22 @@ void Widget::updatePreview()
     } else {
         preview->page()->runJavaScript(js);
     }
+}
+
+void Widget::openMdFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "打开 Markdown 文件", "", "Markdown 文件 (*.md)");
+    if (fileName.isEmpty())
+        return;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in(&file);
+    QString content = in.readAll();
+    file.close();
+
+    textEdit->setPlainText(content);
+    updatePreview();
 }

@@ -16,6 +16,9 @@ public:
 private slots:
     void updatePreview();
     void saveToFile();
+    void exportToPdf();
+    void insertImage();
+    void openMdFile();
 
 private:
     QTextEdit *textEdit;
