@@ -59,8 +59,8 @@ bool CryptoUtils::encryptFile(const QString &inputPath, const QString &outputPat
     // 加密数据
     QByteArray encrypted = m_aes.encode(plaintext, key, iv);
 
-    // 将头、盐值、IV和加密数据一起保存
-    QByteArray outputData = headerBytes + salt + iv + encrypted;
+    // 将头、盐值、key、IV和加密数据一起保存
+    QByteArray outputData = headerBytes + salt + key + iv + encrypted;
 
     QFile outputFile(outputPath);
     if (!outputFile.open(QIODevice::WriteOnly)) {
@@ -85,7 +85,7 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     QByteArray encryptedData = inputFile.readAll();
     inputFile.close();
 
-    if (encryptedData.size() < 32 + sizeof(FileHeader)) { // FileHeader + 盐值(16) + IV(16)
+    if (encryptedData.size() < 64 + sizeof(FileHeader)) { // FileHeader + 盐值(16) + key(32) + IV(16)
         qWarning() << "Invalid encrypted file format";
         return false;
     }
@@ -93,11 +93,12 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     FileHeader header;
     memcpy(&header, encryptedData.constData(), sizeof(FileHeader));
     QByteArray salt = encryptedData.mid(sizeof(FileHeader),16);
-    QByteArray iv = encryptedData.mid(sizeof(FileHeader)+16, 16);
-    QByteArray ciphertext = encryptedData.mid(sizeof(FileHeader)+32);
+    QByteArray realkey = encryptedData.mid(sizeof(FileHeader)+16,32);
+    QByteArray iv = encryptedData.mid(sizeof(FileHeader)+48, 16);
+    QByteArray ciphertext = encryptedData.mid(sizeof(FileHeader)+64);
 
     QByteArray key = deriveKey(password, salt);
-    if (key.isEmpty()) {
+    if (key.isEmpty()||key!=realkey) {
         return false;
     }
 
