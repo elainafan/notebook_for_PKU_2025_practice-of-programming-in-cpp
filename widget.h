@@ -3,11 +3,8 @@
 
 #include <QWidget>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class Widget;
-}
-QT_END_NAMESPACE
+class QTextEdit;
+class QWebEngineView;
 
 class Widget : public QWidget
 {
@@ -15,9 +12,15 @@ class Widget : public QWidget
 
 public:
     Widget(QWidget *parent = nullptr);
-    ~Widget();
+
+private slots:
+    void updatePreview();
+    void saveToFile();
 
 private:
-    Ui::Widget *ui;
+    QTextEdit *textEdit;
+    QWebEngineView *preview;
+    bool previewLoaded = false;
 };
+
 #endif // WIDGET_H

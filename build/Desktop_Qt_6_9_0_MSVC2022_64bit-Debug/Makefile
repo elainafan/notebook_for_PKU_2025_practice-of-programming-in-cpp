@@ -419,6 +419,7 @@ Makefile: ..\..\notebook_for_PKU_2025_practice-of-programming-in-cpp.pro D:\Qt\6
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\qt_config.prf \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\win32-msvc\qmake.conf \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\spec_post.prf \
+		.qmake.stash \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\exclusive_builds.prf \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\common\msvc-version.conf \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\toolchain.prf \
@@ -445,14 +446,37 @@ Makefile: ..\..\notebook_for_PKU_2025_practice-of-programming-in-cpp.pro D:\Qt\6
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\yacc.prf \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\lex.prf \
 		..\..\notebook_for_PKU_2025_practice-of-programming-in-cpp.pro \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineWidgets.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6PrintSupport.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Widgets.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineCore.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Quick.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6OpenGL.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Gui.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlMeta.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlModels.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlWorkerScript.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebChannel.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Qml.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Network.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Positioning.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Core.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6EntryPoint.prl \
-		.qmake.stash \
 		D:\Qt\6.9.0\msvc2022_64\mkspecs\features\build_pass.prf \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineWidgetsd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6PrintSupportd.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Widgetsd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineCored.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Quickd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6OpenGLd.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Guid.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlMetad.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlModelsd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlWorkerScriptd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebChanneld.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Qmld.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Networkd.prl \
+		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Positioningd.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6Cored.prl \
 		D:\Qt\6.9.0\msvc2022_64\lib\Qt6EntryPointd.prl
 	$(QMAKE) -o Makefile ..\..\notebook_for_PKU_2025_practice-of-programming-in-cpp.pro -spec win32-msvc "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -791,6 +815,7 @@ D:\Qt\6.9.0\msvc2022_64\mkspecs\features\qt_functions.prf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\qt_config.prf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\win32-msvc\qmake.conf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\spec_post.prf:
+.qmake.stash:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\exclusive_builds.prf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\common\msvc-version.conf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\toolchain.prf:
@@ -817,14 +842,37 @@ D:\Qt\6.9.0\msvc2022_64\mkspecs\features\exceptions.prf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\yacc.prf:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\lex.prf:
 ..\..\notebook_for_PKU_2025_practice-of-programming-in-cpp.pro:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineWidgets.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6PrintSupport.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Widgets.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineCore.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Quick.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6OpenGL.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Gui.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlMeta.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlModels.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlWorkerScript.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebChannel.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Qml.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Network.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Positioning.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Core.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6EntryPoint.prl:
-.qmake.stash:
 D:\Qt\6.9.0\msvc2022_64\mkspecs\features\build_pass.prf:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineWidgetsd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6PrintSupportd.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Widgetsd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebEngineCored.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Quickd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6OpenGLd.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Guid.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlMetad.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlModelsd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6QmlWorkerScriptd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6WebChanneld.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Qmld.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Networkd.prl:
+D:\Qt\6.9.0\msvc2022_64\lib\Qt6Positioningd.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6Cored.prl:
 D:\Qt\6.9.0\msvc2022_64\lib\Qt6EntryPointd.prl:
 qmake: FORCE
