@@ -140,7 +140,7 @@ void DailyPromptWindow::setupAnimation(){
 
 
     imageFadeIn = new QPropertyAnimation(imageOpacityEffect, "opacity");
-    imageFadeIn->setDuration(800);
+    imageFadeIn->setDuration(1200);
     imageFadeIn->setStartValue(0.0);
     imageFadeIn->setEndValue(1.0);
     imageFadeIn->setEasingCurve(QEasingCurve::InOutQuad);
@@ -161,7 +161,7 @@ void DailyPromptWindow::setupAnimation(){
 
     // 内容淡入动画
     contentFadeIn = new QPropertyAnimation(contentOpacityEffect, "opacity");
-    contentFadeIn->setDuration(800);
+    contentFadeIn->setDuration(1500);
     contentFadeIn->setStartValue(0.0);
     contentFadeIn->setEndValue(1.0);
 
@@ -173,7 +173,7 @@ void DailyPromptWindow::setupAnimation(){
     btnFadeIn->setEndValue(1);
 
     btnWait = new QPropertyAnimation(buttonOpacityEffect,"opacity");
-    btnWait->setDuration(2000);
+    btnWait->setDuration(4000);
 
     btnGroup = new QSequentialAnimationGroup(enterButton);
     btnGroup->addAnimation(btnWait);
