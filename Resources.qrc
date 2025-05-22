@@ -3,5 +3,9 @@
         <file>images/logo.png</file>
         <file>images/logo2.png</file>
         <file>images/enter.png</file>
+        <file>images/testImage.png</file>
+        <file>images/enter_pressed.png</file>
+        <file>images/enter_hover.png</file>
+        <file>images/textBlockForPrompt.png</file>
     </qresource>
 </RCC>

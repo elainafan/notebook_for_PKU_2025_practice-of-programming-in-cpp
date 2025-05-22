@@ -14,7 +14,7 @@ public:
     void setupStyle();
 signals:
     void fadeAway();
-
+    void appeared();
 public slots:
     void fade();
     void appear();

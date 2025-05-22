@@ -13,6 +13,7 @@ SOURCES += \
     application.cpp \
     dailypromptwindow.cpp \
     diarydetailwindow.cpp \
+    gradientoverlay.cpp \
     guiderwindow.cpp \
     loginwindow.cpp \
     main.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     application.h \
     dailypromptwindow.h \
     diarydetailwindow.h \
+    gradientoverlay.h \
     guiderwindow.h \
     loginwindow.h \
     mywidget.h \

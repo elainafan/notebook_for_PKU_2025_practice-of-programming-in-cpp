@@ -56,6 +56,7 @@ SOURCES       = ../../FileOperation.cpp \
 		../../application.cpp \
 		../../dailypromptwindow.cpp \
 		../../diarydetailwindow.cpp \
+		../../gradientoverlay.cpp \
 		../../guiderwindow.cpp \
 		../../loginwindow.cpp \
 		../../main.cpp \
@@ -76,6 +77,7 @@ OBJECTS       = FileOperation.o \
 		application.o \
 		dailypromptwindow.o \
 		diarydetailwindow.o \
+		gradientoverlay.o \
 		guiderwindow.o \
 		loginwindow.o \
 		main.o \
@@ -348,6 +350,7 @@ DIST          = /Qt/6.9.0/macos/mkspecs/features/spec_pre.prf \
 		../../application.h \
 		../../dailypromptwindow.h \
 		../../diarydetailwindow.h \
+		../../gradientoverlay.h \
 		../../guiderwindow.h \
 		../../loginwindow.h \
 		../../mywidget.h \
@@ -355,6 +358,7 @@ DIST          = /Qt/6.9.0/macos/mkspecs/features/spec_pre.prf \
 		../../application.cpp \
 		../../dailypromptwindow.cpp \
 		../../diarydetailwindow.cpp \
+		../../gradientoverlay.cpp \
 		../../guiderwindow.cpp \
 		../../loginwindow.cpp \
 		../../main.cpp \
@@ -918,8 +922,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../Resources.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../../FileOperation.h ../../Headers.h ../../MainWindow.h ../../CryptoUtils.h ../../application.h ../../dailypromptwindow.h ../../diarydetailwindow.h ../../guiderwindow.h ../../loginwindow.h ../../mywidget.h ../../qaesencryption.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../FileOperation.cpp ../../application.cpp ../../dailypromptwindow.cpp ../../diarydetailwindow.cpp ../../guiderwindow.cpp ../../loginwindow.cpp ../../main.cpp ../../MainWindow.cpp ../../CryptoUtils.cpp ../../mywidget.cpp ../../qaesencryption.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../FileOperation.h ../../Headers.h ../../MainWindow.h ../../CryptoUtils.h ../../application.h ../../dailypromptwindow.h ../../diarydetailwindow.h ../../gradientoverlay.h ../../guiderwindow.h ../../loginwindow.h ../../mywidget.h ../../qaesencryption.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../FileOperation.cpp ../../application.cpp ../../dailypromptwindow.cpp ../../diarydetailwindow.cpp ../../gradientoverlay.cpp ../../guiderwindow.cpp ../../loginwindow.cpp ../../main.cpp ../../MainWindow.cpp ../../CryptoUtils.cpp ../../mywidget.cpp ../../qaesencryption.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -951,8 +955,12 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_Resources.cpp
 qrc_Resources.cpp: ../../Resources.qrc \
 		../../../../Qt/6.9.0/macos/libexec/rcc \
+		../../images/enter_hover.png \
 		../../images/logo.png \
+		../../images/testImage.png \
+		../../images/enter_pressed.png \
 		../../images/logo2.png \
+		../../images/textBlockForPrompt.png \
 		../../images/enter.png
 	/Users/xiaogong/Qt/6.9.0/macos/libexec/rcc -name Resources --no-zstd ../../Resources.qrc -o qrc_Resources.cpp
 
@@ -990,6 +998,12 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../../../../Qt/6.9.0/macos/libexec/moc
@@ -1031,7 +1045,14 @@ moc_dailypromptwindow.cpp: ../../dailypromptwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../mywidget.h \
+		../../gradientoverlay.h \
 		../../../../Qt/6.9.0/macos/libexec/moc
 	/Users/xiaogong/Qt/6.9.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/xiaogong/Qt/6.9.0/macos/mkspecs/macx-clang -I/Users/xiaogong/qtproject/notebook_for_PKU_2025_practice-of-programming-in-cpp -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtWidgets.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtGui.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/xiaogong/Qt/6.9.0/macos/lib ../../dailypromptwindow.h -o moc_dailypromptwindow.cpp
 
@@ -1044,6 +1065,33 @@ moc_diarydetailwindow.cpp: ../../diarydetailwindow.h \
 moc_guiderwindow.cpp: ../../guiderwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QWidget \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qwidget.h \
+		../../mywidget.h \
+		../../Headers.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsOpacityEffect \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicseffect.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QPushButton \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLineEdit \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlineedit.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QCheckBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qcheckbox.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLabel \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlabel.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QHBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QFontDatabase \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qfontdatabase.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPixmap \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/libexec/moc
 	/Users/xiaogong/Qt/6.9.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/xiaogong/Qt/6.9.0/macos/mkspecs/macx-clang -I/Users/xiaogong/qtproject/notebook_for_PKU_2025_practice-of-programming-in-cpp -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtWidgets.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtGui.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/xiaogong/Qt/6.9.0/macos/lib ../../guiderwindow.h -o moc_guiderwindow.cpp
 
@@ -1070,6 +1118,12 @@ moc_loginwindow.cpp: ../../loginwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../mywidget.h \
 		../../../../Qt/6.9.0/macos/libexec/moc
 	/Users/xiaogong/Qt/6.9.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/xiaogong/Qt/6.9.0/macos/mkspecs/macx-clang -I/Users/xiaogong/qtproject/notebook_for_PKU_2025_practice-of-programming-in-cpp -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtWidgets.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtGui.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/xiaogong/Qt/6.9.0/macos/lib ../../loginwindow.h -o moc_loginwindow.cpp
@@ -1097,6 +1151,12 @@ moc_mywidget.cpp: ../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/libexec/moc
 	/Users/xiaogong/Qt/6.9.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=201402L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=17 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/xiaogong/Qt/6.9.0/macos/mkspecs/macx-clang -I/Users/xiaogong/qtproject/notebook_for_PKU_2025_practice-of-programming-in-cpp -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtWidgets.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtGui.framework/Headers -I/Users/xiaogong/Qt/6.9.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/xiaogong/Qt/6.9.0/macos/lib ../../mywidget.h -o moc_mywidget.cpp
 
@@ -1173,12 +1233,19 @@ application.o: ../../application.cpp ../../application.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../../loginwindow.h \
 		../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QStackedWidget.h \
 		../../dailypromptwindow.h \
+		../../gradientoverlay.h \
 		../../diarydetailwindow.h \
 		../../guiderwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QObject \
@@ -1208,7 +1275,14 @@ dailypromptwindow.o: ../../dailypromptwindow.cpp ../../dailypromptwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
-		../../mywidget.h
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
+		../../mywidget.h \
+		../../gradientoverlay.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dailypromptwindow.o ../../dailypromptwindow.cpp
 
 diarydetailwindow.o: ../../diarydetailwindow.cpp ../../diarydetailwindow.h \
@@ -1216,9 +1290,68 @@ diarydetailwindow.o: ../../diarydetailwindow.cpp ../../diarydetailwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o diarydetailwindow.o ../../diarydetailwindow.cpp
 
+gradientoverlay.o: ../../gradientoverlay.cpp ../../gradientoverlay.h \
+		../../Headers.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsOpacityEffect \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicseffect.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QWidget \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qwidget.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QPushButton \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLineEdit \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlineedit.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QCheckBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qcheckbox.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLabel \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlabel.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QHBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QFontDatabase \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qfontdatabase.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPixmap \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
+		../../mywidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gradientoverlay.o ../../gradientoverlay.cpp
+
 guiderwindow.o: ../../guiderwindow.cpp ../../guiderwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QWidget \
-		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qwidget.h
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qwidget.h \
+		../../mywidget.h \
+		../../Headers.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsOpacityEffect \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicseffect.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QPushButton \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qpushbutton.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLineEdit \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlineedit.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QCheckBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qcheckbox.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QLabel \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qlabel.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QVBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qboxlayout.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QHBoxLayout \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QFontDatabase \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qfontdatabase.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPixmap \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o guiderwindow.o ../../guiderwindow.cpp
 
 loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
@@ -1244,6 +1377,12 @@ loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../mywidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o loginwindow.o ../../loginwindow.cpp
 
@@ -1270,6 +1409,12 @@ main.o: ../../main.cpp ../../MainWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../../application.h \
@@ -1279,6 +1424,7 @@ main.o: ../../main.cpp ../../MainWindow.h \
 		../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QStackedWidget.h \
 		../../dailypromptwindow.h \
+		../../gradientoverlay.h \
 		../../diarydetailwindow.h \
 		../../guiderwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
@@ -1306,6 +1452,12 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../../CryptoUtils.h \
@@ -1364,7 +1516,13 @@ mywidget.o: ../../mywidget.cpp ../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPixmap \
 		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpixmap.h \
 		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QPropertyAnimation \
-		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qpropertyanimation.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QParallelAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qparallelanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/QSequentialAnimationGroup \
+		../../../../Qt/6.9.0/macos/lib/QtCore.framework/Headers/qsequentialanimationgroup.h \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/QPainter \
+		../../../../Qt/6.9.0/macos/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mywidget.o ../../mywidget.cpp
 
 qaesencryption.o: ../../qaesencryption.cpp ../../qaesencryption.h \

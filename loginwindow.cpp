@@ -13,8 +13,8 @@ LoginWindow::LoginWindow(MyWidget *parent)
     setupConnection();
 }
 
-void LoginWindow::checkLogState(){
-
+bool LoginWindow::checkLogState(){
+    return false;
     emit loggedIn(this);
 }
 
@@ -34,7 +34,8 @@ void LoginWindow::setupUI() {
     errorLabel->setAlignment(Qt::AlignCenter);
     regiLabel = new QLabel("新用户将自动注册",this);
     logo = new QLabel(this);
-    logo->setPixmap(QPixmap(":/images/logo.png").scaled(450,300,Qt::KeepAspectRatio,Qt::SmoothTransformation));
+    logo->setPixmap(QPixmap(":/images/logo.png").scaled(400,250,Qt::KeepAspectRatio,Qt::SmoothTransformation));
+    logo->setAlignment(Qt::AlignCenter);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(logo);
     mainLayout->addSpacing(20);
@@ -109,7 +110,7 @@ void LoginWindow::setupConnection(){
 }
 
 void LoginWindow::logging(){
-    if(false){
+    if(true){
         emit loggedIn(this);
     }else{
         emit registIn(this);

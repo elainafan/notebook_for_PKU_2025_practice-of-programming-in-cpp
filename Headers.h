@@ -12,5 +12,8 @@
 #include<QFontDatabase>
 #include<QPixmap>
 #include<QPropertyAnimation>
+#include<QParallelAnimationGroup>
+#include<QSequentialAnimationGroup>
+#include<QPainter>
 #endif // HEADERS_H
 

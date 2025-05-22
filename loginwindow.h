@@ -18,7 +18,7 @@ class LoginWindow : public MyWidget
 public:
     explicit LoginWindow(MyWidget *parent = nullptr);
 
-    void checkLogState();//最初判断一下是否处于自动登录状态
+    bool checkLogState();//最初判断一下是否处于自动登录状态
     void setupUI();
     void setupConnection();
     void setupStyle();

@@ -42,6 +42,7 @@ template <> constexpr inline auto MyWidget::qt_create_metaobjectdata<qt_meta_tag
         "MyWidget",
         "fadeAway",
         "",
+        "appeared",
         "fade",
         "appear"
     };
@@ -49,10 +50,12 @@ template <> constexpr inline auto MyWidget::qt_create_metaobjectdata<qt_meta_tag
     QtMocHelpers::UintData qt_methods {
         // Signal 'fadeAway'
         QtMocHelpers::SignalData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
+        // Signal 'appeared'
+        QtMocHelpers::SignalData<void()>(3, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'fade'
-        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'appear'
         QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'appear'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPublic, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -77,13 +80,16 @@ void MyWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: _t->fadeAway(); break;
-        case 1: _t->fade(); break;
-        case 2: _t->appear(); break;
+        case 1: _t->appeared(); break;
+        case 2: _t->fade(); break;
+        case 3: _t->appear(); break;
         default: ;
         }
     }
     if (_c == QMetaObject::IndexOfMethod) {
         if (QtMocHelpers::indexOfMethod<void (MyWidget::*)()>(_a, &MyWidget::fadeAway, 0))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (MyWidget::*)()>(_a, &MyWidget::appeared, 1))
             return;
     }
 }
@@ -107,14 +113,14 @@ int MyWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
@@ -123,5 +129,11 @@ int MyWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 void MyWidget::fadeAway()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
+}
+
+// SIGNAL 1
+void MyWidget::appeared()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, nullptr);
 }
 QT_WARNING_POP
