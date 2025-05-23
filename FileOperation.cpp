@@ -16,15 +16,16 @@ FileOperation::FileOperation(QString username_, QObject *parent)  //建议使用
 {
 }
 
-bool FileOperation::findUser(QString user, QString password){
+bool FileOperation::findUser(QString user, QString password_){
     QDir dir(startPath);
     username=user;
+    password=password_;
     if (dir.exists(user)){
         QString inputPath = dir.filePath(QDir(user).filePath("valid.crypt"));  //路径
         QString outputPath = dir.filePath(QDir(user).filePath("valid1"));
         inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
         outputPath = QDir::toNativeSeparators(outputPath);
-        if (CryptoUtils().decryptFile(inputPath,outputPath,password)){
+        if (CryptoUtils().decryptFile(inputPath,outputPath,password_)){
             deleteFile(dir.filePath(QDir(user).filePath("valid1.md")));
             return 1;
         }  //没有删除加密文件
@@ -44,7 +45,7 @@ bool FileOperation::findUser(QString user, QString password){
             } else {
                 qDebug() << "无法创建文件:" << file.errorString() << Qt::endl;
             }
-            CryptoUtils().encryptFile(inputPath,outputPath,password);  //没有删除未加密文件
+            CryptoUtils().encryptFile(inputPath,outputPath,password_);  //没有删除未加密文件
             QString userFullPath = dir.filePath(user); // 用户目录的绝对路径
             QDir userDir(userFullPath); // 初始化为用户目录
 
@@ -137,4 +138,57 @@ bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放�
         return false;
     }
     return QFile::remove(filePath);
+}
+
+bool FileOperation::encryptDiary(){
+    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    QStringList resultFiles;
+    QStringList nameFilters;
+    nameFilters << "*.md";
+
+    // 创建递归迭代器
+    QDirIterator it(
+        dir,
+        nameFilters,                     // 文件名过滤条件
+        QDir::Files,                     // 只查找文件（忽略目录）
+        QDirIterator::Subdirectories     // 递归搜索子目录
+        );
+
+    // 遍历所有匹配文件
+    while (it.hasNext()) {
+        QString filePath = it.next();
+        if(!CryptoUtils().encryptFile(filePath,filePath+".crypt",password))return 0;
+        deleteFile(filePath);
+    }
+    return 1;
+}
+
+bool FileOperation::decryptDiary(){
+    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    QStringList resultFiles;
+    QStringList nameFilters;
+    nameFilters << "*.crypt";
+
+    // 创建递归迭代器
+    QDirIterator it(
+        dir,
+        nameFilters,                     // 文件名过滤条件
+        QDir::Files,                     // 只查找文件（忽略目录）
+        QDirIterator::Subdirectories     // 递归搜索子目录
+        );
+
+    // 遍历所有匹配文件
+    while (it.hasNext()) {
+        QString filePath = it.next();
+
+        QFileInfo fileInfo(filePath);
+        QString dirPath = fileInfo.path();          // 目录
+        QString baseName = fileInfo.baseName();  // 无后缀文件名
+        QString outputPath = QDir::cleanPath(dirPath + "/" + baseName);
+        outputPath = QDir::toNativeSeparators(outputPath);  // 转换为本地分隔符，应当可以跨平台
+
+        if(!CryptoUtils().decryptFile(filePath,outputPath,password))return 0;
+        deleteFile(filePath);
+    }
+    return 1;
 }
