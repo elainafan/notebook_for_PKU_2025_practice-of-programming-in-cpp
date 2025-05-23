@@ -13,7 +13,7 @@ class FileOperation : public QObject
 public:
     explicit FileOperation(QString username_="_", QString password_="_", QObject *parent = nullptr);
 
-    int findUser(QString user,QString password);
+    int findUser(QString user,QString password="");
     void signOut();
 
     QStringList findFile(const QString& fileName, const QString& diaryType);

@@ -113,7 +113,7 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     // 移除可能的填充
     decrypted = m_aes.removePadding(decrypted);
 
-    if (isValid&&decrypted!="_VALID_") {
+    if (isValid&&decrypted!=password) {
         return false;
     }
 

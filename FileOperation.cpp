@@ -26,6 +26,12 @@ int FileOperation::findUser(QString user, QString password_){
         QString outputPath = dir.filePath(QDir(user).filePath("valid"));
         inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
         outputPath = QDir::toNativeSeparators(outputPath);
+        if (QDir(QDir(dir).filePath(user)).exists("valid.md")){
+            QFile valid(QDir(QDir(dir).filePath(user)).filePath("valid.md"));
+            valid.open(QIODevice::ReadOnly | QIODevice::Text);
+            QTextStream in(&valid);
+            password_=in.readAll();
+        }
         if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
             return 1;
         }  //没有删除加密文件
@@ -40,7 +46,7 @@ int FileOperation::findUser(QString user, QString password_){
             QFile file(inputPath);  //创建markdown文件
             if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream out(&file);
-                out << "_VALID_";
+                out << password_;
                 file.close();
             } else {
                 qDebug() << "无法创建文件:" << file.errorString() << Qt::endl;
