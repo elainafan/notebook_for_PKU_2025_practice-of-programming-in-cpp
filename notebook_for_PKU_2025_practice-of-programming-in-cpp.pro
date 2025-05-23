@@ -1,4 +1,5 @@
 QT += core gui widgets
+QT += widgets webenginewidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +21,8 @@ SOURCES += \
     MainWindow.cpp \
     CryptoUtils.cpp \
     mywidget.cpp \
-    qaesencryption.cpp
+    qaesencryption.cpp\
+    widget.cpp
 
 HEADERS += \
     FileOperation.h \
@@ -34,15 +36,18 @@ HEADERS += \
     guiderwindow.h \
     loginwindow.h \
     mywidget.h \
-    qaesencryption.h
+    qaesencryption.h\
+    widget.h
 
 FORMS +=
 
 # 发布版本优化
-CONFIG += c++11
+CONFIG += c++17
 CONFIG(release, debug|release) {
     DEFINES += QT_NO_DEBUG_OUTPUT
 }
 
 RESOURCES += \
     Resources.qrc
+
+
