@@ -18,8 +18,8 @@ public:
     bool newFolder(QString folderName);
     bool deleteFile(const QString& filename);
 
-    bool encryptDiary();
-    bool decryptDiary();
+    bool encryptDir(QString dir="");
+    bool decryptDir(QString dir="");
 
     QString username;
     QString password;

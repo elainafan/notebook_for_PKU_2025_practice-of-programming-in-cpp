@@ -140,8 +140,8 @@ bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放�
     return QFile::remove(filePath);
 }
 
-bool FileOperation::encryptDiary(){
-    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+bool FileOperation::encryptDir(QString dir){
+    if(dir=="")dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.md";
@@ -163,8 +163,8 @@ bool FileOperation::encryptDiary(){
     return 1;
 }
 
-bool FileOperation::decryptDiary(){
-    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+bool FileOperation::decryptDir(QString dir){
+    if(dir=="")dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.crypt";
