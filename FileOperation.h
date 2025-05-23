@@ -11,13 +11,15 @@ class FileOperation : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileOperation(QString username_="_", QObject *parent = nullptr);
+    explicit FileOperation(QString username_="_", QString password_="_", QObject *parent = nullptr);
 
-    bool findUser(QString user,QString password);
+    int findUser(QString user,QString password);
+    void signOut();
+
     QStringList findFile(const QString& fileName, const QString& diaryType);
     QStringList findFileByTime(int year, int month=0, int day=0, QString dairyType="");
 
-    QPair<QString,QVector<int> > findFileByContent(const QString& target, QString diaryType);
+    QPair<QString,QVector<int> > findFileByContent(const QString& target, QString diaryType="");
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(QString folderName);
@@ -33,6 +35,7 @@ public:
 private:
     QStack<QString> unsearchedFiles;
     QString searchword;
+    QString searchDiaryType;
 };
 
 #endif // FILEOPERATION_H

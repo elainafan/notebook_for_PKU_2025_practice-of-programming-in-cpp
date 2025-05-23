@@ -59,8 +59,8 @@ bool CryptoUtils::encryptFile(const QString &inputPath, const QString &outputPat
     // 加密数据
     QByteArray encrypted = m_aes.encode(plaintext, key, iv);
 
-    // 将头、盐值、key、IV和加密数据一起保存
-    QByteArray outputData = headerBytes + salt + key + iv + encrypted;
+    // 将头、盐值、IV和加密数据一起保存
+    QByteArray outputData = headerBytes + salt + iv + encrypted;
 
     QFile outputFile(outputPath);
     if (!outputFile.open(QIODevice::WriteOnly)) {
@@ -74,7 +74,7 @@ bool CryptoUtils::encryptFile(const QString &inputPath, const QString &outputPat
     return true;
 }
 
-bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPath, const QString &password)
+bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPath, const QString &password, bool isValid)
 {
     QFile inputFile(inputPath);
     if (!inputFile.open(QIODevice::ReadOnly)) {
@@ -85,7 +85,7 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     QByteArray encryptedData = inputFile.readAll();
     inputFile.close();
 
-    if (encryptedData.size() < 64 + sizeof(FileHeader)) { // FileHeader + 盐值(16) + key(32) + IV(16)
+    if (encryptedData.size() < 32 + sizeof(FileHeader)) { // FileHeader + 盐值(16) + IV(16)
         qWarning() << "Invalid encrypted file format";
         return false;
     }
@@ -93,12 +93,11 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     FileHeader header;
     memcpy(&header, encryptedData.constData(), sizeof(FileHeader));
     QByteArray salt = encryptedData.mid(sizeof(FileHeader),16);
-    QByteArray realkey = encryptedData.mid(sizeof(FileHeader)+16,32);
-    QByteArray iv = encryptedData.mid(sizeof(FileHeader)+48, 16);
-    QByteArray ciphertext = encryptedData.mid(sizeof(FileHeader)+64);
+    QByteArray iv = encryptedData.mid(sizeof(FileHeader)+16, 16);
+    QByteArray ciphertext = encryptedData.mid(sizeof(FileHeader)+32);
 
     QByteArray key = deriveKey(password, salt);
-    if (key.isEmpty()||key!=realkey) {
+    if (key.isEmpty()){
         return false;
     }
 
@@ -113,6 +112,10 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
 
     // 移除可能的填充
     decrypted = m_aes.removePadding(decrypted);
+
+    if (isValid&&decrypted!="_VALID_") {
+        return false;
+    }
 
     // 恢复原始文件名和格式
     QString format = QString::fromLatin1(header.format).trimmed();

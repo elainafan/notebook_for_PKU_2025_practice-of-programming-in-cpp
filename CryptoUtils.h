@@ -14,7 +14,7 @@ public:
     explicit CryptoUtils(QObject *parent = nullptr);
 
     bool encryptFile(const QString &inputPath, const QString &outputPath, const QString &password);
-    bool decryptFile(const QString &inputPath, const QString &outputPath, const QString &password);
+    bool decryptFile(const QString &inputPath, const QString &outputPath, const QString &password, bool isValid=false);
 
 
 private:

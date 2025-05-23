@@ -12,25 +12,24 @@
 
 QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
 
-FileOperation::FileOperation(QString username_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
-    : QObject(parent), username(username_)
+FileOperation::FileOperation(QString username_, QString password_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
+    : QObject(parent), username(username_), password(password_)
 {
 }
 
-bool FileOperation::findUser(QString user, QString password_){
+int FileOperation::findUser(QString user, QString password_){
     QDir dir(startPath);
     username=user;
     password=password_;
     if (dir.exists(user)){
         QString inputPath = dir.filePath(QDir(user).filePath("valid.crypt"));  //路径
-        QString outputPath = dir.filePath(QDir(user).filePath("valid1"));
+        QString outputPath = dir.filePath(QDir(user).filePath("valid"));
         inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
         outputPath = QDir::toNativeSeparators(outputPath);
-        if (CryptoUtils().decryptFile(inputPath,outputPath,password_)){
-            deleteFile(dir.filePath(QDir(user).filePath("valid1.md")));
+        if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
             return 1;
         }  //没有删除加密文件
-        return 0;
+        return -1;
 
     } else {
         if(dir.mkdir(user)) {
@@ -53,7 +52,7 @@ bool FileOperation::findUser(QString user, QString password_){
             // 创建diary和picture目录
             if (!userDir.mkdir("diary") || !userDir.mkdir("picture")) {
                 qWarning() << "无法创建diary或picture目录";
-                return 0;
+                return -1;
             }
 
             // 创建diary下的子目录
@@ -62,20 +61,25 @@ bool FileOperation::findUser(QString user, QString password_){
             if (!diaryDir.mkdir("daily") || !diaryDir.mkdir("weekly") ||
                 !diaryDir.mkdir("monthly") || !diaryDir.mkdir("yearly")) {
                 qWarning() << "无法创建diary下的子目录";
-                return 0;
+                return -1;
             }
             qDebug() << "目录创建成功\n";
-            return 1;
+            return 0;
         } else {
             qWarning() << "目录创建失败\n";
-            return 0;
+            return -1;
         }
     }
 }
 
+void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
+    deleteFile(QDir(username).filePath("valid.md"));
+    encryptDir();
+}
+
 QStringList FileOperation::findFile(const QString& fileName, const QString& diaryType) {
 
-    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    QString dir = QDir(username).filePath("diary");
     dir = QDir(dir).filePath(diaryType);
     QStringList resultFiles;
     QStringList nameFilters;
@@ -117,7 +121,7 @@ QStringList FileOperation::findFileByTime(int year, int month, int day, QString 
 }
 
 bool FileOperation::newFolder(QString folderName){
-    QDir diaryDir = QDir(QDir(QDir(startPath).filePath(username)).filePath("diary"));
+    QDir diaryDir = QDir(username).filePath("diary");
     // 创建diary下的子目录
     if (!diaryDir.mkdir(folderName)) {
         qWarning() << "无法创建diary下的子目录";
@@ -127,12 +131,13 @@ bool FileOperation::newFolder(QString folderName){
 }
 
 QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, QString diaryType){
-    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的绝对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
+    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
 
-    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    QString dir = QDir(username).filePath("diary");
+    if (diaryType!="")dir = QDir(dir).filePath(diaryType);
     QPair<QString,QVector<int> > resultFiles;
 
-    if(unsearchedFiles.isEmpty()||target!=searchword){
+    if(unsearchedFiles.isEmpty()||target!=searchword||diaryType!=searchDiaryType){
         QStringList nameFilters;
         nameFilters << "*.md";
 
@@ -151,6 +156,7 @@ QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& tar
         }
     }
     searchword = target;
+    searchDiaryType = diaryType;
 
     // 遍历所有匹配文件
     while (!unsearchedFiles.isEmpty()) {
@@ -219,7 +225,7 @@ bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放�
 }
 
 bool FileOperation::encryptDir(QString dir){
-    if(dir=="")dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    if(dir=="")dir = QDir(username).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.md";
@@ -242,7 +248,7 @@ bool FileOperation::encryptDir(QString dir){
 }
 
 bool FileOperation::decryptDir(QString dir){
-    if(dir=="")dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    if(dir=="")dir = QDir(username).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.crypt";
