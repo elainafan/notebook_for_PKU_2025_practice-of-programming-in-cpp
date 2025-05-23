@@ -31,6 +31,7 @@ int FileOperation::findUser(QString user, QString password_){
             valid.open(QIODevice::ReadOnly | QIODevice::Text);
             QTextStream in(&valid);
             password_=in.readAll();
+            valid.close();
         }
         if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
             return 1;
