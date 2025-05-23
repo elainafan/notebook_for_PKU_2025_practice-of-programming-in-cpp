@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <QDir>
+#include <QDirIterator>
+#include <QStack>
 
 class FileOperation : public QObject
 {
@@ -13,7 +15,10 @@ public:
 
     bool findUser(QString user,QString password);
     QStringList findFile(const QString& fileName, const QString& diaryType);
-    QStringList findFilebyTime(int year, int month=0, int day=0, QString dairyType="");
+    QStringList findFileByTime(int year, int month=0, int day=0, QString dairyType="");
+
+    QPair<QString,QVector<int> > findFileByContent(const QString& target, QString diaryType);
+    QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(QString folderName);
     bool deleteFile(const QString& filename);
@@ -24,6 +29,10 @@ public:
     QString username;
     QString password;
     static QString startPath;
+
+private:
+    QStack<QString> unsearchedFiles;
+    QString searchword;
 };
 
 #endif // FILEOPERATION_H

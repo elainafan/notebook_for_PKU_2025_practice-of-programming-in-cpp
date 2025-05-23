@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDirIterator>
+#include <QVector>
 #include <QDebug>
 
 QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
@@ -97,7 +98,7 @@ QStringList FileOperation::findFile(const QString& fileName, const QString& diar
     return resultFiles;
 }
 
-QStringList FileOperation::findFilebyTime(int year, int month, int day, QString diaryType) {  //diaryType包括daily,weekly,monthly,yearly,以及自定义
+QStringList FileOperation::findFileByTime(int year, int month, int day, QString diaryType) {  //diaryType包括daily,weekly,monthly,yearly,以及自定义
     if (diaryType==""){
         if(month==0)diaryType="yearly";
         else{
@@ -123,6 +124,83 @@ bool FileOperation::newFolder(QString folderName){
         return 0;
     }
     return 1;
+}
+
+QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, QString diaryType){
+    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的绝对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
+
+    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    QPair<QString,QVector<int> > resultFiles;
+
+    if(unsearchedFiles.isEmpty()||target!=searchword){
+        QStringList nameFilters;
+        nameFilters << "*.md";
+
+        // 创建递归迭代器
+        QDirIterator it(
+            dir,
+            nameFilters,                     // 文件名过滤条件
+            QDir::Files,                     // 只查找文件（忽略目录）
+            QDirIterator::Subdirectories     // 递归搜索子目录
+            );
+
+        // 将所有匹配文件压入栈中
+        while (it.hasNext()) {
+            QString filePath = it.next();
+            unsearchedFiles.push(filePath);
+        }
+    }
+    searchword = target;
+
+    // 遍历所有匹配文件
+    while (!unsearchedFiles.isEmpty()) {
+        QString filePath = unsearchedFiles.pop();
+        QVector<int> res = searchInFileByContent(filePath, target);
+        if(!res.empty()){
+            resultFiles.first = filePath;
+            resultFiles.second = res;
+            return resultFiles;
+        }
+    }
+
+    return resultFiles;
+}
+
+QVector<int> FileOperation::searchInFileByContent(const QString& filePath, const QString& target) {
+    //返回值vector为全文位置，从0开始；搜索的是未渲染的markdown；不支持词中换行
+    QVector<int> matchPositions;
+    if (target.isEmpty()) {
+        qWarning() << "错误：目标字符串不能为空。";
+        return matchPositions;
+    }
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "无法打开文件：" << filePath;
+        return matchPositions;
+    }
+
+    QTextStream in(&file);
+    int lineNumber = 0;
+    qint64 globalPosition = 0; // 全局字符位置（按字符计数）
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        lineNumber++;
+        int pos = 0;
+
+        // 逐字符搜索匹配项
+        while (line.indexOf(target, pos) != -1) {  //不支持词中换行
+            pos = line.indexOf(target, pos);
+            matchPositions.append(globalPosition + pos);
+            qDebug() << "匹配项位置 - 行号: " << lineNumber << ", 行内位置: " << pos << ", 全局位置: " << (globalPosition + pos);
+            pos += target.length(); // 跳过已匹配的部分
+        }
+
+        globalPosition += line.length() + 1; // 更新全局位置（+1 为换行符）
+    }
+
+    file.close();
+    return matchPositions;
 }
 
 bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放入回收站，请谨慎删除。可以考虑在前端弹窗提示
