@@ -2,9 +2,11 @@
 #include "CryptoUtils.h"
 #include <QDateTime>
 #include <QString>
+#include <QStringList>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QDirIterator>
 #include <QDebug>
 
 QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
@@ -23,7 +25,7 @@ bool FileOperation::findUser(QString user, QString password){
         inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
         outputPath = QDir::toNativeSeparators(outputPath);
         if (CryptoUtils().decryptFile(inputPath,outputPath,password)){
-            deleteFile("valid1.md");
+            deleteFile(dir.filePath(QDir(user).filePath("valid1.md")));
             return 1;
         }  //没有删除加密文件
         return 0;
@@ -43,6 +45,23 @@ bool FileOperation::findUser(QString user, QString password){
                 qDebug() << "无法创建文件:" << file.errorString() << Qt::endl;
             }
             CryptoUtils().encryptFile(inputPath,outputPath,password);  //没有删除未加密文件
+            QString userFullPath = dir.filePath(user); // 用户目录的绝对路径
+            QDir userDir(userFullPath); // 初始化为用户目录
+
+            // 创建diary和picture目录
+            if (!userDir.mkdir("diary") || !userDir.mkdir("picture")) {
+                qWarning() << "无法创建diary或picture目录";
+                return 0;
+            }
+
+            // 创建diary下的子目录
+            QString diaryPath = userDir.filePath("diary");
+            QDir diaryDir(diaryPath);
+            if (!diaryDir.mkdir("daily") || !diaryDir.mkdir("weekly") ||
+                !diaryDir.mkdir("monthly") || !diaryDir.mkdir("yearly")) {
+                qWarning() << "无法创建diary下的子目录";
+                return 0;
+            }
             qDebug() << "目录创建成功\n";
             return 1;
         } else {
@@ -52,80 +71,62 @@ bool FileOperation::findUser(QString user, QString password){
     }
 }
 
-QString FileOperation::findFile(const QString& fileName) {
-    QDir dir(QDir(startPath).filePath(username));
-    if (dir.exists(fileName)) {
-        return dir.absoluteFilePath(fileName);
+QStringList FileOperation::findFile(const QString& fileName, const QString& diaryType) {
+
+    QString dir = QDir(QDir(startPath).filePath(username)).filePath("diary");
+    dir = QDir(dir).filePath(diaryType);
+    QStringList resultFiles;
+    QStringList nameFilters;
+    nameFilters << fileName;
+
+    // 创建递归迭代器
+    QDirIterator it(
+        dir,
+        nameFilters,                     // 文件名过滤条件
+        QDir::Files,                     // 只查找文件（忽略目录）
+        QDirIterator::Subdirectories     // 递归搜索子目录
+        );
+
+    // 遍历所有匹配文件
+    while (it.hasNext()) {
+        QString filePath = it.next();
+        resultFiles.append(filePath);
     }
-    return QString();
+
+    return resultFiles;
 }
 
-void FileOperation::newFile(const QString& content){  //这里是QString而不是markdown文件。如有需要，后再更改
-    QDateTime current = QDateTime::currentDateTime();
-    QString current_formatted = current.toString("yyyy_MM_dd_HH_mm_ss");
-    QDir dir(startPath);
-    if(!dir.exists(username)) {
-        // 创建目录（单层）
-        if(dir.mkdir(username)) {
-            qDebug() << "目录创建成功\n";
-        } else {
-            qWarning() << "目录创建失败\n";
+QStringList FileOperation::findFilebyTime(int year, int month, int day, QString diaryType) {  //diaryType包括daily,weekly,monthly,yearly,以及自定义
+    if (diaryType==""){
+        if(month==0)diaryType="yearly";
+        else{
+            if(day==0)diaryType="monthly";
+            else diaryType="daily";
         }
-    }
-    // 拼接完整文件路径
-    QString fullPath = dir.filePath(QDir(username).filePath(current_formatted + ".md"));  //路径
-    fullPath = QDir::toNativeSeparators(fullPath);  // 转换为本地分隔符，应当可以跨平台
-    QFile file(fullPath);  //创建markdown文件
-
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
-        out << content;
-        file.close();
-    } else {
-        qDebug() << "无法创建文件:" << file.errorString() << Qt::endl;
-    }
+    }    //在缺省diaryType时根据时间值缺省情况推导diaryType
+    QString yyyy=QString("%1").arg(year, 4, 10, QLatin1Char('0'));
+    QString MM=QString("%1").arg(month, 2, 10, QLatin1Char('0'));
+    QString dd=QString("%1").arg(day, 2, 10, QLatin1Char('0'));
+    if (diaryType=="daily")return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
+    if (diaryType=="weekly")return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
+    if (diaryType=="monthly")return findFile(yyyy+"_"+MM+"*.md", diaryType);
+    if (diaryType=="yearly")return findFile(yyyy+"*.md", diaryType);
+    return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
 }
 
-QString FileOperation::readFile(const QString& filename){  //这里是QString而不是markdown文件。如有需要，后再更改
-    QString filePath = findFile(filename);    //默认当前路径，不过findFile已经支持在路径下搜索
-    if (filePath.isEmpty()) {
-        qDebug() << "文件未找到:" << filename;
-        return QString();
+bool FileOperation::newFolder(QString folderName){
+    QDir diaryDir = QDir(QDir(QDir(startPath).filePath(username)).filePath("diary"));
+    // 创建diary下的子目录
+    if (!diaryDir.mkdir(folderName)) {
+        qWarning() << "无法创建diary下的子目录";
+        return 0;
     }
-    QFile file(filePath);
-
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        QString content = in.readAll();
-        file.close();
-        return content;
-    } else {
-        qDebug() << "无法读取文件:" << file.errorString() << Qt::endl;
-        return QString();
-    }
+    return 1;
 }
 
-void FileOperation::storeFile(const QString& filename, const QString& content){  //这里是QString而不是markdown文件。如有需要，后再更改
-    QString filePath = findFile(filename);    //默认当前路径，不过findFile已经支持在路径下搜索
+bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放入回收站，请谨慎删除。可以考虑在前端弹窗提示
     if (filePath.isEmpty()) {
-        qDebug() << "文件未找到:" << filename;
-        return;
-    }
-    QFile file(filePath);
-
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {  //这里是覆写
-        QTextStream out(&file);
-        out << content;
-        file.close();
-    } else {
-        qDebug() << "无法写入文件:" << file.errorString() << Qt::endl;
-    }
-}
-
-bool FileOperation::deleteFile(const QString& filename){  //文件不会被放入回收站，请谨慎删除。可以考虑在前端弹窗提示
-    QString filePath = findFile(filename);
-    if (filePath.isEmpty()) {
-        qDebug() << "文件未找到:" << filename;
+        qDebug() << "文件未找到:" << filePath;
         return false;
     }
     QFileInfo fileInfo(filePath);

@@ -12,10 +12,10 @@ public:
     explicit FileOperation(QString username_="_", QObject *parent = nullptr);
 
     bool findUser(QString user,QString password);
-    QString findFile(const QString& fileName);
-    void newFile(const QString& content="");
-    QString readFile(const QString& filename);
-    void storeFile(const QString& filename, const QString& content);
+    QStringList findFile(const QString& fileName, const QString& diaryType);
+    QStringList findFilebyTime(int year, int month=0, int day=0, QString dairyType="");
+
+    bool newFolder(QString folderName);
     bool deleteFile(const QString& filename);
 
     QString username;
