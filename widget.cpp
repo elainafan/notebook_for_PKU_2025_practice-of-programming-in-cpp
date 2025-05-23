@@ -1,7 +1,7 @@
 #include "widget.h"
 
 #include <QTextEdit>
-#include <QWebEngineView>
+//#include <QWebEngineView>
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QPushButton>

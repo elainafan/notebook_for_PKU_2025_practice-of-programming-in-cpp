@@ -16,7 +16,10 @@ public:
     void setupStyle();
     void setupConnection();
     void setupAnimation();
+public slots:
+    void tryEntering();
 signals:
+    void entering(MyWidget *fromWhere);
 };
 
 #endif // GUIDERWINDOW_H

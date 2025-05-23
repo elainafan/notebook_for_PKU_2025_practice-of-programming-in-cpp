@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 #include<QApplication>
-#include"MainWindow.h"
+#include"AppWindow.h"
 #include"loginwindow.h"
 #include"QStackedWidget.h"
 #include"dailypromptwindow.h"
@@ -17,7 +17,7 @@ private:
     QStackedWidget *mainStack;
     LoginWindow *loginWindow;
     DailyPromptWindow *promptWindow;
-    MainWindow *mainWindow;
+    AppWindow *appWindow;
     DiaryDetailWindow *detailWindow;
     Guider *newGuider;
 
@@ -25,10 +25,10 @@ private:
 public slots:
     // 界面导航函数
     void navigateToLogin();
-    void navigateToDailyPrompt(MyWidget *fromwhere);
-    void navigateToMainWindow();
-    void navigateToDiaryDetail();
-    void navigateToGuider(MyWidget *fromwhere);
+    void navigateToDailyPrompt(MyWidget *fromWhere);
+    void navigateToMainWindow(MyWidget *fromWhere);
+    void navigateToDiaryDetail(MyWidget *fromWhere);
+    void navigateToGuider(MyWidget *fromWhere);
 };
 
 #endif // APPLICATION_H

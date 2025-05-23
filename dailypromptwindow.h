@@ -38,7 +38,10 @@ public:
     void setupAnimation();
     void promptAnimation();
     void setContent(const QString& title, const QString& text, const QPixmap& image);
+public slots:
+    void tryEntering();
 signals:
+    void entering(MyWidget *fromWhere);
 };
 
 #endif // DAILYPROMPTWINDOW_H

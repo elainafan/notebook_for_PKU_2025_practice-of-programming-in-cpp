@@ -10,6 +10,7 @@ TEMPLATE = app
 include(Qt-AES/QAESEncryption.pri)
 
 SOURCES += \
+    AppWindow.cpp \
     FileOperation.cpp \
     application.cpp \
     dailypromptwindow.cpp \
@@ -18,16 +19,15 @@ SOURCES += \
     guiderwindow.cpp \
     loginwindow.cpp \
     main.cpp \
-    MainWindow.cpp \
     CryptoUtils.cpp \
     mywidget.cpp \
     qaesencryption.cpp\
     widget.cpp
 
 HEADERS += \
+    AppWindow.h \
     FileOperation.h \
     Headers.h \
-    MainWindow.h \
     CryptoUtils.h \
     application.h \
     dailypromptwindow.h \
