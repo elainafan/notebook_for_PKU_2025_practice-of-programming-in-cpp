@@ -1,5 +1,5 @@
 QT += core gui widgets
-QT += widgets webenginewidgets
+#QT += widgets webenginewidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -49,5 +49,8 @@ CONFIG(release, debug|release) {
 
 RESOURCES += \
     Resources.qrc
+
+DISTFILES += \
+    interfaceRequirement.md
 
 

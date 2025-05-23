@@ -64,7 +64,7 @@ void LoginWindow::setupUI() {
 }
 
 void LoginWindow::setupStyle() {//登录窗口的样式表，影响登录窗口中的所有构件
-    //qDebug()<<QFontDatabase().families();
+    qDebug()<<QFontDatabase().families();
     setStyleSheet(R"(
             QWidget {
                 background-color: #FFFFF9;
@@ -110,7 +110,7 @@ void LoginWindow::setupConnection(){
 }
 
 void LoginWindow::logging(){
-    if(true){
+    if(false){
         emit loggedIn(this);
     }else{
         emit registIn(this);

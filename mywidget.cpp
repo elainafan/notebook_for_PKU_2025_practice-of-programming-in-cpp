@@ -28,7 +28,7 @@ void MyWidget::fade(){
     riseUp->setDuration(FADING_DURATION);
     riseUp->setEasingCurve(QEasingCurve::InSine);
     riseUp->setStartValue(pos());
-    riseUp->setEndValue(pos()-QPoint(0,100));
+    riseUp->setEndValue(pos()-QPoint(0,50));
 
     QParallelAnimationGroup *fadeGroup = new QParallelAnimationGroup(this);
     fadeGroup->addAnimation(fadeIn);
@@ -50,8 +50,8 @@ void MyWidget::appear(){
     QPropertyAnimation *fallDown = new QPropertyAnimation(this,"pos");
     fallDown->setDuration(APPEARING_DURATION);
     fallDown->setEasingCurve(QEasingCurve::OutSine);
-    fallDown->setStartValue(pos()-QPoint(0,50));
-    fallDown->setEndValue(pos()+QPoint(0,50));
+    fallDown->setStartValue(pos()-QPoint(0,25));
+    fallDown->setEndValue(pos()+QPoint(0,25));
 
     QParallelAnimationGroup *appearGroup = new QParallelAnimationGroup(this);
     appearGroup->addAnimation(appearing);
