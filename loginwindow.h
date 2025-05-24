@@ -24,8 +24,8 @@ public:
     void setupStyle();
     void logging();//按下按钮，判断是注册还是登录
 signals:
-    void loggedIn(MyWidget *fromwhere);
-    void registIn(MyWidget *fromwhere);
+    void loggedIn(MyWidget *fromWhere);
+    void registIn(MyWidget *fromWhere);
 
 public slots:
 };

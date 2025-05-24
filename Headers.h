@@ -15,5 +15,11 @@
 #include<QParallelAnimationGroup>
 #include<QSequentialAnimationGroup>
 #include<QPainter>
+#include<QScrollArea>
+#include<QFrame>
+#include<vector>
+#include <QGraphicsColorizeEffect>
+#include<QScrollBar>
+using namespace std;
 #endif // HEADERS_H
 

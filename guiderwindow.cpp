@@ -73,6 +73,9 @@ void Guider::setupStyle(){
 }
 
 void Guider::setupConnection(){
-
+    connect(enterButton,&QPushButton::released,this,&Guider::tryEntering);
 }
 
+void Guider::tryEntering(){
+    emit entering(this);
+}

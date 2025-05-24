@@ -133,6 +133,7 @@ void DailyPromptWindow::setupStyle(){
 
 void DailyPromptWindow::setupConnection(){
     connect(this,&MyWidget::appeared,this,&DailyPromptWindow::promptAnimation);
+    connect(enterButton,&QPushButton::released,this,&DailyPromptWindow::tryEntering);
 }
 
 void DailyPromptWindow::setupAnimation(){
@@ -214,4 +215,8 @@ void DailyPromptWindow::setContent(const QString& title, const QString& text, co
     contentLabel->adjustSize();
     imageLabel->setPixmap(image.scaled(600, 500, Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
     imageLabel->adjustSize();
+}
+
+void DailyPromptWindow::tryEntering(){
+    emit entering(this);
 }
