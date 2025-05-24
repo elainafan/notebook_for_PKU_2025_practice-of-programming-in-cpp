@@ -15,6 +15,7 @@ QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目�
 FileOperation::FileOperation(QString username_, QString password_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
     : QObject(parent), username(username_), password(password_)
 {
+    searchword="";searchDiaryType="";
 }
 
 int FileOperation::findUser(QString user, QString password_){
@@ -142,7 +143,7 @@ QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& tar
     if (diaryType!="")dir = QDir(dir).filePath(diaryType);
     QPair<QString,QVector<int> > resultFiles;
 
-    if(unsearchedFiles.isEmpty()||target!=searchword||diaryType!=searchDiaryType){
+    if(target!=searchword||diaryType!=searchDiaryType){
         QStringList nameFilters;
         nameFilters << "*.md";
 
