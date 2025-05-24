@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QVector>
+#include <QRandomGenerator>
 #include <QDebug>
 
 QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
@@ -83,6 +84,40 @@ int FileOperation::findUser(QString user, QString password_){
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
     deleteFile(QDir(username).filePath("valid.md"));
     encryptDir();
+}
+
+QString FileOperation::recommend(){
+    QString dir = QDir(username).filePath("diary");
+
+    // 获取所有文件（排除目录和特殊条目）
+    QStringList files;
+    QStringList nameFilters;
+    nameFilters << "*.md";
+
+    // 创建递归迭代器
+    QDirIterator it(
+        dir,
+        nameFilters,                     // 文件名过滤条件
+        QDir::Files,                     // 只查找文件（忽略目录）
+        QDirIterator::Subdirectories     // 递归搜索子目录
+        );
+
+    // 遍历所有匹配文件
+    while (it.hasNext()) {
+        QString filePath = it.next();
+        files.append(filePath);
+    }
+    if (files.isEmpty()) {
+        qDebug()<<"目录中没有文件:"<<dir;
+        return QString();
+    }
+
+    // 生成随机索引
+    int randomIndex = QRandomGenerator::global()->bounded(files.size());
+    QString selectedFile = files.at(randomIndex);
+
+    // 返回相对路径
+    return selectedFile;
 }
 
 QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {

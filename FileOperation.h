@@ -16,6 +16,7 @@ public:
     int findUser(QString user,QString password="");
     void signOut();
 
+    QString recommend();
     QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
     QStringList findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType=""); //默认搜索全部笔记
 
