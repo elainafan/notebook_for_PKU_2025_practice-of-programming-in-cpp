@@ -16,8 +16,8 @@ public:
     int findUser(QString user,QString password="");
     void signOut();
 
-    QStringList findFile(const QString& fileName, const QString& diaryType);
-    QStringList findFileByTime(int year, int month=0, int day=0, QString dairyType="");
+    QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
+    QStringList findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType=""); //默认搜索全部笔记
 
     QPair<QString,QVector<int> > findFileByContent(const QString& target, QString diaryType="");
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);

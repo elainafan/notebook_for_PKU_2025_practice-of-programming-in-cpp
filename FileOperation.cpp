@@ -84,47 +84,45 @@ void FileOperation::signOut(){  //退出登录，并加密所有未加密的日�
     encryptDir();
 }
 
-QStringList FileOperation::findFile(const QString& fileName, const QString& diaryType) {
+QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
 
-    QString dir = QDir(username).filePath("diary");
-    dir = QDir(dir).filePath(diaryType);
+    QDir dir(dirPath);
+    QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
     QStringList resultFiles;
-    QStringList nameFilters;
-    nameFilters << fileName;
 
-    // 创建递归迭代器
-    QDirIterator it(
-        dir,
-        nameFilters,                     // 文件名过滤条件
-        QDir::Files,                     // 只查找文件（忽略目录）
-        QDirIterator::Subdirectories     // 递归搜索子目录
-        );
-
-    // 遍历所有匹配文件
-    while (it.hasNext()) {
-        QString filePath = it.next();
-        resultFiles.append(filePath);
+    for (const QFileInfo &entry : entries) {
+        if (entry.isDir()) {
+            QStringList found = findFile(start, end, entry.filePath());
+            if (!found.isEmpty())resultFiles.append(found);
+        } else {
+            QString baseName = entry.baseName(); // 获取不带扩展名的文件名
+            QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
+            if (fileTime >= start && fileTime <= end) {
+                resultFiles.append(entry.filePath());
+            }
+        }
     }
-
     return resultFiles;
 }
 
-QStringList FileOperation::findFileByTime(int year, int month, int day, QString diaryType) {  //diaryType包括daily,weekly,monthly,yearly,以及自定义
-    if (diaryType==""){
-        if(month==0)diaryType="yearly";
-        else{
-            if(day==0)diaryType="monthly";
-            else diaryType="daily";
-        }
-    }    //在缺省diaryType时根据时间值缺省情况推导diaryType
+QStringList FileOperation::findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType) {
+    //diaryType包括daily,weekly,monthly,yearly,以及自定义；起始日期 , 终止日期的后一天
+
     QString yyyy=QString("%1").arg(year, 4, 10, QLatin1Char('0'));
     QString MM=QString("%1").arg(month, 2, 10, QLatin1Char('0'));
     QString dd=QString("%1").arg(day, 2, 10, QLatin1Char('0'));
-    if (diaryType=="daily")return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
-    if (diaryType=="weekly")return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
-    if (diaryType=="monthly")return findFile(yyyy+"_"+MM+"*.md", diaryType);
-    if (diaryType=="yearly")return findFile(yyyy+"*.md", diaryType);
-    return findFile(yyyy+"_"+MM+"_"+dd+"*.md", diaryType);
+    QDateTime date=QDateTime::fromString(yyyy+"/"+MM+"/"+dd,"yyyy/MM/dd");
+
+    yyyy=QString("%1").arg(year2, 4, 10, QLatin1Char('0'));
+    MM=QString("%1").arg(month2, 2, 10, QLatin1Char('0'));
+    dd=QString("%1").arg(day2, 2, 10, QLatin1Char('0'));
+    QDateTime date2=QDateTime::fromString(yyyy+"/"+MM+"/"+dd,"yyyy/MM/dd");
+    date2 = date2.addSecs(-1);
+
+    QString dirPath = QDir(username).filePath("diary");
+    if (diaryType!="")dirPath = QDir(dirPath).filePath(diaryType);
+
+    return findFile(date, date2, dirPath);
 }
 
 bool FileOperation::newFolder(QString folderName){
@@ -147,6 +145,10 @@ QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& tar
     if(unsearchedFiles.isEmpty()||target!=searchword||diaryType!=searchDiaryType){
         QStringList nameFilters;
         nameFilters << "*.md";
+
+        while (!unsearchedFiles.isEmpty()){
+            unsearchedFiles.pop();
+        }
 
         // 创建递归迭代器
         QDirIterator it(
