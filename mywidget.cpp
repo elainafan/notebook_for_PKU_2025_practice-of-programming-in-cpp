@@ -1,21 +1,35 @@
 #include "mywidget.h"
 #define FADING_DURATION 500
 #define APPEARING_DURATION 500
+
 MyWidget::MyWidget(QWidget *parent)
-    : QWidget{parent}
-{}
-
-void MyWidget::setupUI(){
-
+    : QWidget(parent) // 关键：调用基类构造函数
+{
+    //setupUI();
+    //setupConnection();
+    //setupStyle();
 }
 
-void MyWidget::setupStyle(){
-
+void MyWidget::setupUI() {
+    // 设置布局和子控件
+    /*
+    QPushButton *button = new QPushButton("Test", this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(button);
+    resize(300, 200); // 设置默认尺寸
+    */
 }
 
-void MyWidget::setupConnection(){
-
+void MyWidget::setupConnection() {
+    // 连接信号槽（示例）
+    //connect(button, &QPushButton::clicked, this, &MyWidget::fade);
 }
+
+void MyWidget::setupStyle() {
+    //setStyleSheet("background: #F0F0F0; border: 1px solid #CCCCCC;");
+}
+
+
 
 
 void MyWidget::fade(){

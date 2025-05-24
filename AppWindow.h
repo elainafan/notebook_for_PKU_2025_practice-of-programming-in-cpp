@@ -4,9 +4,10 @@
 #include "Headers.h"
 #include <QMainWindow>
 #include"mywidget.h"
-
-class QLineEdit;
-class QPushButton;
+#include"calendar.h"
+#include"reminder.h"
+#include"searchwidget.h"
+#include"diarylistwidget.h"
 
 class AppWindow : public MyWidget
 {
@@ -19,15 +20,23 @@ public:
 private slots:
 
 private:
+    QWidget *leftColumn;
+    QWidget *searchWidgetWin;
+    QWidget *diaryListWin;
+    QWidget *calendarWin;
+    QWidget *reminderWin;
+    QWidget *rightColumn;
+    SearchWidget *searchWidget;
+    DiaryListWidget *diaryList;
+    Calendar *calendar;
+    Reminder *reminder;
     void setupUI();
     void setupStyle();
     void setupConnection();
     void setupAnimation();
-    QLineEdit *passwordInput;
-    QLineEdit *filePathInput;
-    QPushButton *browseButton;
-    QPushButton *encryptButton;
-    QPushButton *decryptButton;
+
 };
+
+
 
 #endif // APPWINDOW_H

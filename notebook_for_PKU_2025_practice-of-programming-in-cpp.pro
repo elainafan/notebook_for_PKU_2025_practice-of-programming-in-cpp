@@ -13,8 +13,11 @@ SOURCES += \
     AppWindow.cpp \
     FileOperation.cpp \
     application.cpp \
+    calendar.cpp \
     dailypromptwindow.cpp \
     diarydetailwindow.cpp \
+    diarylist.cpp \
+    diarylistwidget.cpp \
     gradientoverlay.cpp \
     guiderwindow.cpp \
     loginwindow.cpp \
@@ -22,6 +25,8 @@ SOURCES += \
     CryptoUtils.cpp \
     mywidget.cpp \
     qaesencryption.cpp\
+    reminder.cpp \
+    searchwidget.cpp \
     widget.cpp
 
 HEADERS += \
@@ -30,13 +35,18 @@ HEADERS += \
     Headers.h \
     CryptoUtils.h \
     application.h \
+    calendar.h \
     dailypromptwindow.h \
     diarydetailwindow.h \
+    diarylist.h \
+    diarylistwidget.h \
     gradientoverlay.h \
     guiderwindow.h \
     loginwindow.h \
     mywidget.h \
     qaesencryption.h\
+    reminder.h \
+    searchwidget.h \
     widget.h
 
 FORMS +=

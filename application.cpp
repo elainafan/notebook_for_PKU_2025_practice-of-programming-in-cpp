@@ -3,14 +3,15 @@
 
 Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
 
+
+
     loginWindow=new LoginWindow();
     promptWindow=new DailyPromptWindow();
     appWindow=new AppWindow();
     newGuider=new Guider();
     setupConnection();
     if(!loginWindow->checkLogState())loginWindow->show();
-
-    //loginWindow->checkLogState();
+    //appWindow->show();
 }
 
 Application::~Application(){}

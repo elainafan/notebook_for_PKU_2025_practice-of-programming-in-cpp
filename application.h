@@ -7,6 +7,7 @@
 #include"dailypromptwindow.h"
 #include"diarydetailwindow.h"
 #include"guiderwindow.h"
+#include"Headers.h"
 
 class Application: public QApplication
 {
@@ -14,7 +15,6 @@ public:
     Application(int& argc, char* argv[]);
     ~Application();
 private:
-    QStackedWidget *mainStack;
     LoginWindow *loginWindow;
     DailyPromptWindow *promptWindow;
     AppWindow *appWindow;
