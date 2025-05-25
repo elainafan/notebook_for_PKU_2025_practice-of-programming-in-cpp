@@ -11,16 +11,16 @@ class FileOperation : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileOperation(QString username_="_", QString password_="_", QObject *parent = nullptr);
+    explicit FileOperation(QString username_="_", QObject *parent = nullptr);
 
-    int findUser(QString user,QString password="");
+    int signIn(QString user="",QString password=""); //缺省全部参数-自动登录，不缺省-登录或注册
     void signOut();
-
     QString recommend();
+
     QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
     QStringList findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType=""); //默认搜索全部笔记
 
-    QPair<QString,QVector<int> > findFileByContent(const QString& target, QString diaryType="");
+    QPair<QString,QVector<int> > findFileByContent(const QString& target, bool newSearch, QString diaryType="");
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(QString folderName);

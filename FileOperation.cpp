@@ -13,14 +13,28 @@
 
 QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
 
-FileOperation::FileOperation(QString username_, QString password_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
-    : QObject(parent), username(username_), password(password_)
+FileOperation::FileOperation(QString username_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
+    : QObject(parent), username(username_)
 {
     searchword="";searchDiaryType="";
 }
 
-int FileOperation::findUser(QString user, QString password_){
+int FileOperation::signIn(QString user, QString password_){
     QDir dir(startPath);
+
+    if(user==""){
+        if(dir.exists("username.md")){
+            QFile userFile(QDir(dir).filePath("username.md"));
+            userFile.open(QIODevice::ReadOnly | QIODevice::Text);
+            QTextStream in(&userFile);
+            user=in.readAll();
+            userFile.close();
+        }
+        else{
+            return -1;
+        }
+    }
+
     username=user;
     password=password_;
     if (dir.exists(user)){
@@ -28,6 +42,17 @@ int FileOperation::findUser(QString user, QString password_){
         QString outputPath = dir.filePath(QDir(user).filePath("valid"));
         inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
         outputPath = QDir::toNativeSeparators(outputPath);
+
+        QString userPath = dir.filePath("username.md");
+        QFile userFile(userPath);  //创建markdown文件
+        if (userFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&userFile);
+            out << user;
+            userFile.close();
+        } else {
+            qDebug() << "无法创建文件:" << userFile.errorString() << Qt::endl;
+        }
+
         if (QDir(QDir(dir).filePath(user)).exists("valid.md")){
             QFile valid(QDir(QDir(dir).filePath(user)).filePath("valid.md"));
             valid.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -46,6 +71,17 @@ int FileOperation::findUser(QString user, QString password_){
             QString outputPath = dir.filePath(QDir(user).filePath("valid.crypt"));
             inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
             outputPath = QDir::toNativeSeparators(outputPath);
+
+            QString userPath = dir.filePath("username.md");
+            QFile userFile(userPath);  //创建markdown文件
+            if (userFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream out(&userFile);
+                out << user;
+                userFile.close();
+            } else {
+                qDebug() << "无法创建文件:" << userFile.errorString() << Qt::endl;
+            }
+
             QFile file(inputPath);  //创建markdown文件
             if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream out(&file);
@@ -83,6 +119,7 @@ int FileOperation::findUser(QString user, QString password_){
 
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
     deleteFile(QDir(username).filePath("valid.md"));
+    deleteFile("username.md");
     encryptDir();
 }
 
@@ -171,14 +208,16 @@ bool FileOperation::newFolder(QString folderName){
     return 1;
 }
 
-QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, QString diaryType){
+
+
+QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, QString diaryType){
     //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
 
     QString dir = QDir(username).filePath("diary");
     if (diaryType!="")dir = QDir(dir).filePath(diaryType);
     QPair<QString,QVector<int> > resultFiles;
 
-    if(target!=searchword||diaryType!=searchDiaryType){
+    if(target!=searchword||diaryType!=searchDiaryType||newSearch){
         QStringList nameFilters;
         nameFilters << "*.md";
 
