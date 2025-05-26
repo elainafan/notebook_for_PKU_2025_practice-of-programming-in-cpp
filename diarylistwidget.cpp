@@ -50,18 +50,18 @@ DiaryListWidget::DiaryListWidget(QWidget *parent)
 
 void DiaryListWidget::setupUI(){
     buildDiaryLists(vector<DiaryList>{ //测试用
-        DiaryList("TEST1",0,1),
-        DiaryList("TEST2",0,2),
-        DiaryList("TEST3",0,3),
-        DiaryList("TEST4",0,4),
-        DiaryList("TEST5",0,5),
-        DiaryList("TEST6",0,6),
-        DiaryList("TEST1",0,7),
-        DiaryList("TEST2",0,8),
-        DiaryList("TEST3",0,1),
-        DiaryList("TEST4",0,2),
-        DiaryList("TEST5",0,3),
-        DiaryList("TEST6",0,4)
+        DiaryList("TEST1","weekly",1),
+        DiaryList("TEST2","daily",2),
+        DiaryList("TEST3","monthly",3),
+        DiaryList("TEST4","yearly",4),
+        DiaryList("TEST5","daily",5),
+        DiaryList("TEST6","monthly",6),
+        DiaryList("TEST1","weekly",7),
+        DiaryList("TEST2","weekly",8),
+        DiaryList("TEST3","weekly",1),
+        DiaryList("TEST4","weekly",2),
+        DiaryList("TEST5","weekly",3),
+        DiaryList("TEST6","weekly",4)
     });
 
 }

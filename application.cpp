@@ -10,8 +10,8 @@ Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
     appWindow=new AppWindow();
     newGuider=new Guider();
     setupConnection();
-    if(!loginWindow->checkLogState())loginWindow->show();
-    //appWindow->show();
+    //if(!loginWindow->checkLogState())loginWindow->show();
+    appWindow->show();
 }
 
 Application::~Application(){}

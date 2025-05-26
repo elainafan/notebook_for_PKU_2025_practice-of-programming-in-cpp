@@ -19,5 +19,7 @@
         <file>images/diaryListIcon6.png</file>
         <file>images/diaryListIcon7.png</file>
         <file>images/diaryListIcon8.png</file>
+        <file>images/nextCalendarPage.png</file>
+        <file>images/prevCalendarPage.png</file>
     </qresource>
 </RCC>

@@ -15,7 +15,7 @@
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
-{
+{/*
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
@@ -48,6 +48,7 @@ Widget::Widget(QWidget *parent)
     connect(imageButton, &QPushButton::clicked, this, &Widget::insertImage);
 
     updatePreview();
+*/
 }
 
 void Widget::saveToFile()
@@ -64,12 +65,12 @@ void Widget::saveToFile()
 }
 
 void Widget::exportToPdf()
-{
+{/*
     QString fileName = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "PDF 文件 (*.pdf)");
     if (!fileName.isEmpty()) {
         preview->page()->printToPdf(fileName);
     }
-}
+*/}
 
 void Widget::insertImage()
 {
@@ -121,7 +122,7 @@ void Widget::insertImage()
 
 
 void Widget::updatePreview()
-{
+{/*
     QString markdown = textEdit->toPlainText();
     QString escaped = markdown;
     escaped.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n");
@@ -137,7 +138,7 @@ void Widget::updatePreview()
     } else {
         preview->page()->runJavaScript(js);
     }
-}
+*/}
 
 void Widget::openMdFile()
 {

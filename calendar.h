@@ -7,12 +7,24 @@
 class Calendar : public QWidget
 {
     Q_OBJECT
+
+    QCalendarWidget *calendarWidget;
+    QString calendarType;
+    QStackedLayout *stackLayout;
+    QVBoxLayout *weekLayout;
+    QWidget *weekContainer;
+    QWidget *weekLine[10];
 public:
-    explicit Calendar(QWidget *parent = nullptr);
+    explicit Calendar(QString tp,QWidget *parent = nullptr);
     void setupUI();
     void setupStyle();
     void setupConnection();
+
 signals:
+
+public slots:
+    void closeWeekLine();
+    void updateWeekLine();
 };
 
 #endif // CALENDAR_H

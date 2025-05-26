@@ -60,20 +60,20 @@ void AppWindow::setupUI(){
     */
     searchWidget= new SearchWidget(searchWidgetWin);
     diaryList = new DiaryListWidget(diaryListWin);
-    calendar = new Calendar(calendarWin);
+    calendar = new Calendar("weekly",calendarWin);
     reminder = new Reminder(reminderWin);
 }
 
 void AppWindow::setupStyle(){
     setStyleSheet(R"(
             QWidget{
-                background-color: #FFFFFC;
+                background-color: #FFFFFF;
                 font-family: "Yuanti SC",sans-serif;
             }
         )");
     leftColumn->setStyleSheet(R"(
             QWidget {
-                background-color: #EEEEE9;
+                background-color: #F3F3F3;
                 font-family: "Yuanti SC",sans-serif;
                 /*border: 2px solid #000000;*/
             }

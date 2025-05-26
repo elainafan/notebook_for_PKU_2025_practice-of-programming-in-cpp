@@ -20,6 +20,10 @@
 #include<vector>
 #include <QGraphicsColorizeEffect>
 #include<QScrollBar>
+#include<QCalendarWidget>
+#include<QStackedLayout>
+#include<QTableView>
+#include<QTimer>
 using namespace std;
 #endif // HEADERS_H
 
