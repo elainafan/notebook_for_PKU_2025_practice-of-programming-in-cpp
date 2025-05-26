@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QStack>
+#include "diarylist.h"
 
 class FileOperation : public QObject
 {
@@ -18,12 +19,13 @@ public:
     QString recommend();
 
     QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
-    QStringList findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType=""); //默认搜索全部笔记
+    QStringList findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记
 
-    QPair<QString,QVector<int> > findFileByContent(const QString& target, bool newSearch, QString diaryType="");
+    QPair<QString,QVector<int> > findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType=DiaryList("","",0));
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
-    bool newFolder(QString folderName);
+    bool newFolder(const DiaryList& diaryType);
+    QVector<DiaryList> allFolders();
     bool deleteFile(const QString& filename);
 
     bool encryptDir(QString dir="");

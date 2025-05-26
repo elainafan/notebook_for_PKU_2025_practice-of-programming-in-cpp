@@ -103,8 +103,8 @@ int FileOperation::signIn(QString user, QString password_){
             // 创建diary下的子目录
             QString diaryPath = userDir.filePath("diary");
             QDir diaryDir(diaryPath);
-            if (!diaryDir.mkdir("daily") || !diaryDir.mkdir("weekly") ||
-                !diaryDir.mkdir("monthly") || !diaryDir.mkdir("yearly")) {
+            if (!diaryDir.mkdir("daily_日记") || !diaryDir.mkdir("weekly_周记") ||
+                !diaryDir.mkdir("monthly_月记") || !diaryDir.mkdir("yearly_年记")) {
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
@@ -178,46 +178,51 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
     return resultFiles;
 }
 
-QStringList FileOperation::findFileByTime(int year, int month, int day, int year2, int month2, int day2, QString diaryType) {
+QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType) {
     //diaryType包括daily,weekly,monthly,yearly,以及自定义；起始日期 , 终止日期的后一天
 
-    QString yyyy=QString("%1").arg(year, 4, 10, QLatin1Char('0'));
-    QString MM=QString("%1").arg(month, 2, 10, QLatin1Char('0'));
-    QString dd=QString("%1").arg(day, 2, 10, QLatin1Char('0'));
-    QDateTime date=QDateTime::fromString(yyyy+"/"+MM+"/"+dd,"yyyy/MM/dd");
-
-    yyyy=QString("%1").arg(year2, 4, 10, QLatin1Char('0'));
-    MM=QString("%1").arg(month2, 2, 10, QLatin1Char('0'));
-    dd=QString("%1").arg(day2, 2, 10, QLatin1Char('0'));
-    QDateTime date2=QDateTime::fromString(yyyy+"/"+MM+"/"+dd,"yyyy/MM/dd");
-    date2 = date2.addSecs(-1);
+    QDateTime date2 = end.addSecs(-1);
 
     QString dirPath = QDir(username).filePath("diary");
-    if (diaryType!="")dirPath = QDir(dirPath).filePath(diaryType);
+    if (diaryType.getName()!="")dirPath = QDir(dirPath).filePath(diaryType.getType()+"_"+diaryType.getName());
 
-    return findFile(date, date2, dirPath);
+    return findFile(start, date2, dirPath);
 }
 
-bool FileOperation::newFolder(QString folderName){
+bool FileOperation::newFolder(const DiaryList& diaryType){
     QDir diaryDir = QDir(username).filePath("diary");
     // 创建diary下的子目录
-    if (!diaryDir.mkdir(folderName)) {
+    if (!diaryDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
         qWarning() << "无法创建diary下的子目录";
         return 0;
     }
     return 1;
 }
 
+QVector<DiaryList> FileOperation::allFolders(){
+    QVector<DiaryList> folders;
+    QDir dir = QDir(username).filePath("diary");
+    QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    for (const QFileInfo &entry : entries) {
+        if (entry.isDir()) {
+            QString folderName=entry.fileName();
+            int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
+            QString name = folderName.right(folderName.length ()-first-1); //从右边截取
+            QString type = folderName.left(first); //从左边截取
+            folders.append(DiaryList(name,type,0));
+        }
+    }
+    return folders;
+}
 
-
-QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, QString diaryType){
+QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
     //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
 
     QString dir = QDir(username).filePath("diary");
-    if (diaryType!="")dir = QDir(dir).filePath(diaryType);
+    if (diaryType.getName()!="")dir = QDir(dir).filePath(diaryType.getType()+"_"+diaryType.getName());
     QPair<QString,QVector<int> > resultFiles;
 
-    if(target!=searchword||diaryType!=searchDiaryType||newSearch){
+    if(target!=searchword||diaryType.getName()!=searchDiaryType||newSearch){
         QStringList nameFilters;
         nameFilters << "*.md";
 
@@ -240,7 +245,7 @@ QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& tar
         }
     }
     searchword = target;
-    searchDiaryType = diaryType;
+    searchDiaryType = diaryType.getName();
 
     // 遍历所有匹配文件
     while (!unsearchedFiles.isEmpty()) {
