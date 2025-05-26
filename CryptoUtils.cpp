@@ -74,7 +74,7 @@ bool CryptoUtils::encryptFile(const QString &inputPath, const QString &outputPat
     return true;
 }
 
-bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPath, const QString &password)
+bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPath, const QString &password, bool isValid)
 {
     QFile inputFile(inputPath);
     if (!inputFile.open(QIODevice::ReadOnly)) {
@@ -97,7 +97,7 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
     QByteArray ciphertext = encryptedData.mid(sizeof(FileHeader)+32);
 
     QByteArray key = deriveKey(password, salt);
-    if (key.isEmpty()) {
+    if (key.isEmpty()){
         return false;
     }
 
@@ -112,6 +112,10 @@ bool CryptoUtils::decryptFile(const QString &inputPath, const QString &outputPat
 
     // 移除可能的填充
     decrypted = m_aes.removePadding(decrypted);
+
+    if (isValid&&decrypted!=password) {
+        return false;
+    }
 
     // 恢复原始文件名和格式
     QString format = QString::fromLatin1(header.format).trimmed();
