@@ -7,6 +7,7 @@
 #include"dailypromptwindow.h"
 #include"diarydetailwindow.h"
 #include"guiderwindow.h"
+#include"FileOperation.h"
 #include"Headers.h"
 
 class Application: public QApplication
@@ -20,11 +21,11 @@ private:
     AppWindow *appWindow;
     DiaryDetailWindow *detailWindow;
     Guider *newGuider;
-
+    FileOperation *fileOperator;
     void setupConnection();
 public slots:
     // 界面导航函数
-    void navigateToLogin();
+    void navigateToLogin(MyWidget *fromWhere);
     void navigateToDailyPrompt(MyWidget *fromWhere);
     void navigateToMainWindow(MyWidget *fromWhere);
     void navigateToDiaryDetail(MyWidget *fromWhere);

@@ -40,6 +40,7 @@ public:
     void setContent(const QString& title, const QString& text, const QPixmap& image);
 public slots:
     void tryEntering();
+    void fadingAll();
 signals:
     void entering(MyWidget *fromWhere);
 };

@@ -6,12 +6,12 @@ DiaryListEntry::DiaryListEntry(const DiaryList &DL,QWidget *parent)
     setFixedSize(wid,hei);
 
     diaryName = new QLabel(DL.getName(),this);
-    diaryName->move(hei+10,3);
+    diaryName->move(hei+15,3);
     diaryName->setFixedSize(wid-hei-20,hei-5);
 
     bcgrdBtn = new QPushButton(this);
-    bcgrdBtn->move(diaryName->pos());
-    bcgrdBtn->setFixedSize(wid-hei,hei);
+    bcgrdBtn->move(hei+10,3);
+    bcgrdBtn->setFixedSize(wid-hei+30,hei-3);
     //bcgrdBtn->setCheckable(true);
     //bcgrdBtn->setDown(true);
 
@@ -19,13 +19,13 @@ DiaryListEntry::DiaryListEntry(const DiaryList &DL,QWidget *parent)
     QString filePath = QString(":/images/diaryListIcon%1.png").arg(DL.getColourType());
     if(DL.getColourType()==0) diaryListIcon->setPixmap(QPixmap(filePath).scaled(hei-15,hei-15,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     else diaryListIcon->setPixmap(QPixmap(filePath).scaled(hei-5,hei-5,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-    if(DL.getColourType()==0) diaryListIcon->move(10,10);
-    else diaryListIcon->move(5,5);
+    if(DL.getColourType()==0) diaryListIcon->move(15,10);
+    else diaryListIcon->move(10,5);
 
     underLine = new QFrame(this);
     underLine->setFrameShape(QFrame::HLine);
-    underLine->setFixedSize(wid-hei,2);
-    underLine->move(hei+5,hei-2);
+    underLine->setFixedSize(wid-hei-10,2);
+    underLine->move(hei+10,hei-2);
 
     setupStyle();
 
@@ -43,12 +43,19 @@ DiaryListWidget::DiaryListWidget(QWidget *parent)
     scrArea = new QScrollArea(parent);
     scrArea->setWidget(this);
     scrArea->setFixedSize(400,281);
+    scrollBarTimer = new QTimer(this);
+    scrollBarTimer->setSingleShot(true);
+    scrollBarTimer->setInterval(1000);
+    scrArea->verticalScrollBar()->installEventFilter(this);
+    connect(scrollBarTimer, &QTimer::timeout, this, &DiaryListWidget::hideScrollBar);
     setupUI();
     setupStyle();
     setupConnection();
+    scrArea->verticalScrollBar()->setVisible(false);
 }
 
 void DiaryListWidget::setupUI(){
+    /*
     buildDiaryLists(vector<DiaryList>{ //测试用
         DiaryList("TEST1","weekly",1),
         DiaryList("TEST2","daily",2),
@@ -62,7 +69,7 @@ void DiaryListWidget::setupUI(){
         DiaryList("TEST4","weekly",2),
         DiaryList("TEST5","weekly",3),
         DiaryList("TEST6","weekly",4)
-    });
+    });*/
 
 }
 
@@ -115,7 +122,7 @@ void DiaryListWidget::setupConnection(){
 
 }
 
-void DiaryListWidget::buildDiaryLists(const vector<DiaryList> &vec){
+void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
     setFixedSize(wid,(hei+11)*vec.size());
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0,0,0,5);
@@ -124,7 +131,33 @@ void DiaryListWidget::buildDiaryLists(const vector<DiaryList> &vec){
     for(int i=0;i<vec.size();i++){
         dlEntry[i]= new DiaryListEntry(vec[i],this);
         mainLayout->addWidget(dlEntry[i]);
-    }newEntry = new DiaryListEntry(DiaryList("添加新笔记本",0,0),this);
+    }newEntry = new DiaryListEntry(DiaryList("添加新笔记本","weekly",0),this);
     mainLayout->addWidget(newEntry);
     return;
+}
+
+bool DiaryListWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == scrArea->verticalScrollBar()) {
+        // 检测滚动条值变化和鼠标事件
+        if (event->type() == QEvent::Wheel ||
+            event->type() == QEvent::MouseMove ||
+            event->type() == QEvent::MouseButtonPress) {
+
+            // 显示滚动条
+            scrArea->verticalScrollBar()->setVisible(true);
+
+            // 重置定时器
+            scrollBarTimer->start();
+
+            return false; // 让事件继续传播
+        }
+    }
+    return QWidget::eventFilter(watched, event);
+}
+
+// 隐藏滚动条的槽函数
+void DiaryListWidget::hideScrollBar()
+{
+    scrArea->verticalScrollBar()->setVisible(false);
 }

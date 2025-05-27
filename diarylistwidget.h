@@ -26,14 +26,18 @@ class DiaryListWidget : public QWidget
     DiaryListEntry *newEntry;
     const int wid=390;
     const int hei=40;
+    QTimer *scrollBarTimer;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 public:
     explicit DiaryListWidget(QWidget *parent = nullptr);
     void setupUI();
     void setupStyle();
     void setupConnection();
-    void buildDiaryLists(const vector<DiaryList> &vec);
+    void buildDiaryLists(const QVector<DiaryList> &vec);
 signals:
 
+private slots:
+    void hideScrollBar();
 };
 
 #endif // DIARYLISTWIDGET_H

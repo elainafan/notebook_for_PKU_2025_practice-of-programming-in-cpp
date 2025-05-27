@@ -64,7 +64,7 @@ void Calendar::setupStyle(){
 
         QCalendarWidget QToolButton#qt_calendar_monthbutton {
             color: #FFFFFF;
-            background-color: #660066;
+            background-color: #7030A0;
             font-size: 20px;
             font-weight: bold;
             border: 0px solid #e0e0e0;
@@ -74,7 +74,7 @@ void Calendar::setupStyle(){
         }
         QCalendarWidget QToolButton#qt_calendar_yearbutton {
             color: #FFFFFF;
-            background-color: #660066;
+            background-color: #7030A0;
             font-size: 20px;
             font-weight: bold;
             border: 0px solid #e0e0e0;
@@ -84,12 +84,12 @@ void Calendar::setupStyle(){
         }
         QCalendarWidget QToolButton#qt_calendar_monthbutton:hover,
         QCalendarWidget QToolButton#qt_calendar_yearbutton:hover {
-            background-color: #550055;
+            background-color: #602090;
             border-color: #ccc;
         }
         QCalendarWidget QToolButton#qt_calendar_monthbutton:pressed,
         QCalendarWidget QToolButton#qt_calendar_yearbutton:pressed {
-            background-color: #440044;
+            background-color: #602090;
             border-color: #aaa;
         }
         QCalendarWidget QToolButton::menu-indicator {
@@ -123,7 +123,7 @@ void Calendar::setupStyle(){
             selection-color: white;
         }
         QCalendarWidget QTableView::item:selected {
-            background-color: #660077;
+            background-color: #7030A0;
             background-size: 14px, 14px;
             color: white;
             border-radius: 12px;
@@ -169,6 +169,6 @@ void Calendar::updateWeekLine(){
     if(dayOfWeek==1)dateRow++;
     closeWeekLine();
     if(dateRow >= 0 && dateRow < 6)
-        weekLine[dateRow]->setStyleSheet("border-radius:12px; background-color:rgba(109,0,119,30);");
+        weekLine[dateRow]->setStyleSheet("border-radius:12px; background-color:rgba(112,48,160,30);");
 
 }

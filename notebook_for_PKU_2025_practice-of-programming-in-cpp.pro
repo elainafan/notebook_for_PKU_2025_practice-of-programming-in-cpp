@@ -27,6 +27,7 @@ SOURCES += \
     qaesencryption.cpp\
     reminder.cpp \
     searchwidget.cpp \
+    userinfowidget.cpp \
     widget.cpp
 
 HEADERS += \
@@ -47,6 +48,7 @@ HEADERS += \
     qaesencryption.h\
     reminder.h \
     searchwidget.h \
+    userinfowidget.h \
     widget.h
 
 FORMS +=

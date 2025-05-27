@@ -8,13 +8,16 @@
 #include"reminder.h"
 #include"searchwidget.h"
 #include"diarylistwidget.h"
+#include"FileOperation.h"
+#include"userinfowidget.h"
 
 class AppWindow : public MyWidget
 {
     Q_OBJECT
 
+    FileOperation *fileOperator;
 public:
-    AppWindow(MyWidget *parent = nullptr);
+    AppWindow(FileOperation *fileOpt,MyWidget *parent = nullptr);
     ~AppWindow();
 
 private slots:
@@ -30,11 +33,18 @@ private:
     DiaryListWidget *diaryList;
     Calendar *calendar;
     Reminder *reminder;
+    UserInfoWidget *userInfo;
+public:
     void setupUI();
     void setupStyle();
     void setupConnection();
     void setupAnimation();
 
+signals:
+    void signOut(MyWidget *fromWhere);
+
+public slots:
+    void setupUserInfo();
 };
 
 
