@@ -1,21 +1,24 @@
 #include "loginwindow.h"
 
-LoginWindow::LoginWindow(MyWidget *parent)
-    : MyWidget{parent}
+LoginWindow::LoginWindow(FileOperation *fileOpt,MyWidget *parent)
+    : MyWidget{parent},fileOperator(fileOpt)
 {
     /*
     loginButton=new QPushButton(this);
     userName=new QLineEdit(this);
     userKey=new QLineEdit(this);
     */
+    autoLog=true;
     setupUI();
     setupStyle();
     setupConnection();
 }
 
 bool LoginWindow::checkLogState(){
-    return false;
-    emit loggedIn(this);
+    if(fileOperator->signIn()==1){
+        emit loggedIn(this);
+        return true;
+    }else return false;
 }
 
 void LoginWindow::setupUI() {
@@ -30,8 +33,8 @@ void LoginWindow::setupUI() {
     loginButton = new QPushButton("登录", this);
     rememberCheck = new QCheckBox("记住密码", this);
     autoLoginCheck = new QCheckBox("自动登录", this);
-    errorLabel = new QLabel(this);
-    errorLabel->setAlignment(Qt::AlignCenter);
+    errorLabel = new QLabel("密码不正确",this);
+    //errorLabel->setAlignment(Qt::AlignCenter);
     regiLabel = new QLabel("新用户将自动注册",this);
     logo = new QLabel(this);
     logo->setPixmap(QPixmap(":/images/logo.png").scaled(400,250,Qt::KeepAspectRatio,Qt::SmoothTransformation));
@@ -59,15 +62,17 @@ void LoginWindow::setupUI() {
     registLayout->addWidget(regiLabel);
     mainLayout->addLayout(registLayout);
 
-    mainLayout->addWidget(errorLabel);
+    //mainLayout->addWidget(errorLabel);
     mainLayout->addStretch();
+    errorLabel->move(20,555);
+    errorLabel->close();
 }
 
 void LoginWindow::setupStyle() {//登录窗口的样式表，影响登录窗口中的所有构件
     //qDebug()<<QFontDatabase().families();
     setStyleSheet(R"(
             QWidget {
-                background-color: #FFFFF9;
+                background-color: #FFFFFF;
                 font-family: "Yuanti SC",sans-serif;
             }
             QLineEdit {
@@ -103,6 +108,7 @@ void LoginWindow::setupStyle() {//登录窗口的样式表，影响登录窗口�
             }
         )");
     errorLabel->setObjectName("errorLabel");
+    errorLabel->setStyleSheet("color:#EE0000; background-color:transparent;");
 }
 
 void LoginWindow::setupConnection(){
@@ -110,11 +116,16 @@ void LoginWindow::setupConnection(){
 }
 
 void LoginWindow::logging(){
-    if(false){
+    //qDebug()<<passwordEdit->text();
+    int state=fileOperator->signIn(usernameEdit->text(),passwordEdit->text());
+    //qDebug()<<state<<Qt::endl;
+    if(state==1){
         emit loggedIn(this);
-    }else{
+        autoLog=autoLoginCheck->isChecked();
+    }else if (state==0){
         emit registIn(this);
-    }
+        autoLog=autoLoginCheck->isChecked();
+    }else errorLabel->show();
     return;
 }
 

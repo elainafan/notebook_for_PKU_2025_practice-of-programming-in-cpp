@@ -25,6 +25,7 @@
 #include<QStackedLayout>
 #include<QTableView>
 #include<QTimer>
+#include<QPainterPath>
 using namespace std;
 #endif // HEADERS_H
 

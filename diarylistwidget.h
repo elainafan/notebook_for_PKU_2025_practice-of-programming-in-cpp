@@ -33,7 +33,7 @@ public:
     void setupUI();
     void setupStyle();
     void setupConnection();
-    void buildDiaryLists(const vector<DiaryList> &vec);
+    void buildDiaryLists(const QVector<DiaryList> &vec);
 signals:
 
 private slots:

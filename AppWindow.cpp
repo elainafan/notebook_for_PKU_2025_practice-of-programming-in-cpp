@@ -2,11 +2,12 @@
 #include "CryptoUtils.h"
 
 
-AppWindow::AppWindow(MyWidget *parent)
-    : MyWidget(parent)
+AppWindow::AppWindow(FileOperation *fileOpt,MyWidget *parent)
+    : MyWidget(parent),fileOperator(fileOpt)
 {
     setupUI();
     setupStyle();
+    setupConnection();
 }
 
 AppWindow::~AppWindow()
@@ -62,6 +63,9 @@ void AppWindow::setupUI(){
     diaryList = new DiaryListWidget(diaryListWin);
     calendar = new Calendar("weekly",calendarWin);
     reminder = new Reminder(reminderWin);
+
+    userInfo = new UserInfoWidget(this);
+    userInfo->move(1050,0);
 }
 
 void AppWindow::setupStyle(){
@@ -106,4 +110,24 @@ void AppWindow::setupStyle(){
                 /*border: 2px solid #AAAAAA;*/
             }
         )");
+}
+
+void AppWindow::setupConnection(){
+    connect(userInfo, &UserInfoWidget::logoutRequested, this, [this]() {
+        fileOperator->signOut();
+        emit signOut(this);
+        //qDebug()<<"lambda...";
+    });
+}
+
+void AppWindow::setupUserInfo(){
+    diaryList->buildDiaryLists(fileOperator->allFolders());
+    QString userName = fileOperator->username;
+    QPixmap avatar;
+
+    userInfo->setUserName(userName);
+    if (!avatar.isNull()) {
+        userInfo->setUserAvatar(avatar);
+    }
+    userInfo->move(1140-15*userName.length(),0);
 }

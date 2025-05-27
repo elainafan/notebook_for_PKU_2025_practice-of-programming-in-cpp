@@ -72,30 +72,19 @@ void DailyPromptWindow::setupUI(){
 
 
     // 初始隐藏所有元素
-    {
     imageOpacityEffect = new QGraphicsOpacityEffect(imageLabel);
-    imageOpacityEffect->setOpacity(0);
-    imageLabel->setGraphicsEffect(imageOpacityEffect);
-
     titleOpacityEffect = new QGraphicsOpacityEffect(titleLabel);
-    titleOpacityEffect->setOpacity(0);
-    titleLabel->setGraphicsEffect(titleOpacityEffect);
-
     contentOpacityEffect = new QGraphicsOpacityEffect(contentWidget);
-    contentOpacityEffect->setOpacity(0);
-    contentWidget->setGraphicsEffect(contentOpacityEffect);
-
     buttonOpacityEffect = new QGraphicsOpacityEffect(enterButton);
-    buttonOpacityEffect->setOpacity(0);
-    enterButton->setGraphicsEffect(buttonOpacityEffect);
-    }
+    fadingAll();
 }
 
 void DailyPromptWindow::setupStyle(){
+    setObjectName("thisObj");
     setStyleSheet(R"(
-        QWidget{
+        #thisObj{
             padding: 0px;
-
+            background-color: #FFFFFF;
         }
         )");
     titleLabel->setStyleSheet(R"(
@@ -174,7 +163,7 @@ void DailyPromptWindow::setupAnimation(){
     btnFadeIn->setEndValue(1);
 
     btnWait = new QPropertyAnimation(buttonOpacityEffect,"opacity");
-    btnWait->setDuration(4000);
+    btnWait->setDuration(3000);
 
     btnGroup = new QSequentialAnimationGroup(enterButton);
     btnGroup->addAnimation(btnWait);
@@ -217,6 +206,24 @@ void DailyPromptWindow::setContent(const QString& title, const QString& text, co
     imageLabel->adjustSize();
 }
 
+void DailyPromptWindow::fadingAll(){
+
+    imageOpacityEffect->setOpacity(0);
+    imageLabel->setGraphicsEffect(imageOpacityEffect);
+
+
+    titleOpacityEffect->setOpacity(0);
+    titleLabel->setGraphicsEffect(titleOpacityEffect);
+
+
+    contentOpacityEffect->setOpacity(0);
+    contentWidget->setGraphicsEffect(contentOpacityEffect);
+
+    buttonOpacityEffect->setOpacity(0);
+    enterButton->setGraphicsEffect(buttonOpacityEffect);
+}
+
 void DailyPromptWindow::tryEntering(){
     emit entering(this);
+    QTimer::singleShot(2000,this,SLOT(fadingAll()));
 }

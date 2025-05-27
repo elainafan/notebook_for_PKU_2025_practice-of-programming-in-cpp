@@ -55,6 +55,7 @@ DiaryListWidget::DiaryListWidget(QWidget *parent)
 }
 
 void DiaryListWidget::setupUI(){
+    /*
     buildDiaryLists(vector<DiaryList>{ //测试用
         DiaryList("TEST1","weekly",1),
         DiaryList("TEST2","daily",2),
@@ -68,7 +69,7 @@ void DiaryListWidget::setupUI(){
         DiaryList("TEST4","weekly",2),
         DiaryList("TEST5","weekly",3),
         DiaryList("TEST6","weekly",4)
-    });
+    });*/
 
 }
 
@@ -121,7 +122,7 @@ void DiaryListWidget::setupConnection(){
 
 }
 
-void DiaryListWidget::buildDiaryLists(const vector<DiaryList> &vec){
+void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
     setFixedSize(wid,(hei+11)*vec.size());
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0,0,0,5);
