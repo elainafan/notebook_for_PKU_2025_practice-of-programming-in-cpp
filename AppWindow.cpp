@@ -32,7 +32,7 @@ void AppWindow::setupUI(){
         line[i]= new QFrame(leftColumn);
         line[i]->setFrameShape(QFrame::HLine);
         line[i]->setFrameShadow(QFrame::Sunken);
-        line[i]->setStyleSheet("QFrame { background-color: #888888; margin: 7;}");
+        line[i]->setStyleSheet("QFrame { background-color: #888888; margin: 10;}");
         line[i]->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
         //line[i]->setLineWidth(5);
         //line->show();

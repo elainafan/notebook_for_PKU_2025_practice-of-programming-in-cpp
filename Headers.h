@@ -3,6 +3,7 @@
 
 #include <QGraphicsOpacityEffect>
 #include <QWidget>
+#include <QEvent>
 #include<QPushButton>
 #include<QLineEdit>
 #include<QCheckBox>
