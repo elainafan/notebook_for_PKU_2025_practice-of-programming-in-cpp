@@ -103,8 +103,8 @@ int FileOperation::signIn(QString user, QString password_){
             // 创建diary下的子目录
             QString diaryPath = userDir.filePath("diary");
             QDir diaryDir(diaryPath);
-            if (!diaryDir.mkdir("daily_日记") || !diaryDir.mkdir("weekly_周记") ||
-                !diaryDir.mkdir("monthly_月记") || !diaryDir.mkdir("yearly_年记")) {
+            if (!newFolder(DiaryList("日记","daily",1)) || !newFolder(DiaryList("周记","weekly",2)) ||
+                !newFolder(DiaryList("月记","monthly",3)) || !newFolder(DiaryList("年记","yearly",4))) {
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
@@ -169,9 +169,11 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
             if (!found.isEmpty())resultFiles.append(found);
         } else {
             QString baseName = entry.baseName(); // 获取不带扩展名的文件名
-            QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
-            if (fileTime >= start && fileTime <= end) {
-                resultFiles.append(entry.filePath());
+            if(baseName!="folderInfo"){
+                QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
+                if (fileTime >= start && fileTime <= end) {
+                    resultFiles.append(entry.filePath());
+                }
             }
         }
     }
@@ -179,7 +181,7 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
 }
 
 QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType) {
-    //diaryType包括daily,weekly,monthly,yearly,以及自定义；起始日期 , 终止日期的后一天
+    //起始日期 , 终止日期的后一天
 
     QDateTime date2 = end.addSecs(-1);
 
@@ -196,27 +198,43 @@ bool FileOperation::newFolder(const DiaryList& diaryType){
         qWarning() << "无法创建diary下的子目录";
         return 0;
     }
+    QDir notebookDir = diaryDir.filePath(diaryType.getType()+"_"+diaryType.getName());
+    QFile file(notebookDir.filePath("folderInfo.md"));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "无法打开文件：" << "folderInfo.md";
+    }
+    QTextStream out(&file);
+    out << diaryType.getColourType();
+    file.close();
     return 1;
 }
 
 QVector<DiaryList> FileOperation::allFolders(){
     QVector<DiaryList> folders;
     QDir dir = QDir(username).filePath("diary");
-    QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable);
     for (const QFileInfo &entry : entries) {
-        if (entry.isDir()) {
-            QString folderName=entry.fileName();
-            int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
-            QString name = folderName.right(folderName.length ()-first-1); //从右边截取
-            QString type = folderName.left(first); //从左边截取
-            folders.append(DiaryList(name,type,0));
+        QString folderName=entry.fileName();
+        int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
+        QString name = folderName.right(folderName.length ()-first-1); //从右边截取
+        QString type = folderName.left(first); //从左边截取
+        QString filename=QDir(dir.filePath(folderName)).filePath("folderInfo.md");
+        filename = QDir::toNativeSeparators(filename);
+        QFile file(filename);
+
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qWarning() << "无法打开文件：" << "folderInfo.md";
         }
+        QTextStream in(&file);
+        QString colour = in.readAll();
+        file.close();
+        folders.append(DiaryList(name,type,colour.toInt()));
     }
     return folders;
 }
 
 QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
-    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
+    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置
 
     QString dir = QDir(username).filePath("diary");
     if (diaryType.getName()!="")dir = QDir(dir).filePath(diaryType.getType()+"_"+diaryType.getName());
