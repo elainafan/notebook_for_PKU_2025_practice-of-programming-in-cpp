@@ -6,9 +6,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = BackEnd
 TEMPLATE = app
 
-# 添加QAESEncryption
-include(Qt-AES/QAESEncryption.pri)
-
 SOURCES += \
     AppWindow.cpp \
     FileOperation.cpp \
