@@ -36,7 +36,6 @@ int FileOperation::signIn(QString user, QString password_){
     }
 
     username=user;
-    password=password_;
     if (dir.exists(user)){
         QString inputPath = dir.filePath(QDir(user).filePath("valid.crypt"));  //路径
         QString outputPath = dir.filePath(QDir(user).filePath("valid"));
@@ -61,6 +60,8 @@ int FileOperation::signIn(QString user, QString password_){
             valid.close();
         }
         if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
+            password=password_;
+            decryptDir();
             return 1;
         }  //没有删除加密文件
         return -1;
@@ -109,6 +110,7 @@ int FileOperation::signIn(QString user, QString password_){
                 return -1;
             }
             qDebug() << "目录创建成功\n";
+            password=password_;
             return 0;
         } else {
             qWarning() << "目录创建失败\n";
@@ -118,6 +120,7 @@ int FileOperation::signIn(QString user, QString password_){
 }
 
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
+    if(password=="")return;
     deleteFile(QDir(username).filePath("valid.md"));
     deleteFile("username.md");
     encryptDir();
