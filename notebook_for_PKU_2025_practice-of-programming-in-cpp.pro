@@ -1,5 +1,5 @@
 QT += core gui widgets
-#QT += widgets webenginewidgets
+QT += widgets webenginewidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,6 +15,7 @@ SOURCES += \
     application.cpp \
     calendar.cpp \
     dailypromptwindow.cpp \
+    diary.cpp \
     diarydetailwindow.cpp \
     diarylist.cpp \
     diarylistwidget.cpp \
@@ -28,7 +29,8 @@ SOURCES += \
     reminder.cpp \
     searchwidget.cpp \
     userinfowidget.cpp \
-    widget.cpp
+    widget.cpp\
+    diary.cpp
 
 HEADERS += \
     AppWindow.h \
@@ -38,6 +40,7 @@ HEADERS += \
     application.h \
     calendar.h \
     dailypromptwindow.h \
+    diary.h \
     diarydetailwindow.h \
     diarylist.h \
     diarylistwidget.h \
@@ -49,7 +52,8 @@ HEADERS += \
     reminder.h \
     searchwidget.h \
     userinfowidget.h \
-    widget.h
+    widget.h\
+    diary.h
 
 FORMS +=
 

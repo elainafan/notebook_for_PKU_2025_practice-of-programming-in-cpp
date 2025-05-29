@@ -1,7 +1,7 @@
 #include "widget.h"
 
 #include <QTextEdit>
-//#include <QWebEngineView>
+#include <QWebEngineView>
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -16,6 +16,8 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
+    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);  // 禁用 OpenGL，改为软件渲染
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu --disable-software-rasterizer --disable-gpu-compositing");
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
