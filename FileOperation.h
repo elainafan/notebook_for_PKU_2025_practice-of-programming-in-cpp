@@ -14,9 +14,10 @@ class FileOperation : public QObject
 public:
     explicit FileOperation(QString username_="_", QObject *parent = nullptr);
 
-    int signIn(QString user="",QString password=""); //缺省全部参数-自动登录，不缺省-登录或注册
+    int signIn(QString user="",QString password=""); //缺省全部参数-自动登录，缺省密码-免密登录，不缺省-登录或注册
     void signOut();
     QString recommend();
+    void setStar(const QString& fileName);
 
     QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
     QStringList findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记

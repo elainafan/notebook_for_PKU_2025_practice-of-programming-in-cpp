@@ -120,10 +120,57 @@ int FileOperation::signIn(QString user, QString password_){
 }
 
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
-    if(password=="")return;
     deleteFile(QDir(username).filePath("valid.md"));
     deleteFile("username.md");
     encryptDir();
+}
+
+void FileOperation::setStar(const QString& fileName){
+    QDir dir(username);
+    QFile file(dir.filePath("starred.md"));
+    QDir diaryDir(QDir(username).filePath("diary"));
+
+    // 构造文件的绝对路径
+    QString filePath;
+    QString rootPath(QDir(username).filePath("diary"));
+
+    // 创建递归迭代器
+    QDirIterator it(rootPath,
+                    QStringList() << fileName, // 要搜索的文件名
+                    QDir::Files,               // 只查找文件
+                    QDirIterator::Subdirectories); // 递归子目录
+
+    while (it.hasNext()) {
+        it.next();
+        filePath = it.filePath();
+        break;
+    }
+
+    // 确保文件存在
+    if (QFile::exists(filePath)) {
+        if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+            // 检查是否已收藏
+            QTextStream in(&file);
+            QStringList entries;
+            while (!in.atEnd()) {
+                entries.append(in.readLine().trimmed());
+            }
+            // 如果未收藏则添加
+            if (!entries.contains(filePath)) {
+                // 移动到文件末尾（因为读取后位置在末尾）
+                file.seek(file.size());
+
+                QTextStream out(&file);
+                out << filePath << "\n";
+                qDebug() << "已收藏文件:" << filePath;
+            } else {
+                qDebug() << "文件已收藏:" << filePath;
+            }
+            file.close();
+        } else {
+            qDebug() << "无法打开文件:" << file.errorString() << Qt::endl;
+        }
+    }
 }
 
 QString FileOperation::recommend(){
@@ -132,30 +179,61 @@ QString FileOperation::recommend(){
     // 获取所有文件（排除目录和特殊条目）
     QStringList files;
     QStringList nameFilters;
-    nameFilters << "*.md";
+    QStringList starredFiles;
+    QString selectedFile;
+    nameFilters << "2*.md";
 
-    // 创建递归迭代器
-    QDirIterator it(
-        dir,
-        nameFilters,                     // 文件名过滤条件
-        QDir::Files,                     // 只查找文件（忽略目录）
-        QDirIterator::Subdirectories     // 递归搜索子目录
-        );
-
-    // 遍历所有匹配文件
-    while (it.hasNext()) {
-        QString filePath = it.next();
-        files.append(filePath);
-    }
-    if (files.isEmpty()) {
-        qDebug()<<"目录中没有文件:"<<dir;
-        return QString();
+    // 先读取收藏文件（总是读取，但50%概率使用）
+    QFile starFile(QDir(dir).filePath("starred.md"));
+    if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&starFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty()) {
+                starredFiles.append(line);
+            }
+        }
+        starFile.close();
     }
 
-    // 生成随机索引
-    int randomIndex = QRandomGenerator::global()->bounded(files.size());
-    QString selectedFile = files.at(randomIndex);
+    // 然后50%概率优先使用收藏文件
+    if (!starredFiles.isEmpty() && QRandomGenerator::global()->bounded(2) == 0) {
+        // 过滤掉不存在的文件
+        QStringList validFiles;
+        for (const QString &path : starredFiles) {
+            if (QFile::exists(path)) {
+                validFiles.append(path);
+            }
+        }
 
+        if (!validFiles.isEmpty()) {
+            int randomIndex = QRandomGenerator::global()->bounded(validFiles.size());
+            selectedFile = validFiles.at(randomIndex);
+        }
+    }
+
+    // 在未选择收藏文件时扫描目录
+    if (selectedFile.isEmpty()) {
+        // 使用更合理的过滤条件
+        QDirIterator it(
+            dir,
+            QStringList() << "2*.md",  // 匹配所有Markdown文件
+            QDir::Files,
+            QDirIterator::Subdirectories
+            );
+
+        while (it.hasNext()) {
+            files.append(it.next());
+        }
+
+        if (files.isEmpty()) {
+            qDebug() << "目录中没有文件:" << dir;
+            return QString();
+        }
+
+        int randomIndex = QRandomGenerator::global()->bounded(files.size());
+        selectedFile = files.at(randomIndex);
+    }
     // 返回相对路径
     return selectedFile;
 }
