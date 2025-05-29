@@ -125,14 +125,53 @@ void FileOperation::signOut(){  //退出登录，并加密所有未加密的日�
     encryptDir();
 }
 
+void FileOperation::setProfilePicture(const QPixmap& pic){
+    QDir dir(username);
+    pic.save(dir.filePath("profilePicture.jpg"));
+}
+
+QString FileOperation::getProfilePicture(){
+    QString dir(QDir(username).filePath("profilePicture.jpg"));
+    return dir;
+}
+
+void FileOperation::changeUsername(QString newUsername){
+    QDir(startPath).rename(username,newUsername);
+    username = newUsername;
+}
+
+bool FileOperation::changePassword(QString newPassword){
+    QDir dir(username);
+    QFile file(dir.filePath("valid.md"));
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << newPassword;
+        file.close();
+    } else {
+        qDebug() << "无法修改密码:" << file.errorString() << Qt::endl;
+        return 0;
+    }
+
+    decryptDir();
+
+    deleteFile(dir.filePath("valid.crypt"));
+    QString inputPath = dir.filePath("valid.md");  //路径
+    QString outputPath = dir.filePath("valid.crypt");
+    inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
+    outputPath = QDir::toNativeSeparators(outputPath);
+    CryptoUtils().encryptFile(inputPath,outputPath,newPassword);
+
+    password = newPassword;
+    return 1;
+}
+
 void FileOperation::setStar(const QString& fileName){
+    // 构造文件的绝对路径
     QDir dir(username);
     QFile file(dir.filePath("starred.md"));
-    QDir diaryDir(QDir(username).filePath("diary"));
-
-    // 构造文件的绝对路径
-    QString filePath;
     QString rootPath(QDir(username).filePath("diary"));
+    QDir diaryDir(QDir(username).filePath("diary"));
+    QString filePath;
 
     // 创建递归迭代器
     QDirIterator it(rootPath,
@@ -148,6 +187,13 @@ void FileOperation::setStar(const QString& fileName){
 
     // 确保文件存在
     if (QFile::exists(filePath)) {
+        QString basePath("/"+rootPath);
+        QDir::toNativeSeparators(basePath);
+        QDir baseDir(basePath);
+
+        // 生成相对于basePath的路径
+        QString relativePath = baseDir.relativeFilePath("/"+filePath);
+        QDir::toNativeSeparators(relativePath);
         if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
             // 检查是否已收藏
             QTextStream in(&file);
@@ -156,15 +202,15 @@ void FileOperation::setStar(const QString& fileName){
                 entries.append(in.readLine().trimmed());
             }
             // 如果未收藏则添加
-            if (!entries.contains(filePath)) {
+            if (!entries.contains(relativePath)) {
                 // 移动到文件末尾（因为读取后位置在末尾）
                 file.seek(file.size());
 
                 QTextStream out(&file);
-                out << filePath << "\n";
-                qDebug() << "已收藏文件:" << filePath;
+                out << relativePath << "\n";
+                qDebug() << "已收藏文件:" << relativePath;
             } else {
-                qDebug() << "文件已收藏:" << filePath;
+                qDebug() << "文件已收藏:" << relativePath;
             }
             file.close();
         } else {
@@ -184,13 +230,13 @@ QString FileOperation::recommend(){
     nameFilters << "2*.md";
 
     // 先读取收藏文件（总是读取，但50%概率使用）
-    QFile starFile(QDir(dir).filePath("starred.md"));
+    QFile starFile(QDir(username).filePath("starred.md"));
     if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&starFile);
         while (!in.atEnd()) {
             QString line = in.readLine().trimmed();
             if (!line.isEmpty()) {
-                starredFiles.append(line);
+                starredFiles.append(QDir(dir).filePath(line));
             }
         }
         starFile.close();
@@ -214,10 +260,9 @@ QString FileOperation::recommend(){
 
     // 在未选择收藏文件时扫描目录
     if (selectedFile.isEmpty()) {
-        // 使用更合理的过滤条件
         QDirIterator it(
             dir,
-            QStringList() << "2*.md",  // 匹配所有Markdown文件
+            QStringList() << "2*.md",  // 匹配所有日记
             QDir::Files,
             QDirIterator::Subdirectories
             );
