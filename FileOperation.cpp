@@ -61,7 +61,7 @@ int FileOperation::signIn(QString user, QString password_){
         }
         if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
             password=password_;
-            decryptDir();
+            decryptAll();
             return 1;
         }  //没有删除加密文件
         return -1;
@@ -122,7 +122,7 @@ int FileOperation::signIn(QString user, QString password_){
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
     deleteFile(QDir(username).filePath("valid.md"));
     deleteFile("username.md");
-    encryptDir();
+    encryptAll();
 }
 
 void FileOperation::setProfilePicture(const QPixmap& pic){
@@ -478,7 +478,7 @@ bool FileOperation::encryptDir(QString dir){
     if(dir=="")dir = QDir(username).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
-    nameFilters << "*.md";
+    nameFilters << "*.md" << "*.png" << "*.jpg" << "*.jpeg" << "*.bmp";
 
     // 创建递归迭代器
     QDirIterator it(
@@ -525,6 +525,16 @@ bool FileOperation::decryptDir(QString dir){
         deleteFile(filePath);
     }
     return 1;
+}
+
+void FileOperation::encryptAll(){
+    encryptDir();
+    encryptDir(QDir(username).filePath("picture"));
+}
+
+void FileOperation::decryptAll(){
+    decryptDir();
+    decryptDir(QDir(username).filePath("picture"));
 }
 
 void FileOperation::setReminder(const Reminder& r){

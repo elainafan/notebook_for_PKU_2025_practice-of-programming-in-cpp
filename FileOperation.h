@@ -37,6 +37,8 @@ public:
 
     bool encryptDir(QString dir="");
     bool decryptDir(QString dir="");
+    void encryptAll();
+    void decryptAll();
 
     void setReminder(const Reminder& r);//若无该reminder则转为reminder，若已是reminder则取消reminder
     QVector<Reminder> getReminder();    //返回全部提醒事项
