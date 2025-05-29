@@ -127,11 +127,11 @@ void FileOperation::signOut(){  //退出登录，并加密所有未加密的日�
 
 void FileOperation::setProfilePicture(const QPixmap& pic){
     QDir dir(username);
-    pic.save(dir.filePath("profilePicture.jpg"));
+    pic.save(dir.filePath("profilePicture.png"));
 }
 
 QString FileOperation::getProfilePicture(){
-    QString dir(QDir(username).filePath("profilePicture.jpg"));
+    QString dir(QDir(username).filePath("profilePicture.png"));
     return dir;
 }
 
@@ -195,26 +195,43 @@ void FileOperation::setStar(const QString& fileName){
         QString relativePath = baseDir.relativeFilePath("/"+filePath);
         QDir::toNativeSeparators(relativePath);
         if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
-            // 检查是否已收藏
             QTextStream in(&file);
             QStringList entries;
-            while (!in.atEnd()) {
-                entries.append(in.readLine().trimmed());
-            }
-            // 如果未收藏则添加
-            if (!entries.contains(relativePath)) {
-                // 移动到文件末尾（因为读取后位置在末尾）
-                file.seek(file.size());
+            bool found = false;
 
-                QTextStream out(&file);
-                out << relativePath << "\n";
-                qDebug() << "已收藏文件:" << relativePath;
-            } else {
-                qDebug() << "文件已收藏:" << relativePath;
+            while (!in.atEnd()) {
+                QString line = in.readLine().trimmed();
+                if (!line.isEmpty()) {
+                    if (line == relativePath) {
+                        found = true;
+                    } else {
+                        entries.append(line);
+                    }
+                }
             }
+
+            // 根据是否找到匹配项决定操作
+            if (found) {
+                // 取消收藏：移除匹配项
+                qDebug() << "已取消收藏文件:" << relativePath;
+            } else {
+                // 添加收藏
+                entries.append(relativePath);
+                qDebug() << "已收藏文件:" << relativePath;
+            }
+
+            // 清空文件并重新写入
+            file.resize(0);
+            file.seek(0);
+
+            QTextStream out(&file);
+            for (const QString &entry : entries) {
+                out << entry << "\n";
+            }
+
             file.close();
         } else {
-            qDebug() << "无法打开文件:" << file.errorString() << Qt::endl;
+            qDebug() << "无法打开文件:" << file.errorString();
         }
     }
 }
@@ -508,4 +525,77 @@ bool FileOperation::decryptDir(QString dir){
         deleteFile(filePath);
     }
     return 1;
+}
+
+void FileOperation::setReminder(const Reminder& r){
+    QDir dir(username);
+    QFile file(dir.filePath("reminder.md"));
+    QString time = r.time.toString("yyyy_MM_dd");
+    QString task = r.task;
+
+    if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream in(&file);
+        QStringList reminders;
+        bool found = false;
+
+        while (!in.atEnd()) {
+            QString lineTime = in.readLine().trimmed();
+            QString lineTask;
+            if (!in.atEnd())lineTask = in.readLine().trimmed();
+            if (!lineTime.isEmpty() && !lineTask.isEmpty()) {
+                if (lineTime == time && lineTask == task) {
+                    found = true;
+                } else {
+                    reminders.append(lineTime);
+                    reminders.append(lineTask);
+                }
+            }
+        }
+
+        // 根据是否找到匹配项决定操作
+        if (found) {
+            qDebug() << "已取消提醒事项:" << time << ":" << task << "\n";
+        } else {
+            reminders.append(time);
+            reminders.append(task);
+            qDebug() << "已添加提醒事项:" << time << ":" << task << "\n";
+        }
+
+        // 清空文件并重新写入
+        file.resize(0);
+        file.seek(0);
+
+        QTextStream out(&file);
+        for (const QString &entry : reminders) {
+            out << entry << "\n";
+        }
+
+        file.close();
+    } else {
+        qDebug() << "无法打开文件:" << file.errorString();
+    }
+}
+
+QVector<Reminder> FileOperation::getReminder(){
+    QDir dir(username);
+    QFile file(dir.filePath("reminder.md"));
+    QVector<Reminder> reminders;
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+
+        while (!in.atEnd()) {
+            QString lineTime = in.readLine().trimmed();
+            QString lineTask;
+            if (!in.atEnd())lineTask = in.readLine().trimmed();
+            if (!lineTime.isEmpty() && !lineTask.isEmpty()) {
+                reminders.append(Reminder(QDateTime::fromString(lineTime, "yyyy_MM_dd"),lineTask));
+            }
+        }
+
+        file.close();
+    } else {
+        qDebug() << "无法打开文件:" << file.errorString();
+    }
+    return reminders;
 }
