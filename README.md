@@ -9,11 +9,11 @@ Thank you for your stars!
 
 ## 加密模块说明
 
-CryptoUtils.h和CryptoUtils.cpp是加解密的主要文件，支持各种文件格式(md,jpg,...)的加解密。
+`CryptoUtils.h`和`CryptoUtils.cpp`是加解密的主要文件，支持各种文件格式(md,jpg,...)的加解密。
 
-qaesencryption.h和qaesencryption.cpp是AES加解密的实现文件，来自第三方库，请勿修改。
+`qaesencryption.h`和`qaesencryption.cpp`是AES加解密的实现文件，来自第三方库，请勿修改。
 
-mainwindow.h和mainwindow.cpp是加密窗口的一个样例，用于测试和理解接口的功能。
+`FileOperation.h`和`FileOperation.cpp`执行文件操作，负责用户登录、推荐日记、查找文件（按时间、按内容）
 
 ## 源代码说明
 
@@ -27,7 +27,7 @@ mainwindow.h和mainwindow.cpp是加密窗口的一个样例，用于测试和理
 
 `DailyPromptWindow` ： 每日推送界面类
 
-`DairyDetailWindow` ： 日记细节展示窗口类（可能以后会删掉）
+`DiaryDetailWindow` ： 日记细节展示窗口类（可能以后会删掉）
 
 `Guider` （在 `GuiderWindow` 文件中存放）： 新用户的欢迎界面
 
