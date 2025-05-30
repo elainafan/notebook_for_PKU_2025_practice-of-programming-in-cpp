@@ -36,7 +36,6 @@ int FileOperation::signIn(QString user, QString password_){
     }
 
     username=user;
-    password=password_;
     if (dir.exists(user)){
         QString inputPath = dir.filePath(QDir(user).filePath("valid.crypt"));  //路径
         QString outputPath = dir.filePath(QDir(user).filePath("valid"));
@@ -61,6 +60,8 @@ int FileOperation::signIn(QString user, QString password_){
             valid.close();
         }
         if (CryptoUtils().decryptFile(inputPath,outputPath,password_,true)){
+            password=password_;
+            decryptAll();
             return 1;
         }  //没有删除加密文件
         return -1;
@@ -103,12 +104,13 @@ int FileOperation::signIn(QString user, QString password_){
             // 创建diary下的子目录
             QString diaryPath = userDir.filePath("diary");
             QDir diaryDir(diaryPath);
-            if (!diaryDir.mkdir("daily_日记") || !diaryDir.mkdir("weekly_周记") ||
-                !diaryDir.mkdir("monthly_月记") || !diaryDir.mkdir("yearly_年记")) {
+            if (!newFolder(DiaryList("日记","daily",1)) || !newFolder(DiaryList("周记","weekly",2)) ||
+                !newFolder(DiaryList("月记","monthly",3)) || !newFolder(DiaryList("年记","yearly",4))) {
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
             qDebug() << "目录创建成功\n";
+            password=password_;
             return 0;
         } else {
             qWarning() << "目录创建失败\n";
@@ -120,7 +122,118 @@ int FileOperation::signIn(QString user, QString password_){
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
     deleteFile(QDir(username).filePath("valid.md"));
     deleteFile("username.md");
-    encryptDir();
+    encryptAll();
+}
+
+void FileOperation::setProfilePicture(const QPixmap& pic){
+    QDir dir(username);
+    pic.save(dir.filePath("profilePicture.png"));
+}
+
+QString FileOperation::getProfilePicture(){
+    QString dir(QDir(username).filePath("profilePicture.png"));
+    return dir;
+}
+
+void FileOperation::changeUsername(QString newUsername){
+    QDir(startPath).rename(username,newUsername);
+    username = newUsername;
+}
+
+bool FileOperation::changePassword(QString newPassword){
+    QDir dir(username);
+    QFile file(dir.filePath("valid.md"));
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << newPassword;
+        file.close();
+    } else {
+        qDebug() << "无法修改密码:" << file.errorString() << Qt::endl;
+        return 0;
+    }
+
+    decryptDir();
+
+    deleteFile(dir.filePath("valid.crypt"));
+    QString inputPath = dir.filePath("valid.md");  //路径
+    QString outputPath = dir.filePath("valid.crypt");
+    inputPath = QDir::toNativeSeparators(inputPath);  // 转换为本地分隔符，应当可以跨平台
+    outputPath = QDir::toNativeSeparators(outputPath);
+    CryptoUtils().encryptFile(inputPath,outputPath,newPassword);
+
+    password = newPassword;
+    return 1;
+}
+
+void FileOperation::setStar(const QString& fileName){
+    // 构造文件的绝对路径
+    QDir dir(username);
+    QFile file(dir.filePath("starred.md"));
+    QString rootPath(QDir(username).filePath("diary"));
+    QDir diaryDir(QDir(username).filePath("diary"));
+    QString filePath;
+
+    // 创建递归迭代器
+    QDirIterator it(rootPath,
+                    QStringList() << fileName, // 要搜索的文件名
+                    QDir::Files,               // 只查找文件
+                    QDirIterator::Subdirectories); // 递归子目录
+
+    while (it.hasNext()) {
+        it.next();
+        filePath = it.filePath();
+        break;
+    }
+
+    // 确保文件存在
+    if (QFile::exists(filePath)) {
+        QString basePath("/"+rootPath);
+        QDir::toNativeSeparators(basePath);
+        QDir baseDir(basePath);
+
+        // 生成相对于basePath的路径
+        QString relativePath = baseDir.relativeFilePath("/"+filePath);
+        QDir::toNativeSeparators(relativePath);
+        if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+            QTextStream in(&file);
+            QStringList entries;
+            bool found = false;
+
+            while (!in.atEnd()) {
+                QString line = in.readLine().trimmed();
+                if (!line.isEmpty()) {
+                    if (line == relativePath) {
+                        found = true;
+                    } else {
+                        entries.append(line);
+                    }
+                }
+            }
+
+            // 根据是否找到匹配项决定操作
+            if (found) {
+                // 取消收藏：移除匹配项
+                qDebug() << "已取消收藏文件:" << relativePath;
+            } else {
+                // 添加收藏
+                entries.append(relativePath);
+                qDebug() << "已收藏文件:" << relativePath;
+            }
+
+            // 清空文件并重新写入
+            file.resize(0);
+            file.seek(0);
+
+            QTextStream out(&file);
+            for (const QString &entry : entries) {
+                out << entry << "\n";
+            }
+
+            file.close();
+        } else {
+            qDebug() << "无法打开文件:" << file.errorString();
+        }
+    }
 }
 
 QString FileOperation::recommend(){
@@ -129,30 +242,60 @@ QString FileOperation::recommend(){
     // 获取所有文件（排除目录和特殊条目）
     QStringList files;
     QStringList nameFilters;
-    nameFilters << "*.md";
+    QStringList starredFiles;
+    QString selectedFile;
+    nameFilters << "2*.md";
 
-    // 创建递归迭代器
-    QDirIterator it(
-        dir,
-        nameFilters,                     // 文件名过滤条件
-        QDir::Files,                     // 只查找文件（忽略目录）
-        QDirIterator::Subdirectories     // 递归搜索子目录
-        );
-
-    // 遍历所有匹配文件
-    while (it.hasNext()) {
-        QString filePath = it.next();
-        files.append(filePath);
-    }
-    if (files.isEmpty()) {
-        qDebug()<<"目录中没有文件:"<<dir;
-        return QString();
+    // 先读取收藏文件（总是读取，但50%概率使用）
+    QFile starFile(QDir(username).filePath("starred.md"));
+    if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&starFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty()) {
+                starredFiles.append(QDir(dir).filePath(line));
+            }
+        }
+        starFile.close();
     }
 
-    // 生成随机索引
-    int randomIndex = QRandomGenerator::global()->bounded(files.size());
-    QString selectedFile = files.at(randomIndex);
+    // 然后50%概率优先使用收藏文件
+    if (!starredFiles.isEmpty() && QRandomGenerator::global()->bounded(2) == 0) {
+        // 过滤掉不存在的文件
+        QStringList validFiles;
+        for (const QString &path : starredFiles) {
+            if (QFile::exists(path)) {
+                validFiles.append(path);
+            }
+        }
 
+        if (!validFiles.isEmpty()) {
+            int randomIndex = QRandomGenerator::global()->bounded(validFiles.size());
+            selectedFile = validFiles.at(randomIndex);
+        }
+    }
+
+    // 在未选择收藏文件时扫描目录
+    if (selectedFile.isEmpty()) {
+        QDirIterator it(
+            dir,
+            QStringList() << "2*.md",  // 匹配所有日记
+            QDir::Files,
+            QDirIterator::Subdirectories
+            );
+
+        while (it.hasNext()) {
+            files.append(it.next());
+        }
+
+        if (files.isEmpty()) {
+            qDebug() << "目录中没有文件:" << dir;
+            return QString();
+        }
+
+        int randomIndex = QRandomGenerator::global()->bounded(files.size());
+        selectedFile = files.at(randomIndex);
+    }
     // 返回相对路径
     return selectedFile;
 }
@@ -169,9 +312,11 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
             if (!found.isEmpty())resultFiles.append(found);
         } else {
             QString baseName = entry.baseName(); // 获取不带扩展名的文件名
-            QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
-            if (fileTime >= start && fileTime <= end) {
-                resultFiles.append(entry.filePath());
+            if(baseName!="folderInfo"){
+                QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
+                if (fileTime >= start && fileTime <= end) {
+                    resultFiles.append(entry.filePath());
+                }
             }
         }
     }
@@ -179,7 +324,7 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
 }
 
 QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType) {
-    //diaryType包括daily,weekly,monthly,yearly,以及自定义；起始日期 , 终止日期的后一天
+    //起始日期 , 终止日期的后一天
 
     QDateTime date2 = end.addSecs(-1);
 
@@ -196,27 +341,43 @@ bool FileOperation::newFolder(const DiaryList& diaryType){
         qWarning() << "无法创建diary下的子目录";
         return 0;
     }
+    QDir notebookDir = diaryDir.filePath(diaryType.getType()+"_"+diaryType.getName());
+    QFile file(notebookDir.filePath("folderInfo.md"));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "无法打开文件：" << "folderInfo.md";
+    }
+    QTextStream out(&file);
+    out << diaryType.getColourType();
+    file.close();
     return 1;
 }
 
 QVector<DiaryList> FileOperation::allFolders(){
     QVector<DiaryList> folders;
     QDir dir = QDir(username).filePath("diary");
-    QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable);
     for (const QFileInfo &entry : entries) {
-        if (entry.isDir()) {
-            QString folderName=entry.fileName();
-            int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
-            QString name = folderName.right(folderName.length ()-first-1); //从右边截取
-            QString type = folderName.left(first); //从左边截取
-            folders.append(DiaryList(name,type,0));
+        QString folderName=entry.fileName();
+        int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
+        QString name = folderName.right(folderName.length ()-first-1); //从右边截取
+        QString type = folderName.left(first); //从左边截取
+        QString filename=QDir(dir.filePath(folderName)).filePath("folderInfo.md");
+        filename = QDir::toNativeSeparators(filename);
+        QFile file(filename);
+
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qWarning() << "无法打开文件：" << "folderInfo.md";
         }
+        QTextStream in(&file);
+        QString colour = in.readAll();
+        file.close();
+        folders.append(DiaryList(name,type,colour.toInt()));
     }
     return folders;
 }
 
 QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
-    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置；diaryType包括daily,weekly,monthly,yearly,以及自定义
+    //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置
 
     QString dir = QDir(username).filePath("diary");
     if (diaryType.getName()!="")dir = QDir(dir).filePath(diaryType.getType()+"_"+diaryType.getName());
@@ -317,7 +478,7 @@ bool FileOperation::encryptDir(QString dir){
     if(dir=="")dir = QDir(username).filePath("diary");
     QStringList resultFiles;
     QStringList nameFilters;
-    nameFilters << "*.md";
+    nameFilters << "*.md" << "*.png" << "*.jpg" << "*.jpeg" << "*.bmp";
 
     // 创建递归迭代器
     QDirIterator it(
@@ -364,4 +525,87 @@ bool FileOperation::decryptDir(QString dir){
         deleteFile(filePath);
     }
     return 1;
+}
+
+void FileOperation::encryptAll(){
+    encryptDir();
+    encryptDir(QDir(username).filePath("picture"));
+}
+
+void FileOperation::decryptAll(){
+    decryptDir();
+    decryptDir(QDir(username).filePath("picture"));
+}
+
+void FileOperation::setReminder(const reminder& r){
+    QDir dir(username);
+    QFile file(dir.filePath("reminder.md"));
+    QString time = r.time.toString("yyyy_MM_dd");
+    QString task = r.task;
+
+    if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream in(&file);
+        QStringList reminders;
+        bool found = false;
+
+        while (!in.atEnd()) {
+            QString lineTime = in.readLine().trimmed();
+            QString lineTask;
+            if (!in.atEnd())lineTask = in.readLine().trimmed();
+            if (!lineTime.isEmpty() && !lineTask.isEmpty()) {
+                if (lineTime == time && lineTask == task) {
+                    found = true;
+                } else {
+                    reminders.append(lineTime);
+                    reminders.append(lineTask);
+                }
+            }
+        }
+
+        // 根据是否找到匹配项决定操作
+        if (found) {
+            qDebug() << "已取消提醒事项:" << time << ":" << task << "\n";
+        } else {
+            reminders.append(time);
+            reminders.append(task);
+            qDebug() << "已添加提醒事项:" << time << ":" << task << "\n";
+        }
+
+        // 清空文件并重新写入
+        file.resize(0);
+        file.seek(0);
+
+        QTextStream out(&file);
+        for (const QString &entry : reminders) {
+            out << entry << "\n";
+        }
+
+        file.close();
+    } else {
+        qDebug() << "无法打开文件:" << file.errorString();
+    }
+}
+
+QVector<reminder> FileOperation::getReminder(){
+    QDir dir(username);
+    QFile file(dir.filePath("reminder.md"));
+    QVector<reminder> reminders;
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+
+        while (!in.atEnd()) {
+            QString lineTime = in.readLine().trimmed();
+            QString lineTask;
+            if (!in.atEnd())lineTask = in.readLine().trimmed();
+            if (!lineTime.isEmpty() && !lineTask.isEmpty()) {
+                reminders.append(reminder(QDateTime::fromString(lineTime, "yyyy_MM_dd"),lineTask));
+            }
+        }
+
+        file.close();
+    } else {
+        qDebug() << "无法打开文件:" << file.errorString();
+    }
+    return reminders;
 }
