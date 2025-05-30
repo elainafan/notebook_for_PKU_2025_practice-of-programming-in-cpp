@@ -40,8 +40,8 @@ public:
     void encryptAll();
     void decryptAll();
 
-    void setReminder(const Reminder& r);//若无该reminder则转为reminder，若已是reminder则取消reminder
-    QVector<Reminder> getReminder();    //返回全部提醒事项
+    void setReminder(const reminder& r);//若无该reminder则转为reminder，若已是reminder则取消reminder
+    QVector<reminder> getReminder();    //返回全部提醒事项
 
     QString username;
     QString password;

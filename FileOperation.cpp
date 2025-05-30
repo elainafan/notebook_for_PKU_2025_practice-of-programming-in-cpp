@@ -537,7 +537,7 @@ void FileOperation::decryptAll(){
     decryptDir(QDir(username).filePath("picture"));
 }
 
-void FileOperation::setReminder(const Reminder& r){
+void FileOperation::setReminder(const reminder& r){
     QDir dir(username);
     QFile file(dir.filePath("reminder.md"));
     QString time = r.time.toString("yyyy_MM_dd");
@@ -586,10 +586,10 @@ void FileOperation::setReminder(const Reminder& r){
     }
 }
 
-QVector<Reminder> FileOperation::getReminder(){
+QVector<reminder> FileOperation::getReminder(){
     QDir dir(username);
     QFile file(dir.filePath("reminder.md"));
-    QVector<Reminder> reminders;
+    QVector<reminder> reminders;
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
@@ -599,7 +599,7 @@ QVector<Reminder> FileOperation::getReminder(){
             QString lineTask;
             if (!in.atEnd())lineTask = in.readLine().trimmed();
             if (!lineTime.isEmpty() && !lineTask.isEmpty()) {
-                reminders.append(Reminder(QDateTime::fromString(lineTime, "yyyy_MM_dd"),lineTask));
+                reminders.append(reminder(QDateTime::fromString(lineTime, "yyyy_MM_dd"),lineTask));
             }
         }
 
