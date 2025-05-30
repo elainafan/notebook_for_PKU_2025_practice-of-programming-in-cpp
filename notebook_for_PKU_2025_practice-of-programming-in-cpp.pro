@@ -1,5 +1,6 @@
 QT += core gui widgets
 QT += widgets webenginewidgets
+QT += webenginewidgets webchannel
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +22,7 @@ SOURCES += \
     loginwindow.cpp \
     main.cpp \
     CryptoUtils.cpp \
+    markdowneditorwidget.cpp \
     mywidget.cpp \
     qaesencryption.cpp\
     reminder.cpp \
@@ -44,6 +46,7 @@ HEADERS += \
     gradientoverlay.h \
     guiderwindow.h \
     loginwindow.h \
+    markdowneditorwidget.h \
     mywidget.h \
     qaesencryption.h\
     reminder.h \
