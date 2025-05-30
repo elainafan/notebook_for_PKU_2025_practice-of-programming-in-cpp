@@ -376,6 +376,14 @@ QVector<DiaryList> FileOperation::allFolders(){
     return folders;
 }
 
+QString FileOperation::getBaseDir(const DiaryList& diaryType){
+    QDir dir = QDir(username).filePath("diary");
+    if (dir.exists(diaryType.getType()+"_"+diaryType.getName())){
+        return dir.filePath(diaryType.getType()+"_"+diaryType.getName());
+    }
+    return QString();
+}
+
 QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
     //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置
 

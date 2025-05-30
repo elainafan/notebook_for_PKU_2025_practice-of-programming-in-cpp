@@ -34,6 +34,7 @@ public:
     bool newFolder(const DiaryList& diaryType);
     QVector<DiaryList> allFolders();
     bool deleteFile(const QString& filename);
+    QString getBaseDir(const DiaryList& diaryType);
 
     bool encryptDir(QString dir="");
     bool decryptDir(QString dir="");
