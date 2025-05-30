@@ -3,12 +3,12 @@
 
 #include <QDateTime>
 
-class Reminder
+class reminder
 {
 public:
     QDateTime time;
     QString task;
-    Reminder(const QDateTime &time_,const QString &task_)
+    reminder(const QDateTime &time_,const QString &task_)
         :time(time_),task(task_)
     {}
 };
