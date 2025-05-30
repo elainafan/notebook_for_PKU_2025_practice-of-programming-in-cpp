@@ -10,6 +10,7 @@
 #include"diarylistwidget.h"
 #include"FileOperation.h"
 #include"userinfowidget.h"
+#include"reminderwidget.h"
 
 class AppWindow : public MyWidget
 {
@@ -32,7 +33,7 @@ private:
     SearchWidget *searchWidget;
     DiaryListWidget *diaryList;
     Calendar *calendar;
-    Reminder *reminder;
+    ReminderWidget *reminder;
     UserInfoWidget *userInfo;
 public:
     void setupUI();

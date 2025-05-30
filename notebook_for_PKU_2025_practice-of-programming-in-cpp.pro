@@ -5,25 +5,65 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = notebookBackend
 TEMPLATE = app
 
+
+
 SOURCES += \
+    reminderwidget.cpp\
+    AppWindow.cpp \
     FileOperation.cpp \
+    application.cpp \
+    calendar.cpp \
+    dailypromptwindow.cpp \
+    diary.cpp \
+    diarydetailwindow.cpp \
+    diarylist.cpp \
+    diarylistwidget.cpp \
+    gradientoverlay.cpp \
+    guiderwindow.cpp \
+    loginwindow.cpp \
     main.cpp \
-    MainWindow.cpp \
     CryptoUtils.cpp \
-    qaesencryption.cpp
+    mywidget.cpp \
+    qaesencryption.cpp\
+    searchwidget.cpp \
+    userinfowidget.cpp \
+    widget.cpp\
 
 HEADERS += \
+    reminderwidget.h\
+    AppWindow.h \
     FileOperation.h \
     Headers.h \
-    MainWindow.h \
     CryptoUtils.h \
+    application.h \
+    calendar.h \
+    dailypromptwindow.h \
+    diary.h \
+    diarydetailwindow.h \
     diarylist.h \
-    qaesencryption.h
+    diarylistwidget.h \
+    gradientoverlay.h \
+    guiderwindow.h \
+    loginwindow.h \
+    mywidget.h \
+    qaesencryption.h\
+    reminder.h \
+    searchwidget.h \
+    userinfowidget.h \
+    widget.h\
 
 FORMS +=
 
 # 发布版本优化
-CONFIG += c++11
+CONFIG += c++17
 CONFIG(release, debug|release) {
     DEFINES += QT_NO_DEBUG_OUTPUT
 }
+
+RESOURCES += \
+    Resources.qrc
+
+DISTFILES += \
+    interfaceRequirement.md
+
+

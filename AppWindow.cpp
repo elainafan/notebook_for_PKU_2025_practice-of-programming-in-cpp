@@ -62,7 +62,7 @@ void AppWindow::setupUI(){
     searchWidget= new SearchWidget(searchWidgetWin);
     diaryList = new DiaryListWidget(diaryListWin);
     calendar = new Calendar("weekly",calendarWin);
-    reminder = new Reminder(reminderWin);
+    reminder = new ReminderWidget(reminderWin);
 
     userInfo = new UserInfoWidget(this);
     userInfo->move(1050,0);
