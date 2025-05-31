@@ -58,7 +58,7 @@ Thank you for your stars!
 
 `qaesencryption` ： 加密用
 
-`Widget` ： 日记本编辑器类
+`markdowneditorwidget`: 日记编辑器类
 
 ### 数据结构类
 
