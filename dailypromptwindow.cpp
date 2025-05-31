@@ -7,30 +7,7 @@ DailyPromptWindow::DailyPromptWindow(FileOperation *fileOpt,MyWidget *parent)
     setupStyle();
     setupConnection();
     setupAnimation();
-    Diary dia = fileOperator->recommend();
-    QPixmap img = dia.getImages().value(0,QPixmap(":/images/defaultImage.jpg"));
-    // 将img沿着中间切割成4:5
-    if (!img.isNull()) {
-        int w = img.width();
-        int h = img.height();
-        // 目标宽高比为4:5
-        double targetRatio = 4.0 / 5.0;
-        int cropW = w;
-        int cropH = h;
-        if (w / static_cast<double>(h) > targetRatio) {
-            // 图片太宽，裁剪宽度
-            cropW = static_cast<int>(h * targetRatio);
-            int x = (w - cropW) / 2;
-            img = img.copy(x, 0, cropW, h);
-        } else {
-            // 图片太高，裁剪高度
-            cropH = static_cast<int>(w / targetRatio);
-            int y = (h - cropH) / 2;
-            img = img.copy(0, y, w, cropH);
-        }
-    }
-    setContent("TEST", dia.getMarkdownHtmlPreview()
-               ,img);
+
 }
 
 
@@ -69,6 +46,7 @@ void DailyPromptWindow::setupUI(){
     //contentLabel->setGraphicsEffect(shadowEffect);
     contentLabel->setWordWrap(true);
     contentLabel->setAlignment(Qt::AlignCenter);
+    contentLabel->setFixedSize(550,450);
     //mainLayout->setContentsMargins(20, 20, 20, 20);
 
     QVBoxLayout *container = new QVBoxLayout(this);
@@ -245,4 +223,31 @@ void DailyPromptWindow::fadingAll(){
 void DailyPromptWindow::tryEntering(){
     emit entering(this);
     QTimer::singleShot(2000,this,SLOT(fadingAll()));
+}
+
+void DailyPromptWindow::setUser(){
+    Diary dia = fileOperator->recommend();
+    QPixmap img = dia.getImages().value(0,QPixmap(":/images/defaultImage.jpg"));
+    // 将img沿着中间切割成4:5
+    if (!img.isNull()) {
+        int w = img.width();
+        int h = img.height();
+        // 目标宽高比为4:5
+        double targetRatio = 4.0 / 5.0;
+        int cropW = w;
+        int cropH = h;
+        if (w / static_cast<double>(h) > targetRatio) {
+            // 图片太宽，裁剪宽度
+            cropW = static_cast<int>(h * targetRatio);
+            int x = (w - cropW) / 2;
+            img = img.copy(x, 0, cropW, h);
+        } else {
+            // 图片太高，裁剪高度
+            cropH = static_cast<int>(w / targetRatio);
+            int y = (h - cropH) / 2;
+            img = img.copy(0, y, w, cropH);
+        }
+    }
+    setContent("TEST", dia.getMarkdownHtmlPreview()
+               ,img);
 }

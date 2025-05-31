@@ -4,7 +4,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
-#include <QWebChannel>
+//#include <QWebChannel>
 #include <QSplitter>
 
 MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
@@ -12,7 +12,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
 {
     setFixedSize(800,900);
     editor = new QPlainTextEdit(this);
-    preview = new QWebEngineView(this);
+    //preview = new QWebEngineView(this);
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
@@ -24,7 +24,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     determineTargetDirectory();
 
     // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
-    preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+    //preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
 }
 
 void MarkdownEditorWidget::setupLayout()
@@ -32,7 +32,7 @@ void MarkdownEditorWidget::setupLayout()
     auto *layout = new QVBoxLayout(this);
     auto *split = new QSplitter(Qt::Horizontal, this);
     split->addWidget(editor);
-    split->addWidget(preview);
+    //split->addWidget(preview);
     split->setStretchFactor(0, 1);
     split->setStretchFactor(1, 3);
 
@@ -54,7 +54,7 @@ void MarkdownEditorWidget::setupConnections()
 void MarkdownEditorWidget::determineTargetDirectory()
 {
     QString basePath = QDir(QCoreApplication::applicationDirPath()).absolutePath();
-    basePath = QDir(basePath).absoluteFilePath("..");  // 向上一级目录
+    //basePath = QDir(basePath).absoluteFilePath("..");  // 向上一级目录
     QString subFolder;
     if (diaryType == "daily") subFolder = "daily_日记";
     else if (diaryType == "weekly") subFolder = "weekly_周记";
@@ -70,7 +70,7 @@ void MarkdownEditorWidget::updatePreview()
     QString escaped = markdown;
     escaped.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
     QString js = QString("updateMarkdown(\"%1\");").arg(escaped);
-    preview->page()->runJavaScript(js);
+    //preview->page()->runJavaScript(js);
 }
 
 void MarkdownEditorWidget::onInsertImageClicked()
@@ -101,7 +101,7 @@ void MarkdownEditorWidget::onExportPdfClicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "*.pdf");
     if (!filePath.isEmpty()) {
-        preview->page()->printToPdf(filePath);
+   //     preview->page()->printToPdf(filePath);
     }
 }
 
@@ -112,11 +112,13 @@ void MarkdownEditorWidget::setDefaultContent(const QString &content)
 
 void MarkdownEditorWidget::saveToMarkdown(const QString &filePath)
 {
+    qDebug()<<"try to save at "<<filePath;
     QFile file(filePath);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
         out << editor->toPlainText();
         emit saved();
+        qDebug()<<"saved";
     }
 }
 

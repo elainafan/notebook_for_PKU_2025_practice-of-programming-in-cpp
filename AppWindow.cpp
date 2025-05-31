@@ -190,9 +190,13 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
     }diaryDisplay = new DiaryDisplayWidget(diaryVec,fileOperator);
     connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
         if(mdEditor)delete mdEditor;
+        qDebug()<<"opened";
         mdEditor = new MarkdownEditorWidget(dia);
         mdEditor->show();
-        connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
+        connect(mdEditor,&MarkdownEditorWidget::saved,this,[this](){
+            qDebug()<<"refreshing...";
+            QTimer::singleShot(1000,this,SLOT(refresh()));
+        });
     });
     connect(diaryDisplay,&DiaryDisplayWidget::newingDiary,this,[this](){
         if(mdEditor)delete mdEditor;
@@ -203,7 +207,10 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
                   )
             );
         mdEditor->show();
-        connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
+        connect(mdEditor,&MarkdownEditorWidget::saved,this,[this](){
+            qDebug()<<"refreshing...";
+            QTimer::singleShot(1,this,SLOT(refresh()));
+        });
     });
 
     diaryScroll->setWidget(diaryDisplay);

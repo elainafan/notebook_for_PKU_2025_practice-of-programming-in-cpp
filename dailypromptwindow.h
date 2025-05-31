@@ -43,6 +43,7 @@ public:
 public slots:
     void tryEntering();
     void fadingAll();
+    void setUser();
 signals:
     void entering(MyWidget *fromWhere);
 };

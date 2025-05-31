@@ -58,20 +58,30 @@ void DiaryWidget::setupUI(){
     int rateWid = cnt==2? 12:16,rateHei=9;
     for(int i=0;i<cnt;i++){
         QLabel *img = new QLabel(this);
-        if(imgVec[i].height()*rateWid<imgVec[i].width()*rateHei)
+        int srcW = imgVec[i].width();
+        int srcH = imgVec[i].height();
+        if(srcH * rateWid < srcW * rateHei) {
+            // 需要裁剪宽度
+            int targetW = srcH * rateWid / rateHei;
+            int x = (srcW - targetW) / 2; // 居中
             img->setPixmap(
-                imgVec[i].copy(QRect(0,0,imgVec[i].height()*rateWid/rateHei,imgVec[i].height()))
-                .scaled(DIARY_WID/cnt,10000,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-        else img->setPixmap(
-                imgVec[i].copy(QRect(0,0,imgVec[i].width(),imgVec[i].width()*rateHei/rateWid))
-                .scaled(DIARY_WID/cnt,10000,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-        img->setStyleSheet("background:transparent");
+                imgVec[i].copy(QRect(x, 0, targetW, srcH))
+                .scaled(DIARY_WID/cnt, 10000, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        } else {
+            // 需要裁剪高度
+            int targetH = srcW * rateHei / rateWid;
+            int y = (srcH - targetH) / 2; // 居中
+            img->setPixmap(
+                imgVec[i].copy(QRect(0, y, srcW, targetH))
+                .scaled(DIARY_WID/cnt, 10000, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }img->setStyleSheet("background:transparent");
         imgLayout->addWidget(img);
     }
     if(cnt)mainLayout->addLayout(imgLayout);
     //if(cnt==2)mainLayout->addSpacing(-100);
     mainLayout->setAlignment(Qt::AlignTop);
     QLabel *txt = new QLabel(diary.getMarkdownHtmlPreview(),this);
+    txt->setWordWrap(true);
     txt->setStyleSheet("QLabel{"
                        "background:transparent;"
                        "padding: 20px;"
