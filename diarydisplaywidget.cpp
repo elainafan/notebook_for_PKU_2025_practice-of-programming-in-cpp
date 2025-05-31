@@ -127,6 +127,8 @@ void DiaryDisplayWidget::setupUI(){
     }
     newDiary = new QPushButton(this);
     newDiary->setFixedSize(100,100);
+    connect(newDiary,&QPushButton::released,this,&DiaryDisplayWidget::newingDiary);
+
     QHBoxLayout *btnLayout = new QHBoxLayout(this);
     btnLayout->setAlignment(Qt::AlignCenter);
     btnLayout->addWidget(newDiary);
@@ -153,3 +155,4 @@ void DiaryDisplayWidget::setupStyle(){
 void DiaryDisplayWidget::setupConnection(){
 
 }
+

@@ -128,11 +128,12 @@ void AppWindow::setupConnection(){
     });
     connect(this,&AppWindow::appeared, this, [this](){
         buildDiaries(QVector<Diary>{
-            Diary("test0",QDateTime(QDate::currentDate(),QTime()),"TEST","## TEST"),
+            Diary("test0",QDateTime(QDate::currentDate(),QTime()),"教程","## 请点击左侧任意一个笔记本，开始记录你的生活")
+            /*,
             Diary("test",QDateTime(QDate::currentDate(),QTime()),"TEST","## This is a piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),
             Diary("test2",QDateTime(QDate::currentDate(),QTime()),"TEST2","## This is another piece of test text.",
-                  QVector<QPixmap>{QPixmap(":/images/testImage.png")})
+                  QVector<QPixmap>{QPixmap(":/images/testImage.png")})*/
         });
     });
 
@@ -191,7 +192,17 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
         mdEditor->show();
         //connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
     });
-
+    connect(diaryDisplay,&DiaryDisplayWidget::newingDiary,this,[this](){
+        if(mdEditor)delete mdEditor;
+        mdEditor = new MarkdownEditorWidget(
+            Diary(diaryListVec[curDiaryList].getName(),QDateTime::currentDateTime(),
+                  "","",QVector<QPixmap>(),
+                  fileOperator->username,diaryListVec[curDiaryList].getType()
+                  )
+            );
+        mdEditor->show();
+        //connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
+    });
     diaryScroll->setWidget(diaryDisplay);
     diaryScroll->show();
     //diaryScroll->setStyleSheet("border:2px solid green;");
