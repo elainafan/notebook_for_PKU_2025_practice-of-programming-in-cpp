@@ -115,3 +115,4 @@ void MarkdownEditorWidget::saveToMarkdown(const QString &filePath)
         out << editor->toPlainText();
     }
 }
+

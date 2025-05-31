@@ -27,7 +27,6 @@ SOURCES += \
     qaesencryption.cpp\
     searchwidget.cpp \
     userinfowidget.cpp \
-    widget.cpp\
     markdowneditorwidget.cpp\
 
 HEADERS += \
@@ -51,7 +50,6 @@ HEADERS += \
     reminder.h \
     searchwidget.h \
     userinfowidget.h \
-    widget.h\
     markdowneditorwidget.h\
 
 FORMS +=
