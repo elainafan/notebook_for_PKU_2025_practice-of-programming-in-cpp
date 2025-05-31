@@ -130,9 +130,8 @@ void FileOperation::setProfilePicture(const QPixmap& pic){
     pic.save(dir.filePath("profilePicture.png"));
 }
 
-QString FileOperation::getProfilePicture(){
-    QString dir(QDir(username).filePath("profilePicture.png"));
-    return dir;
+QPixmap FileOperation::getProfilePicture(){
+    return QPixmap(QDir(username).filePath("profilePicture.png"));
 }
 
 void FileOperation::changeUsername(QString newUsername){
