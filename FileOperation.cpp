@@ -261,7 +261,7 @@ Diary FileOperation::recommend(){
 
         for (const QString &grandchild : grandchildDir.entryList()) {
             // 添加孙文件夹的名称到结果列表
-            pictureFiles.append(QDir(childDir).filePath(grandchild));
+            pictureFiles.append(QDir(childDir).filePath(grandchild)+".md");
         }
     }
 
@@ -307,7 +307,7 @@ Diary FileOperation::recommend(){
             selectedFile = validFiles.at(randomIndex);
         }
     }
-    qDebug()<<selectedFile.isEmpty();
+
     // 在不存在有图文件时扫描目录
     if (selectedFile.isEmpty()) {
         QDirIterator it(
@@ -330,7 +330,7 @@ Diary FileOperation::recommend(){
         selectedFile = files.at(randomIndex);
     }
     // 返回日记类
-    return fileToDiary(selectedFile);
+    return fileToDiary(QDir(QDir(username).filePath("diary")).filePath(selectedFile));
 }
 
 QVector<Diary> FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
