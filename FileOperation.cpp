@@ -109,6 +109,14 @@ int FileOperation::signIn(QString user, QString password_){
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
+            // 创建picture下的子目录
+            QString picPath = userDir.filePath("picture");
+            QDir picDir(picPath);
+            if (!newFolder(DiaryList("日记","daily",1)) || !newFolder(DiaryList("周记","weekly",2)) ||
+                !newFolder(DiaryList("月记","monthly",3)) || !newFolder(DiaryList("年记","yearly",4))) {
+                qWarning() << "无法创建picture下的子目录";
+                return -1;
+            }
             qDebug() << "目录创建成功\n";
             password=password_;
             return 0;
@@ -300,22 +308,22 @@ QString FileOperation::recommend(){
     return selectedFile;
 }
 
-QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
+QVector<Diary> FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
 
     QDir dir(dirPath);
     QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    QStringList resultFiles;
+    QVector<Diary> resultFiles;
 
     for (const QFileInfo &entry : entries) {
         if (entry.isDir()) {
-            QStringList found = findFile(start, end, entry.filePath());
+            QVector<Diary> found = findFile(start, end, entry.filePath());
             if (!found.isEmpty())resultFiles.append(found);
         } else {
             QString baseName = entry.baseName(); // 获取不带扩展名的文件名
             if(baseName!="folderInfo"){
                 QDateTime fileTime = QDateTime::fromString(baseName, "yyyy_MM_dd_HH_mm_ss");
                 if (fileTime >= start && fileTime <= end) {
-                    resultFiles.append(entry.filePath());
+                    resultFiles.append(fileToDiary(entry.filePath()));
                 }
             }
         }
@@ -323,7 +331,7 @@ QStringList FileOperation::findFile(QDateTime start, QDateTime end, const QStrin
     return resultFiles;
 }
 
-QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType) {
+QVector<Diary> FileOperation::findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType) {
     //起始日期 , 终止日期的后一天
 
     QDateTime date2 = end.addSecs(-1);
@@ -336,9 +344,15 @@ QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const 
 
 bool FileOperation::newFolder(const DiaryList& diaryType){
     QDir diaryDir = QDir(username).filePath("diary");
+    QDir picDir = QDir(username).filePath("picture");
     // 创建diary下的子目录
     if (!diaryDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
         qWarning() << "无法创建diary下的子目录";
+        return 0;
+    }
+    // 创建picture下的子目录
+    if (!picDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
+        qWarning() << "无法创建picture下的子目录";
         return 0;
     }
     QDir notebookDir = diaryDir.filePath(diaryType.getType()+"_"+diaryType.getName());
@@ -376,12 +390,20 @@ QVector<DiaryList> FileOperation::allFolders(){
     return folders;
 }
 
-QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
+QString FileOperation::getBaseDir(const DiaryList& diaryType){
+    QDir dir = QDir(username).filePath("diary");
+    if (dir.exists(diaryType.getType()+"_"+diaryType.getName())){
+        return dir.filePath(diaryType.getType()+"_"+diaryType.getName());
+    }
+    return QString();
+}
+
+QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
     //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置
 
     QString dir = QDir(username).filePath("diary");
     if (diaryType.getName()!="")dir = QDir(dir).filePath(diaryType.getType()+"_"+diaryType.getName());
-    QPair<QString,QVector<int> > resultFiles;
+    QPair<Diary,QVector<int> > resultFiles=make_pair(Diary("",QDateTime::fromString("1970_01_01_00_00_00","yyyy_MM_dd_HH_mm_ss"),"",""),QVector<int>());
 
     if(target!=searchword||diaryType.getName()!=searchDiaryType||newSearch){
         QStringList nameFilters;
@@ -413,7 +435,7 @@ QPair<QString,QVector<int> > FileOperation::findFileByContent(const QString& tar
         QString filePath = unsearchedFiles.pop();
         QVector<int> res = searchInFileByContent(filePath, target);
         if(!res.empty()){
-            resultFiles.first = filePath;
+            resultFiles.first = fileToDiary(filePath);
             resultFiles.second = res;
             return resultFiles;
         }
@@ -535,6 +557,71 @@ void FileOperation::encryptAll(){
 void FileOperation::decryptAll(){
     decryptDir();
     decryptDir(QDir(username).filePath("picture"));
+}
+
+Diary FileOperation::fileToDiary(const QString& filePath){
+    QFile file(filePath);
+    QString content;
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        content = in.readAll();
+        file.close();
+    } else {
+        qDebug() << "无法读取文件内容:" << file.errorString() << Qt::endl;
+    }
+
+    QFileInfo info(filePath);
+    QDir parentDir = info.dir();
+    QString folderName = parentDir.dirName();  // 文件夹名
+    int first = folderName.lastIndexOf ("_"); //从后面查找"_"位置
+    QString name = folderName.right(folderName.length ()-first-1); //从右边截取
+    QString type = folderName.left(first); //从左边截取
+
+    // 获取文件夹下所有图片路径
+    QVector<QPixmap> pixmaps;
+    QStringList imageFiles;
+    QString picParentDir = QDir(username).filePath("picture");
+    QString picPath(QDir(QDir(picParentDir).filePath(folderName)).filePath(info.baseName()));
+
+    qDebug()<<picPath;
+
+    // 设置支持的图片格式（Qt支持的格式）
+    QStringList formats;
+    formats << "*.png" << "*.jpg" << "*.jpeg" << "*.bmp" << "*.gif";
+
+    // 设置搜索选项
+    QDir::Filters filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+
+    // 遍历文件夹
+    QDirIterator it(picPath, formats, filters);
+    while (it.hasNext()) {
+        imageFiles << it.next();
+    }
+
+    // 将图片文件转为QPixmap列表
+    foreach (const QString& path, imageFiles) {
+        QPixmap pixmap;
+
+        if (pixmap.load(path)) {
+            if (!pixmap.isNull()) {
+                pixmaps.append(pixmap);
+            } else {
+                qWarning() << "加载图片失败(空图像):" << path;
+            }
+        } else {
+            qWarning() << "加载图片失败:" << path;
+        }
+    }
+
+    Diary d(name,
+            QDateTime::fromString(info.baseName(), "yyyy_MM_dd_HH_mm_ss"),
+            "",
+            content,
+            pixmaps,
+            username,
+            type);
+    return d;
 }
 
 void FileOperation::setReminder(const reminder& r){
