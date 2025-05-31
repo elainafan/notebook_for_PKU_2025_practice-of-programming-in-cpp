@@ -8,6 +8,7 @@
 #include <QStack>
 #include "diarylist.h"
 #include "Reminder.h"
+#include "diary.h"
 
 class FileOperation : public QObject
 {
@@ -25,10 +26,10 @@ public:
     QString recommend();
     void setStar(const QString& fileName);  //若未starred则转为starred，若已starred则取消starred
 
-    QStringList findFile(QDateTime start, QDateTime end, const QString& diaryType);
-    QStringList findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记
+    QVector<Diary> findFile(QDateTime start, QDateTime end, const QString& diaryType);
+    QVector<Diary> findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记
 
-    QPair<QString,QVector<int> > findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType=DiaryList("","",0));
+    QPair<Diary,QVector<int> > findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType=DiaryList("","",0));
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(const DiaryList& diaryType);
@@ -43,6 +44,8 @@ public:
 
     void setReminder(const reminder& r);//若无该reminder则转为reminder，若已是reminder则取消reminder
     QVector<reminder> getReminder();    //返回全部提醒事项
+
+    Diary fileToDiary(const QString& filePath);
 
     QString username;
     QString password;
