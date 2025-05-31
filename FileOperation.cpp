@@ -109,14 +109,6 @@ int FileOperation::signIn(QString user, QString password_){
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
-            // 创建picture下的子目录
-            QString picPath = userDir.filePath("picture");
-            QDir picDir(picPath);
-            if (!newFolder(DiaryList("日记","daily",1)) || !newFolder(DiaryList("周记","weekly",2)) ||
-                !newFolder(DiaryList("月记","monthly",3)) || !newFolder(DiaryList("年记","yearly",4))) {
-                qWarning() << "无法创建picture下的子目录";
-                return -1;
-            }
             qDebug() << "目录创建成功\n";
             password=password_;
             return 0;
@@ -138,9 +130,8 @@ void FileOperation::setProfilePicture(const QPixmap& pic){
     pic.save(dir.filePath("profilePicture.png"));
 }
 
-QString FileOperation::getProfilePicture(){
-    QString dir(QDir(username).filePath("profilePicture.png"));
-    return dir;
+QPixmap FileOperation::getProfilePicture(){
+    return QPixmap(QDir(username).filePath("profilePicture.png"));
 }
 
 void FileOperation::changeUsername(QString newUsername){
@@ -244,15 +235,34 @@ void FileOperation::setStar(const QString& fileName){
     }
 }
 
-QString FileOperation::recommend(){
+Diary FileOperation::recommend(){
     QString dir = QDir(username).filePath("diary");
+    QDir parentDir(QDir(username).filePath("picture"));
 
     // 获取所有文件（排除目录和特殊条目）
     QStringList files;
     QStringList nameFilters;
     QStringList starredFiles;
     QString selectedFile;
+    QStringList pictureFiles;
     nameFilters << "2*.md";
+
+    // 设置过滤器，只获取文件夹
+    parentDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+
+    // 遍历所有直接子文件夹
+    for (const QString &childDir : parentDir.entryList()) {
+        QString childPath = parentDir.filePath(childDir);
+
+        // 获取当前子文件夹的子文件夹
+        QDir grandchildDir(childPath);
+        grandchildDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+
+        for (const QString &grandchild : grandchildDir.entryList()) {
+            // 添加孙文件夹的名称到结果列表
+            pictureFiles.append(QDir(childDir).filePath(grandchild)+".md");
+        }
+    }
 
     // 先读取收藏文件（总是读取，但50%概率使用）
     QFile starFile(QDir(username).filePath("starred.md"));
@@ -261,19 +271,18 @@ QString FileOperation::recommend(){
         while (!in.atEnd()) {
             QString line = in.readLine().trimmed();
             if (!line.isEmpty()) {
-                starredFiles.append(QDir(dir).filePath(line));
+                starredFiles.append(line);
             }
         }
         starFile.close();
     }
-
     // 然后50%概率优先使用收藏文件
     if (!starredFiles.isEmpty() && QRandomGenerator::global()->bounded(2) == 0) {
         // 过滤掉不存在的文件
         QStringList validFiles;
-        for (const QString &path : starredFiles) {
-            if (QFile::exists(path)) {
-                validFiles.append(path);
+        for (const QString &filename : starredFiles) {
+            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename)) && pictureFiles.contains(filename)) {
+                validFiles.append(filename);
             }
         }
 
@@ -283,7 +292,22 @@ QString FileOperation::recommend(){
         }
     }
 
-    // 在未选择收藏文件时扫描目录
+    if (selectedFile.isEmpty()) {
+        // 过滤掉不存在的文件
+        QStringList validFiles;
+        for (const QString &filename : pictureFiles) {
+            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename))) {
+                validFiles.append(filename);
+            }
+        }
+
+        if (!validFiles.isEmpty()) {
+            int randomIndex = QRandomGenerator::global()->bounded(validFiles.size());
+            selectedFile = validFiles.at(randomIndex);
+        }
+    }
+
+    // 在不存在有图文件时扫描目录
     if (selectedFile.isEmpty()) {
         QDirIterator it(
             dir,
@@ -298,14 +322,14 @@ QString FileOperation::recommend(){
 
         if (files.isEmpty()) {
             qDebug() << "目录中没有文件:" << dir;
-            return QString();
+            return Diary("",QDateTime::fromString("1970_01_01_00_00_00","yyyy_MM_dd_HH_mm_ss"),"","");
         }
 
         int randomIndex = QRandomGenerator::global()->bounded(files.size());
         selectedFile = files.at(randomIndex);
     }
-    // 返回相对路径
-    return selectedFile;
+    // 返回日记类
+    return fileToDiary(QDir(QDir(username).filePath("diary")).filePath(selectedFile));
 }
 
 QVector<Diary> FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
