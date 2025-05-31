@@ -464,7 +464,7 @@ QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& targe
             return resultFiles;
         }
     }
-
+    searchword = "";
     return resultFiles;
 }
 
