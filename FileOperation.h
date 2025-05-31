@@ -19,11 +19,11 @@ public:
     int signIn(QString user="",QString password=""); //缺省全部参数-自动登录，缺省密码-免密登录，不缺省-登录或注册
     void signOut();
     void setProfilePicture(const QPixmap& pic);
-    QString getProfilePicture();            //返回图片文件地址，请在前端读取
+    QPixmap getProfilePicture();
     void changeUsername(QString newUsername);
     bool changePassword(QString newPassword);
 
-    QString recommend();
+    Diary recommend();
     void setStar(const QString& fileName);  //若未starred则转为starred，若已starred则取消starred
 
     QVector<Diary> findFile(QDateTime start, QDateTime end, const QString& diaryType);
