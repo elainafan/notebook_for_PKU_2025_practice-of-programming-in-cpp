@@ -28,6 +28,7 @@ SOURCES += \
     searchwidget.cpp \
     userinfowidget.cpp \
     widget.cpp\
+    markdowneditorwidget.cpp\
 
 HEADERS += \
     reminderwidget.h\
@@ -51,6 +52,7 @@ HEADERS += \
     searchwidget.h \
     userinfowidget.h \
     widget.h\
+    markdowneditorwidget.h\
 
 FORMS +=
 

@@ -1,0 +1,117 @@
+#include "markdowneditorwidget.h"
+#include <QVBoxLayout>
+#include <QFileDialog>
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+#include <QWebChannel>
+#include <QSplitter>
+
+MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
+    : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType())
+{
+    editor = new QPlainTextEdit(this);
+    preview = new QWebEngineView(this);
+    saveButton = new QPushButton("保存", this);
+    exportButton = new QPushButton("导出为 PDF", this);
+    insertImageButton = new QPushButton("插入图片", this);
+
+    setupLayout();
+    setupConnections();
+    determineTargetDirectory();
+
+    // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
+    preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+}
+
+void MarkdownEditorWidget::setupLayout()
+{
+    auto *layout = new QVBoxLayout(this);
+    auto *split = new QSplitter(Qt::Horizontal, this);
+    split->addWidget(editor);
+    split->addWidget(preview);
+    split->setStretchFactor(0, 1);
+    split->setStretchFactor(1, 1);
+
+    layout->addWidget(split);
+    layout->addWidget(insertImageButton);
+    layout->addWidget(saveButton);
+    layout->addWidget(exportButton);
+    setLayout(layout);
+}
+
+void MarkdownEditorWidget::setupConnections()
+{
+    connect(editor, &QPlainTextEdit::textChanged, this, &MarkdownEditorWidget::updatePreview);
+    connect(saveButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onSaveClicked);
+    connect(exportButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onExportPdfClicked);
+    connect(insertImageButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onInsertImageClicked);
+}
+
+void MarkdownEditorWidget::determineTargetDirectory()
+{
+    QString basePath = QCoreApplication::applicationDirPath();
+    QString subFolder;
+    if (diaryType == "daily") subFolder = "daily_日记";
+    else if (diaryType == "weekly") subFolder = "weekly_周记";
+    else if (diaryType == "monthly") subFolder = "monthly_月记";
+    else if (diaryType == "yearly") subFolder = "yearly_年记";
+    targetDir = basePath + "/" + username + "/diary/" + subFolder;
+    imageDirBase = basePath + "/" + username + "/picture/" + subFolder;
+}
+
+void MarkdownEditorWidget::updatePreview()
+{
+    QString markdown = editor->toPlainText();
+    QString js = QString("updateMarkdown(%1);")
+                     .arg(QJsonDocument::fromVariant(markdown).toJson(QJsonDocument::Compact));
+    preview->page()->runJavaScript(js);
+}
+
+void MarkdownEditorWidget::onInsertImageClicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "选择图片", "", "Images (*.png *.jpg *.jpeg *.bmp *.gif)");
+    if (filePath.isEmpty()) return;
+
+    QFileInfo fileInfo(filePath);
+    QString imageSubDir = imageDirBase + "/" + currentMarkdownName;
+    QDir().mkpath(imageSubDir);
+    QString destPath = imageSubDir + "/" + fileInfo.fileName();
+
+    if (QFile::copy(filePath, destPath)) {
+        QString relativePath = QDir(targetDir).relativeFilePath(destPath);
+        QString markdownImage = QString("![%1](%2)").arg(fileInfo.fileName(), relativePath.replace("\\", "/"));
+        editor->insertPlainText("\n" + markdownImage + "\n");
+    }
+}
+
+void MarkdownEditorWidget::onSaveClicked()
+{
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss");
+    currentMarkdownName = timestamp;
+    QString fileName = currentMarkdownName + ".md";
+    QString filePath = targetDir + "/" + fileName;
+    saveToMarkdown(filePath);
+}
+
+void MarkdownEditorWidget::onExportPdfClicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "*.pdf");
+    if (!filePath.isEmpty()) {
+        preview->page()->printToPdf(filePath);
+    }
+}
+
+void MarkdownEditorWidget::setDefaultContent(const QString &content)
+{
+    editor->setPlainText(content);
+}
+
+void MarkdownEditorWidget::saveToMarkdown(const QString &filePath)
+{
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << editor->toPlainText();
+    }
+}

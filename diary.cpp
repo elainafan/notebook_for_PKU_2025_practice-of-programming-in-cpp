@@ -6,12 +6,16 @@ Diary::Diary(const QString& notebookName,
              const QDateTime& dateTime,
              const QString& title,
              const QString& markdownContent,
-             const QVector<QPixmap>& images)
+             const QVector<QPixmap>& images,
+             const QString& username,
+             const QString& diaryType)
     : m_notebookName(notebookName),
     m_dateTime(dateTime),
     m_title(title),
     m_markdownContent(markdownContent),
-    m_images(images) {}
+    m_images(images),
+    m_username(username),
+    m_diaryType(diaryType){}
 
 QString Diary::getNotebookName() const {
     return m_notebookName;
@@ -31,6 +35,14 @@ QString Diary::getTitle() const {
 
 QVector<QPixmap> Diary::getImages() const {
     return m_images;
+}
+
+QString Diary::getUsername() const {
+    return m_username;
+}
+
+QString Diary::getDiaryType() const {
+    return m_diaryType;
 }
 
 QString Diary::getMarkdownHtmlPreview(int lineCount) const {
