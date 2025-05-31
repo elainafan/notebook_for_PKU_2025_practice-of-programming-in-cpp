@@ -26,6 +26,7 @@
 #include<QTableView>
 #include<QTimer>
 #include<QPainterPath>
+#include<QMouseEvent>
 using namespace std;
 #endif // HEADERS_H
 

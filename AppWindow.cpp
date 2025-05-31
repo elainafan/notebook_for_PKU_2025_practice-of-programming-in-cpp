@@ -128,13 +128,28 @@ void AppWindow::setupConnection(){
     });
     connect(this,&AppWindow::appeared, this, [this](){
         showDiaries(QVector<Diary>{
-            Diary("test0",QDateTime(),"TEST","## TEST"),
-            Diary("test",QDateTime(),"TEST","## This is a piece of test text.",
+            Diary("test0",QDateTime(QDate::currentDate(),QTime()),"TEST","## TEST"),
+            Diary("test",QDateTime(QDate::currentDate(),QTime()),"TEST","## This is a piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),
-            Diary("test2",QDateTime(),"TEST2","## This is another piece of test text.",
+            Diary("test2",QDateTime(QDate::currentDate(),QTime()),"TEST2","## This is another piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png")})
         });
     });
+    /*
+    connect(diaryList,&DiaryListWidget::changeList,this,[this](const int &num){
+        curDiaryList=num;
+        showDiaries(fileOperator->findFileByTime(
+            QDateTime(calendar->getCurDate(),QTime()),
+            QDateTime(calendar->getCurDate().addDays(1),QTime()),
+            diaryListVec[num]));
+    });
+    connect(calendar,&Calendar::dateUpdated,this,[this](){
+        showDiaries(fileOperator->findFileByTime(
+            QDateTime(calendar->getCurDate(),QTime()),
+            QDateTime(calendar->getCurDate().addDays(1),QTime()),
+            diaryListVec[num]));
+    });
+    */
     /*
     connect(calendar, &Calendar::dateUpdated, this, [this](){
         showDiaries(QVector<Diary>{

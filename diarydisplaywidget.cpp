@@ -10,6 +10,31 @@ void DiaryWidget::setupUI(){
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(35,35,35,35);
     mainLayout->setSpacing(0);
+    QHBoxLayout *dateTime = new QHBoxLayout(this);
+    QLabel *dateTitle = new QLabel(diary.getDate().toString("yyyy.MM.dd"),this);
+    dateTitle->setStyleSheet(R"(
+        QLabel{
+            font-family: "Yuanti SC",sans-serif;
+            font-size: 32px;
+            padding: 10px;
+        }
+    )");
+
+    QLabel *timeTitle = new QLabel(diary.getTime().toString("HH:mm"),this);
+    timeTitle->setStyleSheet(R"(
+        QLabel{
+            background:transparent;
+            font-family: "Yuanti SC", sans-serif;
+            font-size: 20px;
+            color: #777777;
+            padding: 25px;
+        }
+    )");
+    dateTime->addWidget(dateTitle);
+    dateTime->addSpacing(-300);
+    dateTime->addWidget(timeTitle);
+    dateTime->setAlignment(Qt::AlignBottom);
+    mainLayout->addLayout(dateTime);
     QVector<QPixmap> imgVec = diary.getImages();
     QHBoxLayout *imgLayout = new QHBoxLayout(this);
     imgLayout->setContentsMargins(10,10,10,10);
@@ -28,7 +53,8 @@ void DiaryWidget::setupUI(){
                 .scaled(DIARY_WID/cnt,10000,Qt::KeepAspectRatio,Qt::SmoothTransformation));
         img->setStyleSheet("background:transparent");
         imgLayout->addWidget(img);
-    }mainLayout->addLayout(imgLayout);
+    }
+    if(cnt)mainLayout->addLayout(imgLayout);
     //if(cnt==2)mainLayout->addSpacing(-100);
     mainLayout->setAlignment(Qt::AlignTop);
     QLabel *txt = new QLabel(diary.getMarkdownHtmlPreview(),this);
@@ -51,6 +77,28 @@ void DiaryWidget::setupStyle(){
 void DiaryWidget::setupConnection(){
 
 }
+
+void DiaryWidget::mousePressEvent(QMouseEvent *event)
+{
+    // 判断是哪个鼠标按键
+    if (event->button() == Qt::LeftButton) {
+        // 左键点击
+        emit leftClicked(this);
+        emit diaryClicked(this, Qt::LeftButton);
+    }
+    else if (event->button() == Qt::RightButton) {
+        // 右键点击
+        emit rightClicked(this);
+        emit diaryClicked(this, Qt::RightButton);
+    }
+
+    // 调用父类实现以保持其他默认行为
+    QWidget::mousePressEvent(event);
+}
+
+/*-------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------*/
 
 DiaryDisplayWidget::DiaryDisplayWidget(QVector<Diary> dVec,QWidget *parent)
     : MyWidget(parent),diaryVec(dVec)

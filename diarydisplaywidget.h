@@ -31,6 +31,13 @@ public:
     void setupUI();
     void setupStyle();
     void setupConnection();
+signals:
+    void leftClicked(DiaryWidget* widget);    // 左键点击信号
+    void rightClicked(DiaryWidget* widget);   // 右键点击信号
+    void diaryClicked(DiaryWidget* widget, Qt::MouseButton button); // 通用点击信号
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override; // 重写鼠标点击事件
 };
 
 class DiaryDisplayWidget : public MyWidget
