@@ -187,7 +187,7 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
     if(diaryDisplay){
         disconnect(diaryDisplay,nullptr,this,nullptr);
         delete diaryDisplay;
-    }diaryDisplay = new DiaryDisplayWidget(diaryVec);
+    }diaryDisplay = new DiaryDisplayWidget(diaryVec,fileOperator);
     connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
         if(mdEditor)delete mdEditor;
         mdEditor = new MarkdownEditorWidget(dia);

@@ -24,6 +24,7 @@ void DiaryWidget::setupUI(){
     QLabel *dateTitle = new QLabel(daystr,this);
     dateTitle->setStyleSheet(R"(
         QLabel{
+            background:transparent;
             font-family: "Yuanti SC",sans-serif;
             font-size: 32px;
             padding: 10px;
@@ -42,7 +43,10 @@ void DiaryWidget::setupUI(){
     )");
     dateTime->addWidget(dateTitle);
     dateTime->addSpacing(-300);
-    dateTime->addWidget(timeTitle);
+    //dateTime->addWidget(timeTitle);
+    timeTitle->close();
+
+
     dateTime->setAlignment(Qt::AlignBottom);
     mainLayout->addLayout(dateTime);
     QVector<QPixmap> imgVec = diary.getImages();
@@ -74,18 +78,41 @@ void DiaryWidget::setupUI(){
                        "}");
     mainLayout->addWidget(txt);
 
+
+    star = new QPushButton(this);
+    star->setCheckable(true);
+    star->setFixedSize(30,30);
+    star->move(DIARY_WID-70,40);
+    //star->close();
 }
 
 void DiaryWidget::setupStyle(){
     //setObjectName("diarywidget");
     setAutoFillBackground(true);
-    setStyleSheet(R"(
+    star->setStyleSheet(R"(
+        QAbstructButton{
+            background:transparent;
+        }QLabel{
+            background:transparent;
+        }QWidget{
+            background:transparent;
+        }
+        QPushButton {
+            background:transparent;
+            border: none;
+            border-image: url(":/images/unstar.png") 0 0 0 0 stretch stretch;
+        }QPushButton:checked{
+            border-image: url(":/images/starred.png") 0 0 0 0 stretch stretch;
+        }
     )");
+    star->setAttribute(Qt::WA_TranslucentBackground);
 
 }
 
 void DiaryWidget::setupConnection(){
-
+    connect(star,&QPushButton::toggled,this,[this](bool checked){
+        emit toggleStar(QDateTime(diary.getDate(),diary.getTime()).toString("yyyy_MM_dd_HH_mm_ss.md"));
+    });
 }
 
 void DiaryWidget::mousePressEvent(QMouseEvent *event)
@@ -108,12 +135,14 @@ void DiaryWidget::mousePressEvent(QMouseEvent *event)
     QWidget::mousePressEvent(event);
 }
 
+
+
 /*-------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------*/
 
-DiaryDisplayWidget::DiaryDisplayWidget(QVector<Diary> dVec,QWidget *parent)
-    : MyWidget(parent),diaryVec(dVec)
+DiaryDisplayWidget::DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,QWidget *parent)
+    : MyWidget(parent),diaryVec(dVec),fileOperator(fileOpt)
 {
     setFixedSize(DIARY_WID+200,dVec.size()*(DIARY_HEI+20)+250);
     setupUI();
@@ -133,6 +162,9 @@ void DiaryDisplayWidget::setupUI(){
         connect(diaWidgVec[i],&DiaryWidget::leftClicked,this,[this,i](){
             qDebug()<<"openDiary";
             emit openDiary(diaryVec[i]);
+        });
+        connect(diaWidgVec[i],&DiaryWidget::toggleStar,this,[this,i](QString str){
+            fileOperator->setStar(str);
         });
     }
     newDiary = new QPushButton(this);
@@ -160,6 +192,7 @@ void DiaryDisplayWidget::setupStyle(){
             border-image: url(":/images/newDiary_pressed.png") 0 0 0 0 stretch stretch;
         }
     )");
+
 }
 
 void DiaryDisplayWidget::setupConnection(){

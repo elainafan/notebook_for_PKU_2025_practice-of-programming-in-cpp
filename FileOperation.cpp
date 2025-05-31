@@ -235,6 +235,22 @@ void FileOperation::setStar(const QString& fileName){
     }
 }
 
+QVector<Diary> FileOperation::allStarred(){
+    QVector<Diary> starredFiles;
+    QFile starFile(QDir(username).filePath("starred.md"));
+    if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&starFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty()) {
+                starredFiles.append(fileToDiary(QDir(QDir(username).filePath("diary")).filePath(line)));
+            }
+        }
+        starFile.close();
+    }
+    return starredFiles;
+}
+
 Diary FileOperation::recommend(){
     QString dir = QDir(username).filePath("diary");
     QDir parentDir(QDir(username).filePath("picture"));
