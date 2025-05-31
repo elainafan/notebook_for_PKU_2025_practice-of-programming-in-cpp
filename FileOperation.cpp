@@ -109,6 +109,14 @@ int FileOperation::signIn(QString user, QString password_){
                 qWarning() << "无法创建diary下的子目录";
                 return -1;
             }
+            // 创建picture下的子目录
+            QString picPath = userDir.filePath("picture");
+            QDir picDir(picPath);
+            if (!newFolder(DiaryList("日记","daily",1)) || !newFolder(DiaryList("周记","weekly",2)) ||
+                !newFolder(DiaryList("月记","monthly",3)) || !newFolder(DiaryList("年记","yearly",4))) {
+                qWarning() << "无法创建picture下的子目录";
+                return -1;
+            }
             qDebug() << "目录创建成功\n";
             password=password_;
             return 0;
@@ -336,9 +344,15 @@ QStringList FileOperation::findFileByTime(QDateTime start, QDateTime end, const 
 
 bool FileOperation::newFolder(const DiaryList& diaryType){
     QDir diaryDir = QDir(username).filePath("diary");
+    QDir picDir = QDir(username).filePath("picture");
     // 创建diary下的子目录
     if (!diaryDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
         qWarning() << "无法创建diary下的子目录";
+        return 0;
+    }
+    // 创建picture下的子目录
+    if (!picDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
+        qWarning() << "无法创建picture下的子目录";
         return 0;
     }
     QDir notebookDir = diaryDir.filePath(diaryType.getType()+"_"+diaryType.getName());
