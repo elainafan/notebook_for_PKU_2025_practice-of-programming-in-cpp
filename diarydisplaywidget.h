@@ -5,6 +5,7 @@
 #include "mywidget.h"
 #include"Headers.h"
 #include "diary.h"
+#include "FileOperation.h"
 
 #ifndef DIARY_HEI
 #define DIARY_HEI 900
@@ -15,6 +16,7 @@ class DiaryWidget: public QWidget
     Q_OBJECT
     Diary diary;
     QLabel *diaryBlock;
+    QPushButton *star;
     void paintEvent(QPaintEvent *)
     {
         QStyleOption opt;
@@ -35,7 +37,7 @@ signals:
     void leftClicked(DiaryWidget* widget);    // 左键点击信号
     void rightClicked(DiaryWidget* widget);   // 右键点击信号
     void diaryClicked(DiaryWidget* widget, Qt::MouseButton button); // 通用点击信号
-
+    void toggleStar(QString);
 protected:
     void mousePressEvent(QMouseEvent *event) override; // 重写鼠标点击事件
 };
@@ -46,8 +48,9 @@ class DiaryDisplayWidget : public MyWidget
     QVector<Diary> diaryVec;
     QVector< DiaryWidget* > diaWidgVec;
     QPushButton *newDiary;
+    FileOperation *fileOperator;
 public:
-    explicit DiaryDisplayWidget(QVector<Diary> dVec,QWidget *parent = nullptr);
+    explicit DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,QWidget *parent = nullptr);
     void setupUI();
     void setupStyle();
     void setupConnection();
