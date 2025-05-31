@@ -25,5 +25,6 @@
         <file>images/newDiary_hover.png</file>
         <file>images/newDiary_pressed.png</file>
         <file>images/newDiary.png</file>
+        <file>images/defaultImage.jpg</file>
     </qresource>
 </RCC>
