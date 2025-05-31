@@ -151,16 +151,20 @@ void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
     mainLayout->setContentsMargins(0,0,0,5);
     mainLayout->setAlignment(Qt::AlignCenter);
     mainLayout->setSpacing(10);
-    for(int i=0;i<dlEntry.size();i++)delete dlEntry[i];
-    dlEntry.clear();
+    for(int i=0;i<dlEntry.size();i++){
+        disconnect(dlEntry[i],nullptr,this,nullptr);
+        delete dlEntry[i];
+    }dlEntry.clear();
     for(int i=0;i<vec.size();i++){
         dlEntry.push_back( new DiaryListEntry(vec[i],this));
         mainLayout->addWidget(dlEntry[i]);
 
         connect(dlEntry[i],&DiaryListEntry::checkUpdated,this,[this,i](){
+            qDebug()<<i;
             updateBtnState(i);
             emit changeList(i);
         });
+
     }if(newEntry)delete newEntry;
     newEntry = new DiaryListEntry(DiaryList("添加新笔记本","weekly",0),this);
     mainLayout->addWidget(newEntry);

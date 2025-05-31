@@ -137,6 +137,15 @@ void AppWindow::setupConnection(){
     });
 
     connect(calendar,&Calendar::dateUpdated,this,&AppWindow::refresh);
+    connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
+        diaryListVec = fileOperator->allFolders();
+        curDiaryList = -1;
+    });
+    connect(diaryList,&DiaryListWidget::changeList,this,[this](const int &num){
+        curDiaryList=num;
+        refresh();
+    });
+
 
     /*
     connect(calendar, &Calendar::dateUpdated, this, [this](){
@@ -165,24 +174,23 @@ void AppWindow::setupUserInfo(){
 }
 
 void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记预览滚动框
-    if(diaryScroll)delete diaryScroll;
-    diaryScroll = new QScrollArea(rightColumn);
-    diaryScroll->move(5,0);
-    diaryScroll->setStyleSheet("border:none;");
-    diaryScroll->setFixedSize(rightColumn->size());
-    diaryDisplay = new DiaryDisplayWidget(diaryVec,rightColumn);
-
+    if(!diaryScroll){
+        diaryScroll = new QScrollArea(rightColumn);
+        diaryScroll->move(5,0);
+        diaryScroll->setStyleSheet("border:none;");
+        diaryScroll->setFixedSize(rightColumn->size());
+    }
+    //重新连接所有
+    if(diaryDisplay){
+        disconnect(diaryDisplay,nullptr,this,nullptr);
+        delete diaryDisplay;
+    }diaryDisplay = new DiaryDisplayWidget(diaryVec);
     connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
         if(mdEditor)delete mdEditor;
         mdEditor = new MarkdownEditorWidget(dia);
         mdEditor->show();
         //connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
     });
-    connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
-        diaryListVec = fileOperator->allFolders();
-        curDiaryList = -1;
-    });
-    connect(diaryList,&DiaryListWidget::changeList,this,&AppWindow::refresh);
 
     diaryScroll->setWidget(diaryDisplay);
     diaryScroll->show();
@@ -198,6 +206,7 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
 }
 
 void AppWindow::refresh(){
+    qDebug()<<"refresh "<<curDiaryList<<" "<<calendar->getCurDate();
     if(curDiaryList<0)return;
     buildDiaries(
         fileOperator->findFileByTime(

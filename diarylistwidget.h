@@ -28,16 +28,16 @@ signals:
 class DiaryListWidget : public QWidget
 {
     Q_OBJECT
-    NewDiaryList *newdl;
-    QScrollArea *scrArea;
+    NewDiaryList *newdl=nullptr;
+    QScrollArea *scrArea=nullptr;
     QVector<DiaryListEntry*> dlEntry;
-    DiaryListEntry *newEntry;
+    DiaryListEntry *newEntry=nullptr;
     const int wid=390;
     const int hei=40;
-    QTimer *scrollBarTimer;
+    QTimer *scrollBarTimer=nullptr;
     bool eventFilter(QObject *watched, QEvent *event) override;
-    FileOperation *fileOperator;
-    QVBoxLayout *mainLayout;
+    FileOperation *fileOperator=nullptr;
+    QVBoxLayout *mainLayout=nullptr;
 public:
     explicit DiaryListWidget(FileOperation *fileOpt, QWidget *parent = nullptr);
     void setupUI();

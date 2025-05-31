@@ -40,9 +40,9 @@ private:
     Calendar *calendar;
     ReminderWidget *reminder;
     UserInfoWidget *userInfo;
-    QScrollArea *diaryScroll;
-    DiaryDisplayWidget *diaryDisplay;
-    MarkdownEditorWidget *mdEditor;
+    QScrollArea *diaryScroll=nullptr;
+    DiaryDisplayWidget *diaryDisplay=nullptr;
+    MarkdownEditorWidget *mdEditor=nullptr;
 public:
     void setupUI();
     void setupStyle();
