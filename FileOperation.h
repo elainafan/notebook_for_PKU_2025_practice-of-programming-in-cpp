@@ -25,6 +25,7 @@ public:
 
     Diary recommend();
     void setStar(const QString& fileName);  //若未starred则转为starred，若已starred则取消starred
+    QVector<Diary> allStarred();
 
     QVector<Diary> findFile(QDateTime start, QDateTime end, const QString& diaryType);
     QVector<Diary> findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记
