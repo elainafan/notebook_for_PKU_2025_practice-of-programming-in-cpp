@@ -4,14 +4,14 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
-#include <QWebChannel>
+//#include <QWebChannel>
 #include <QSplitter>
 
 MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType())
 {
     editor = new QPlainTextEdit(this);
-    preview = new QWebEngineView(this);
+    //preview = new QWebEngineView(this);
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
@@ -21,7 +21,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     determineTargetDirectory();
 
     // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
-    preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+    //preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
 }
 
 void MarkdownEditorWidget::setupLayout()
@@ -29,7 +29,7 @@ void MarkdownEditorWidget::setupLayout()
     auto *layout = new QVBoxLayout(this);
     auto *split = new QSplitter(Qt::Horizontal, this);
     split->addWidget(editor);
-    split->addWidget(preview);
+    //split->addWidget(preview);
     split->setStretchFactor(0, 1);
     split->setStretchFactor(1, 1);
 
@@ -63,9 +63,9 @@ void MarkdownEditorWidget::determineTargetDirectory()
 void MarkdownEditorWidget::updatePreview()
 {
     QString markdown = editor->toPlainText();
-    QString js = QString("updateMarkdown(%1);")
-                     .arg(QJsonDocument::fromVariant(markdown).toJson(QJsonDocument::Compact));
-    preview->page()->runJavaScript(js);
+    //QString js = QString("updateMarkdown(%1);")
+    //                 .arg(QJsonDocument::fromVariant(markdown).toJson(QJsonDocument::Compact));
+    //preview->page()->runJavaScript(js);
 }
 
 void MarkdownEditorWidget::onInsertImageClicked()
@@ -98,7 +98,7 @@ void MarkdownEditorWidget::onExportPdfClicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "*.pdf");
     if (!filePath.isEmpty()) {
-        preview->page()->printToPdf(filePath);
+    //    preview->page()->printToPdf(filePath);
     }
 }
 

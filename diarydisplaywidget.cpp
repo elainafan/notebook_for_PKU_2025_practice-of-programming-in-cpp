@@ -83,11 +83,13 @@ void DiaryWidget::mousePressEvent(QMouseEvent *event)
     // 判断是哪个鼠标按键
     if (event->button() == Qt::LeftButton) {
         // 左键点击
+        qDebug()<<"clicked";
         emit leftClicked(this);
         emit diaryClicked(this, Qt::LeftButton);
     }
     else if (event->button() == Qt::RightButton) {
         // 右键点击
+        qDebug()<<"rightclicked";
         emit rightClicked(this);
         emit diaryClicked(this, Qt::RightButton);
     }
@@ -119,6 +121,7 @@ void DiaryDisplayWidget::setupUI(){
         //diaWidgVec[i]->setStyleSheet("background:#888888;");
         mainLayout->addWidget(diaWidgVec[i]);
         connect(diaWidgVec[i],&DiaryWidget::leftClicked,this,[this,i](){
+            qDebug()<<"openDiary";
             emit openDiary(diaryVec[i]);
         });
     }

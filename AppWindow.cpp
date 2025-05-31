@@ -135,16 +135,7 @@ void AppWindow::setupConnection(){
                   QVector<QPixmap>{QPixmap(":/images/testImage.png")})
         });
     });
-    connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
-        if(mdEditor)delete mdEditor;
-        mdEditor = new MarkdownEditorWidget(dia);
-    });
-    connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
-        diaryListVec = fileOperator->allFolders();
-        curDiaryList = -1;
-    });
-    connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
-    connect(diaryList,&DiaryListWidget::changeList,this,&AppWindow::refresh);
+
     connect(calendar,&Calendar::dateUpdated,this,&AppWindow::refresh);
 
     /*
@@ -180,6 +171,19 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
     diaryScroll->setStyleSheet("border:none;");
     diaryScroll->setFixedSize(rightColumn->size());
     diaryDisplay = new DiaryDisplayWidget(diaryVec,rightColumn);
+
+    connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
+        if(mdEditor)delete mdEditor;
+        mdEditor = new MarkdownEditorWidget(dia);
+        mdEditor->show();
+        //connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
+    });
+    connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
+        diaryListVec = fileOperator->allFolders();
+        curDiaryList = -1;
+    });
+    connect(diaryList,&DiaryListWidget::changeList,this,&AppWindow::refresh);
+
     diaryScroll->setWidget(diaryDisplay);
     diaryScroll->show();
     //diaryScroll->setStyleSheet("border:2px solid green;");
