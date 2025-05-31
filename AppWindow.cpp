@@ -128,7 +128,7 @@ void AppWindow::setupConnection(){
     });
     connect(this,&AppWindow::appeared, this, [this](){
         buildDiaries(QVector<Diary>{
-            Diary("test0",QDateTime(QDate::currentDate(),QTime()),"教程","## 请点击左侧任意一个笔记本，开始记录你的生活")
+            Diary("test0",QDateTime(QDate::currentDate(),QTime()),"教程","## 点击左侧任意一个笔记本，开始记录你的生活")
             /*,
             Diary("test",QDateTime(QDate::currentDate(),QTime()),"TEST","## This is a piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),

@@ -5,7 +5,7 @@ Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
 
     fileOperator= new FileOperation();
     loginWindow=new LoginWindow(fileOperator);
-    promptWindow=new DailyPromptWindow();
+    promptWindow=new DailyPromptWindow(fileOperator);
     appWindow=new AppWindow(fileOperator);
     newGuider=new Guider();
     setupConnection();

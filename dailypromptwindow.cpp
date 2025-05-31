@@ -1,17 +1,36 @@
 #include "dailypromptwindow.h"
 
-DailyPromptWindow::DailyPromptWindow(MyWidget *parent)
-    : MyWidget{parent}
+DailyPromptWindow::DailyPromptWindow(FileOperation *fileOpt,MyWidget *parent)
+    : MyWidget{parent},fileOperator(fileOpt)
 {
     setupUI();
     setupStyle();
     setupConnection();
     setupAnimation();
-    setContent("TEST",
-                       "This is the test text.\n"
-               "Test twice.\n"
-               "Test three times.\n"
-               ,QPixmap(":/images/testImage.png"));
+    Diary dia = fileOperator->recommend();
+    QPixmap img = dia.getImages().value(0,QPixmap(":/images/defaultImage.jpg"));
+    // 将img沿着中间切割成4:5
+    if (!img.isNull()) {
+        int w = img.width();
+        int h = img.height();
+        // 目标宽高比为4:5
+        double targetRatio = 4.0 / 5.0;
+        int cropW = w;
+        int cropH = h;
+        if (w / static_cast<double>(h) > targetRatio) {
+            // 图片太宽，裁剪宽度
+            cropW = static_cast<int>(h * targetRatio);
+            int x = (w - cropW) / 2;
+            img = img.copy(x, 0, cropW, h);
+        } else {
+            // 图片太高，裁剪高度
+            cropH = static_cast<int>(w / targetRatio);
+            int y = (h - cropH) / 2;
+            img = img.copy(0, y, w, cropH);
+        }
+    }
+    setContent("TEST", dia.getMarkdownHtmlPreview()
+               ,img);
 }
 
 
@@ -23,7 +42,7 @@ void DailyPromptWindow::setupUI(){
 
     // 图片标签
     imageLabel = new QLabel(this);
-    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setAlignment(Qt::AlignTop);
     //imageLabel->setStyleSheet("border-radius: 10px;");
     mainLayout->addWidget(imageLabel);
 
@@ -56,7 +75,7 @@ void DailyPromptWindow::setupUI(){
     container->setContentsMargins(10,10,10,10);
     container->addWidget(contentWidget);
 
-    mainLayout->addSpacing(-280);
+    mainLayout->addSpacing(-330);
     mainLayout->addLayout(container);
 
     // 进入按钮

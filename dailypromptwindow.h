@@ -5,6 +5,7 @@
 #include "Headers.h"
 #include "mywidget.h"
 #include"gradientoverlay.h"
+#include"FileOperation.h"
 class DailyPromptWindow : public MyWidget
 {
     Q_OBJECT
@@ -30,8 +31,9 @@ class DailyPromptWindow : public MyWidget
     QGraphicsOpacityEffect *contentOpacityEffect;
     QGraphicsOpacityEffect *buttonOpacityEffect;
     GradientOverlay *myGradient;
+    FileOperation *fileOperator;
 public:
-    explicit DailyPromptWindow(MyWidget *parent = nullptr);
+    explicit DailyPromptWindow(FileOperation *fileOpt,MyWidget *parent = nullptr);
     void setupUI();
     void setupStyle();
     void setupConnection();
