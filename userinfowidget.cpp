@@ -1,6 +1,6 @@
 #include "UserInfoWidget.h"
 
-UserInfoWidget::UserInfoWidget(QWidget *parent) : QWidget(parent)
+UserInfoWidget::UserInfoWidget(FileOperation *fileOpt,QWidget *parent) : QWidget(parent), fileOperator(fileOpt)
 {
     setFixedSize(MENU_WIDTH+10,AVATAR_SIZE+10);
     setupUI();
@@ -61,11 +61,13 @@ void UserInfoWidget::setupUI()
 
     QAction *changeNameAction = new QAction("修改用户名", this);
     QAction *changeAvatarAction = new QAction("修改头像", this);
+    QAction *changeKeyAction = new QAction("修改密码",this);
     QAction *logoutAction = new QAction("退出登录", this);
 
     // 添加操作到菜单
     dropdownMenu->addAction(changeNameAction);
     dropdownMenu->addAction(changeAvatarAction);
+    dropdownMenu->addAction(changeKeyAction);
     dropdownMenu->addSeparator();
     dropdownMenu->addAction(logoutAction);
 
@@ -134,7 +136,8 @@ void UserInfoWidget::setupConnections()
     // 连接菜单动作信号
     connect(dropdownMenu->actions().at(0), &QAction::triggered, this, &UserInfoWidget::changeUserName);
     connect(dropdownMenu->actions().at(1), &QAction::triggered, this, &UserInfoWidget::changeUserAvatar);
-    connect(dropdownMenu->actions().at(3), &QAction::triggered, this, &UserInfoWidget::logout);
+    connect(dropdownMenu->actions().at(2), &QAction::triggered,this, &UserInfoWidget::changeUserKey);
+    connect(dropdownMenu->actions().at(4), &QAction::triggered, this, &UserInfoWidget::logout);
 }
 
 void UserInfoWidget::setUserName(const QString &name)
@@ -194,6 +197,8 @@ void UserInfoWidget::changeUserName()
                                             currentUserName, &ok);
     if (ok && !newName.isEmpty()) {
         setUserName(newName);
+        fileOperator->changeUsername(newName);
+        move(1140-15*newName.length(),0);
         emit userNameChanged(newName);
     }
 }
@@ -207,8 +212,25 @@ void UserInfoWidget::changeUserAvatar()
         QPixmap newAvatar(fileName);
         if (!newAvatar.isNull()) {
             setUserAvatar(newAvatar);
+            fileOperator->setProfilePicture(newAvatar);
             emit userAvatarChanged(newAvatar);
         }
+    }
+}
+
+void UserInfoWidget::changeUserKey(){
+    bool ok;
+    while(1){
+        QString verify = QInputDialog::getText(this, "修改密码",
+                                            "请输入原密码:", QLineEdit::Normal,
+                                            "", &ok);
+        if(ok && verify == fileOperator->password)break;
+    }QString newPass = QInputDialog::getText(this,"修改密码",
+                                            "请输入新密码:", QLineEdit::Normal,
+                                            "", &ok);
+    if (ok && !newPass.isEmpty()) {
+        fileOperator->changePassword(newPass);
+        emit userPassChanged(newPass);
     }
 }
 

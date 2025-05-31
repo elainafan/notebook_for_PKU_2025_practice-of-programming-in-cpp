@@ -16,13 +16,18 @@ class DiaryListEntry: public QWidget{
 public:
     DiaryListEntry(const DiaryList &DL,QWidget *parent = nullptr);
     void setupStyle();
+    void setupConnection();
+    void setChecked(bool);
+signals:
+    void checkUpdated();
+    void beingPressed();
 };
 
 class DiaryListWidget : public QWidget
 {
     Q_OBJECT
     QScrollArea *scrArea;
-    DiaryListEntry *dlEntry[100];
+    QVector<DiaryListEntry*> dlEntry;
     DiaryListEntry *newEntry;
     const int wid=390;
     const int hei=40;
@@ -35,9 +40,10 @@ public:
     void setupConnection();
     void buildDiaryLists(const QVector<DiaryList> &vec);
 signals:
-
+    void changeList(const int &num);
 private slots:
     void hideScrollBar();
+    void updateBtnState(const int &num);
 };
 
 #endif // DIARYLISTWIDGET_H

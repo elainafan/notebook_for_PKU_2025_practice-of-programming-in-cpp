@@ -1,7 +1,7 @@
 #include "widget.h"
 
 #include <QTextEdit>
-#include <QWebEngineView>
+//#include <QWebEngineView>
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -15,7 +15,7 @@
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
-{
+{/*
     QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);  // 禁用 OpenGL，改为软件渲染
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu --disable-software-rasterizer --disable-gpu-compositing");
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -50,7 +50,7 @@ Widget::Widget(QWidget *parent)
     connect(imageButton, &QPushButton::clicked, this, &Widget::insertImage);
 
     updatePreview();
-
+*/
 }
 
 void Widget::saveToFile()
@@ -67,12 +67,12 @@ void Widget::saveToFile()
 }
 
 void Widget::exportToPdf()
-{
+{/*
     QString fileName = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "PDF 文件 (*.pdf)");
     if (!fileName.isEmpty()) {
         preview->page()->printToPdf(fileName);
     }
-}
+*/}
 
 void Widget::insertImage()
 {
@@ -124,7 +124,7 @@ void Widget::insertImage()
 
 
 void Widget::updatePreview()
-{
+{/*
     QString markdown = textEdit->toPlainText();
     QString escaped = markdown;
     escaped.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n");
@@ -140,7 +140,7 @@ void Widget::updatePreview()
     } else {
         preview->page()->runJavaScript(js);
     }
-}
+*/}
 
 void Widget::openMdFile()
 {

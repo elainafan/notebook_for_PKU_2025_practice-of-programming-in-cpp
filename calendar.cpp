@@ -144,11 +144,15 @@ void Calendar::setupConnection(){
 
     connect(calendarWidget, &QCalendarWidget::selectionChanged,
             this, &Calendar::updateWeekLine);
-
-
+    connect(calendarWidget, &QCalendarWidget::selectionChanged,
+            this, &Calendar::dateUpdated);
     connect(calendarWidget, &QCalendarWidget::currentPageChanged,
             this, &Calendar::closeWeekLine);
 
+}
+
+QDate Calendar::getCurDate(){
+    return calendarWidget->selectedDate();
 }
 
 void Calendar::closeWeekLine(){

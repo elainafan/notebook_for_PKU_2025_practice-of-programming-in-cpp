@@ -8,6 +8,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    diarydisplaywidget.cpp \
     reminderwidget.cpp\
     AppWindow.cpp \
     FileOperation.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
     widget.cpp\
 
 HEADERS += \
+    diarydisplaywidget.h \
     reminderwidget.h\
     AppWindow.h \
     FileOperation.h \

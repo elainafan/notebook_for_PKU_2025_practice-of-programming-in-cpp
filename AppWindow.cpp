@@ -64,17 +64,19 @@ void AppWindow::setupUI(){
     calendar = new Calendar("weekly",calendarWin);
     reminder = new ReminderWidget(reminderWin);
 
-    userInfo = new UserInfoWidget(this);
+    userInfo = new UserInfoWidget(fileOperator,this);
     userInfo->move(1050,0);
+
 }
 
 void AppWindow::setupStyle(){
-    setStyleSheet(R"(
+    /*setStyleSheet(R"(
             QWidget{
                 background-color: #FFFFFF;
                 font-family: "Yuanti SC",sans-serif;
             }
-        )");
+        )");*/
+
     leftColumn->setStyleSheet(R"(
             QWidget {
                 background-color: #F3F3F3;
@@ -105,11 +107,13 @@ void AppWindow::setupStyle(){
         )");
     rightColumn->setStyleSheet(R"(
             QWidget{
-                background-color: #FFFFFC;
+                background-color: #FFFFFA;
                 font-family: "Yuanti SC",sans-serif;
                 /*border: 2px solid #AAAAAA;*/
             }
         )");
+
+
 }
 
 void AppWindow::setupConnection(){
@@ -118,16 +122,54 @@ void AppWindow::setupConnection(){
         emit signOut(this);
         //qDebug()<<"lambda...";
     });
+    connect(this,&AppWindow::appeared, this, [this](){
+        showDiaries(QVector<Diary>{
+            Diary("test0",QDateTime(),"TEST","## TEST"),
+            Diary("test",QDateTime(),"TEST","## This is a piece of test text.",
+                  QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),
+            Diary("test2",QDateTime(),"TEST2","## This is another piece of test text.",
+                  QVector<QPixmap>{QPixmap(":/images/testImage.png")})
+        });
+    });
+    /*
+    connect(calendar, &Calendar::dateUpdated, this, [this](){
+        showDiaries(QVector<Diary>{
+            Diary("test",QDateTime(calendar->getCurDate(),QTime(0)),"TEST","## This is a piece of test text.",
+                  QVector<QPixmap>{QPixmap(":/images/logo.png"),QPixmap(":/images/diaryListIcon.png")}),
+            Diary("test2",QDateTime(calendar->getCurDate(),QTime(0)),"TEST2","## This is another piece of test text.",
+                  QVector<QPixmap>{QPixmap(":/images/logo.png")})
+        });
+    });
+    */
 }
 
 void AppWindow::setupUserInfo(){
-    diaryList->buildDiaryLists(fileOperator->allFolders());
+    diaryListVec=fileOperator->allFolders(); //导入所有日记本
+    diaryList->buildDiaryLists(diaryListVec);
+    curDiaryList = 0; //未选中日记本
     QString userName = fileOperator->username;
-    QPixmap avatar;
+    QPixmap avatar = fileOperator->getProfilePicture();
 
     userInfo->setUserName(userName);
     if (!avatar.isNull()) {
         userInfo->setUserAvatar(avatar);
     }
     userInfo->move(1140-15*userName.length(),0);
+}
+
+void AppWindow::showDiaries(QVector<Diary> diaryVec){
+    if(diaryDisplay)delete diaryDisplay;
+    diaryDisplay = new QScrollArea(rightColumn);
+    diaryDisplay->setFixedSize(rightColumn->size());
+    diaryDisplay->setWidget(new DiaryDisplayWidget(diaryVec,rightColumn));
+    diaryDisplay->show();
+    //diaryDisplay->setStyleSheet("border:2px solid green;");
+    /*
+    QVBoxLayout *rightLayer = new QVBoxLayout(rightColumn);
+    rightLayer->setContentsMargins(0,0,0,0);
+    rightLayer->setAlignment(Qt::AlignCenter);
+    rightLayer->addWidget(diaryDisplay->scrArea);
+    */
+    //diaryDisplay->appear();
+
 }

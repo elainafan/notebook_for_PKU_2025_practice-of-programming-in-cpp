@@ -12,8 +12,8 @@ DiaryListEntry::DiaryListEntry(const DiaryList &DL,QWidget *parent)
     bcgrdBtn = new QPushButton(this);
     bcgrdBtn->move(hei+10,3);
     bcgrdBtn->setFixedSize(wid-hei+30,hei-3);
-    //bcgrdBtn->setCheckable(true);
-    //bcgrdBtn->setDown(true);
+    if(DL.getColourType())bcgrdBtn->setCheckable(true);
+    //bcgrdBtn->setChecked(true);
 
     diaryListIcon = new QLabel(this);
     QString filePath = QString(":/images/diaryListIcon%1.png").arg(DL.getColourType());
@@ -27,14 +27,29 @@ DiaryListEntry::DiaryListEntry(const DiaryList &DL,QWidget *parent)
     underLine->setFixedSize(wid-hei-10,2);
     underLine->move(hei+10,hei-2);
 
+    bcgrdBtn->raise();
     setupStyle();
-
+    setupConnection();
 }
 
 void DiaryListEntry::setupStyle(){
     underLine->setStyleSheet("QFrame { background-color: rgba(120,120,120,40); border-radius:1px; margin: 7;}");
     diaryName->setStyleSheet("QLabel{font-size: 25px;}");
 }
+
+void DiaryListEntry::setupConnection(){
+    connect(bcgrdBtn,&QPushButton::toggled,this,[this](bool checked){
+        if(checked) emit checkUpdated();
+    });
+    connect(bcgrdBtn,&QPushButton::pressed,this,&DiaryListEntry::beingPressed);
+}
+
+void DiaryListEntry::setChecked(bool bl){
+    bcgrdBtn->setChecked(bl);
+}
+
+
+/*--------------------------------------------------------------------------*/
 
 DiaryListWidget::DiaryListWidget(QWidget *parent)
     : QWidget{parent}
@@ -111,12 +126,16 @@ QScrollBar:vertical {
         background: rgba(120,120,120,0);
         border:none;
         border-radius:0px;
-    }QPushButton:Pressed{
+    }QPushButton:checked{
+        background: rgba(120,120,120,40);
+    }QPushButton:pressed{
         background: rgba(120,120,120,40);
     }
     )");
     scrArea->verticalScrollBar()->setProperty("visible", false);
 }
+
+
 
 void DiaryListWidget::setupConnection(){
 
@@ -128,11 +147,18 @@ void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
     mainLayout->setContentsMargins(0,0,0,5);
     mainLayout->setAlignment(Qt::AlignCenter);
     mainLayout->setSpacing(10);
+    dlEntry.clear();
     for(int i=0;i<vec.size();i++){
-        dlEntry[i]= new DiaryListEntry(vec[i],this);
+        dlEntry.push_back( new DiaryListEntry(vec[i],this));
         mainLayout->addWidget(dlEntry[i]);
+
+        connect(dlEntry[i],&DiaryListEntry::checkUpdated,this,[this,i](){
+            updateBtnState(i);
+            emit changeList(i);
+        });
     }newEntry = new DiaryListEntry(DiaryList("添加新笔记本","weekly",0),this);
     mainLayout->addWidget(newEntry);
+    //connect(newEntry);
     return;
 }
 
@@ -160,4 +186,10 @@ bool DiaryListWidget::eventFilter(QObject *watched, QEvent *event)
 void DiaryListWidget::hideScrollBar()
 {
     scrArea->verticalScrollBar()->setVisible(false);
+}
+
+void DiaryListWidget::updateBtnState(const int &num){
+    for(int i=0;i<dlEntry.size();i++){
+        if(i!=num)dlEntry[i]->setChecked(false);
+    }
 }
