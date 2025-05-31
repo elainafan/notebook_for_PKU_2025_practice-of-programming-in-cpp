@@ -3,7 +3,8 @@
 
 Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
 
-
+    NewDiaryList *newd = new NewDiaryList();
+    newd->show();
     fileOperator= new FileOperation();
     loginWindow=new LoginWindow(fileOperator);
     promptWindow=new DailyPromptWindow();

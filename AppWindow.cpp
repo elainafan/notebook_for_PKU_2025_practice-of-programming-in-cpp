@@ -23,6 +23,9 @@ void AppWindow::setupUI(){
     diaryListWin = new QWidget(leftColumn);
     calendarWin = new QWidget(leftColumn);
     reminderWin = new QWidget(leftColumn);
+
+
+
     leftColumn->setGeometry(0,0,400,900);
     rightColumn = new QWidget(this);
     rightColumn->setGeometry(400,-2,1202,902);
@@ -60,9 +63,10 @@ void AppWindow::setupUI(){
     reminder->show();
     */
     searchWidget= new SearchWidget(searchWidgetWin);
-    diaryList = new DiaryListWidget(diaryListWin);
+    diaryList = new DiaryListWidget(fileOperator,diaryListWin);
     calendar = new Calendar("weekly",calendarWin);
     reminder = new ReminderWidget(reminderWin);
+
 
     userInfo = new UserInfoWidget(fileOperator,this);
     userInfo->move(1050,0);
@@ -160,6 +164,8 @@ void AppWindow::setupUserInfo(){
 void AppWindow::showDiaries(QVector<Diary> diaryVec){
     if(diaryDisplay)delete diaryDisplay;
     diaryDisplay = new QScrollArea(rightColumn);
+    diaryDisplay->move(5,0);
+    diaryDisplay->setStyleSheet("border:none;");
     diaryDisplay->setFixedSize(rightColumn->size());
     diaryDisplay->setWidget(new DiaryDisplayWidget(diaryVec,rightColumn));
     diaryDisplay->show();

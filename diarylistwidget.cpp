@@ -51,9 +51,10 @@ void DiaryListEntry::setChecked(bool bl){
 
 /*--------------------------------------------------------------------------*/
 
-DiaryListWidget::DiaryListWidget(QWidget *parent)
-    : QWidget{parent}
+DiaryListWidget::DiaryListWidget(FileOperation *fileOpt,QWidget *parent)
+    : QWidget{parent},fileOperator(fileOpt)
 {
+    newdl = new NewDiaryList();
     setFixedSize(400,281);
     scrArea = new QScrollArea(parent);
     scrArea->setWidget(this);
@@ -143,10 +144,12 @@ void DiaryListWidget::setupConnection(){
 
 void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
     setFixedSize(wid,(hei+11)*vec.size());
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    if(mainLayout)delete mainLayout;
+    mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0,0,0,5);
     mainLayout->setAlignment(Qt::AlignCenter);
     mainLayout->setSpacing(10);
+    for(int i=0;i<dlEntry.size();i++)delete dlEntry[i];
     dlEntry.clear();
     for(int i=0;i<vec.size();i++){
         dlEntry.push_back( new DiaryListEntry(vec[i],this));
@@ -156,9 +159,11 @@ void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
             updateBtnState(i);
             emit changeList(i);
         });
-    }newEntry = new DiaryListEntry(DiaryList("添加新笔记本","weekly",0),this);
+    }if(newEntry)delete newEntry;
+    newEntry = new DiaryListEntry(DiaryList("添加新笔记本","weekly",0),this);
     mainLayout->addWidget(newEntry);
-    //connect(newEntry);
+    connect(newEntry,&DiaryListEntry::beingPressed,newdl,&NewDiaryList::show);
+    connect(newdl,&NewDiaryList::diaryListCreated,this,&DiaryListWidget::addNewList);
     return;
 }
 
@@ -192,4 +197,9 @@ void DiaryListWidget::updateBtnState(const int &num){
     for(int i=0;i<dlEntry.size();i++){
         if(i!=num)dlEntry[i]->setChecked(false);
     }
+}
+
+void DiaryListWidget::addNewList(const DiaryList &dl){
+    fileOperator->newFolder(dl);
+    buildDiaryLists(fileOperator->allFolders());
 }

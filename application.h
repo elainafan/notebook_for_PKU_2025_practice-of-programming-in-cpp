@@ -9,6 +9,7 @@
 #include"guiderwindow.h"
 #include"FileOperation.h"
 #include"Headers.h"
+#include"newdiarylist.h"
 
 class Application: public QApplication
 {

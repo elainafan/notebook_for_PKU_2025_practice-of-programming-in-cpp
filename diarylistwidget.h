@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "Headers.h"
 #include"diarylist.h"
+#include"FileOperation.h"
+#include"newdiarylist.h"
 
 class DiaryListEntry: public QWidget{
     Q_OBJECT
@@ -26,6 +28,7 @@ signals:
 class DiaryListWidget : public QWidget
 {
     Q_OBJECT
+    NewDiaryList *newdl;
     QScrollArea *scrArea;
     QVector<DiaryListEntry*> dlEntry;
     DiaryListEntry *newEntry;
@@ -33,8 +36,10 @@ class DiaryListWidget : public QWidget
     const int hei=40;
     QTimer *scrollBarTimer;
     bool eventFilter(QObject *watched, QEvent *event) override;
+    FileOperation *fileOperator;
+    QVBoxLayout *mainLayout;
 public:
-    explicit DiaryListWidget(QWidget *parent = nullptr);
+    explicit DiaryListWidget(FileOperation *fileOpt, QWidget *parent = nullptr);
     void setupUI();
     void setupStyle();
     void setupConnection();
@@ -44,6 +49,7 @@ signals:
 private slots:
     void hideScrollBar();
     void updateBtnState(const int &num);
+    void addNewList(const DiaryList &);
 };
 
 #endif // DIARYLISTWIDGET_H

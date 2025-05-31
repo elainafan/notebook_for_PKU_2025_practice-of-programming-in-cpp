@@ -12,6 +12,7 @@
 #include"userinfowidget.h"
 #include"reminderwidget.h"
 #include"diarydisplaywidget.h"
+#include"newdiarylist.h"
 
 class AppWindow : public MyWidget
 {
