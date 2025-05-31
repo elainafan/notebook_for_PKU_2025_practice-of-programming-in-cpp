@@ -26,5 +26,7 @@
         <file>images/newDiary_pressed.png</file>
         <file>images/newDiary.png</file>
         <file>images/defaultImage.jpg</file>
+        <file>images/starred.png</file>
+        <file>images/unstar.png</file>
     </qresource>
 </RCC>
