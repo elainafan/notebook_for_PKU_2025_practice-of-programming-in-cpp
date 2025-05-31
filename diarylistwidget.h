@@ -46,6 +46,7 @@ public:
     void buildDiaryLists(const QVector<DiaryList> &vec);
 signals:
     void changeList(const int &num);
+    void newListAdded();
 private slots:
     void hideScrollBar();
     void updateBtnState(const int &num);

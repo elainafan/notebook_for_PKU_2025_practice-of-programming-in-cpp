@@ -127,7 +127,7 @@ void AppWindow::setupConnection(){
         //qDebug()<<"lambda...";
     });
     connect(this,&AppWindow::appeared, this, [this](){
-        showDiaries(QVector<Diary>{
+        buildDiaries(QVector<Diary>{
             Diary("test0",QDateTime(QDate::currentDate(),QTime()),"TEST","## TEST"),
             Diary("test",QDateTime(QDate::currentDate(),QTime()),"TEST","## This is a piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),
@@ -135,21 +135,18 @@ void AppWindow::setupConnection(){
                   QVector<QPixmap>{QPixmap(":/images/testImage.png")})
         });
     });
-    /*
-    connect(diaryList,&DiaryListWidget::changeList,this,[this](const int &num){
-        curDiaryList=num;
-        showDiaries(fileOperator->findFileByTime(
-            QDateTime(calendar->getCurDate(),QTime()),
-            QDateTime(calendar->getCurDate().addDays(1),QTime()),
-            diaryListVec[num]));
+    connect(diaryDisplay,&DiaryDisplayWidget::openDiary,this,[this](Diary dia){
+        if(mdEditor)delete mdEditor;
+        mdEditor = new MarkdownEditorWidget(dia);
     });
-    connect(calendar,&Calendar::dateUpdated,this,[this](){
-        showDiaries(fileOperator->findFileByTime(
-            QDateTime(calendar->getCurDate(),QTime()),
-            QDateTime(calendar->getCurDate().addDays(1),QTime()),
-            diaryListVec[num]));
+    connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
+        diaryListVec = fileOperator->allFolders();
+        curDiaryList = -1;
     });
-    */
+    connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
+    connect(diaryList,&DiaryListWidget::changeList,this,&AppWindow::refresh);
+    connect(calendar,&Calendar::dateUpdated,this,&AppWindow::refresh);
+
     /*
     connect(calendar, &Calendar::dateUpdated, this, [this](){
         showDiaries(QVector<Diary>{
@@ -165,7 +162,7 @@ void AppWindow::setupConnection(){
 void AppWindow::setupUserInfo(){
     diaryListVec=fileOperator->allFolders(); //导入所有日记本
     diaryList->buildDiaryLists(diaryListVec);
-    curDiaryList = 0; //未选中日记本
+    curDiaryList = -1; //未选中日记本
     QString userName = fileOperator->username;
     QPixmap avatar = fileOperator->getProfilePicture();
 
@@ -176,21 +173,33 @@ void AppWindow::setupUserInfo(){
     userInfo->move(1140-15*userName.length(),0);
 }
 
-void AppWindow::showDiaries(QVector<Diary> diaryVec){
-    if(diaryDisplay)delete diaryDisplay;
-    diaryDisplay = new QScrollArea(rightColumn);
-    diaryDisplay->move(5,0);
-    diaryDisplay->setStyleSheet("border:none;");
-    diaryDisplay->setFixedSize(rightColumn->size());
-    diaryDisplay->setWidget(new DiaryDisplayWidget(diaryVec,rightColumn));
-    diaryDisplay->show();
-    //diaryDisplay->setStyleSheet("border:2px solid green;");
+void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记预览滚动框
+    if(diaryScroll)delete diaryScroll;
+    diaryScroll = new QScrollArea(rightColumn);
+    diaryScroll->move(5,0);
+    diaryScroll->setStyleSheet("border:none;");
+    diaryScroll->setFixedSize(rightColumn->size());
+    diaryDisplay = new DiaryDisplayWidget(diaryVec,rightColumn);
+    diaryScroll->setWidget(diaryDisplay);
+    diaryScroll->show();
+    //diaryScroll->setStyleSheet("border:2px solid green;");
     /*
     QVBoxLayout *rightLayer = new QVBoxLayout(rightColumn);
     rightLayer->setContentsMargins(0,0,0,0);
     rightLayer->setAlignment(Qt::AlignCenter);
-    rightLayer->addWidget(diaryDisplay->scrArea);
+    rightLayer->addWidget(diaryScroll->scrArea);
     */
-    //diaryDisplay->appear();
+    //diaryScroll->appear();
 
+}
+
+void AppWindow::refresh(){
+    if(curDiaryList<0)return;
+    buildDiaries(
+        fileOperator->findFileByTime(
+            QDateTime(calendar->getCurDate(),QTime()),
+            QDateTime(calendar->getCurDate().addDays(1),QTime()),
+            diaryListVec[curDiaryList]
+        )
+    );
 }

@@ -13,6 +13,7 @@
 #include"reminderwidget.h"
 #include"diarydisplaywidget.h"
 #include"newdiarylist.h"
+#include"markdowneditorwidget.h"
 
 class AppWindow : public MyWidget
 {
@@ -39,7 +40,9 @@ private:
     Calendar *calendar;
     ReminderWidget *reminder;
     UserInfoWidget *userInfo;
-    QScrollArea *diaryDisplay;
+    QScrollArea *diaryScroll;
+    DiaryDisplayWidget *diaryDisplay;
+    MarkdownEditorWidget *mdEditor;
 public:
     void setupUI();
     void setupStyle();
@@ -51,7 +54,8 @@ signals:
 
 public slots:
     void setupUserInfo();
-    void showDiaries(QVector<Diary> diaryVec);
+    void buildDiaries(QVector<Diary> diaryVec);
+    void refresh();
 };
 
 

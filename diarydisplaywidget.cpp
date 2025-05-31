@@ -118,6 +118,9 @@ void DiaryDisplayWidget::setupUI(){
         diaWidgVec.push_back(new DiaryWidget(diaryVec[i],this));
         //diaWidgVec[i]->setStyleSheet("background:#888888;");
         mainLayout->addWidget(diaWidgVec[i]);
+        connect(diaWidgVec[i],&DiaryWidget::leftClicked,this,[this,i](){
+            emit openDiary(diaryVec[i]);
+        });
     }
     newDiary = new QPushButton(this);
     newDiary->setFixedSize(100,100);

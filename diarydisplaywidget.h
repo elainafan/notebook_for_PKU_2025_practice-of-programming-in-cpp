@@ -52,6 +52,7 @@ public:
     void setupStyle();
     void setupConnection();
 signals:
+    void openDiary(Diary);
 };
 
 #endif // DIARYDISPLAYWIDGET_H

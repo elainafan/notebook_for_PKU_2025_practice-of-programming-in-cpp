@@ -204,4 +204,5 @@ void DiaryListWidget::updateBtnState(const int &num){
 void DiaryListWidget::addNewList(const DiaryList &dl){
     fileOperator->newFolder(dl);
     buildDiaryLists(fileOperator->allFolders());
+    emit newListAdded();
 }
