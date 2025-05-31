@@ -34,6 +34,7 @@ void Application::navigateToLogin(MyWidget *fromWhere){
 
 void Application::navigateToDailyPrompt(MyWidget *fromWhere){
     connect(fromWhere,&MyWidget::fadeAway,promptWindow,&DailyPromptWindow::appear,Qt::SingleShotConnection);
+    connect(fromWhere,&MyWidget::fadeAway,promptWindow,&DailyPromptWindow::setUser,Qt::SingleShotConnection);
     fromWhere->fade();
 }
 
