@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QPlainTextEdit>
-//#include <QWebEngineView>
+#include <QWebEngineView>
 #include <QPushButton>
 #include "diary.h"
 
@@ -17,6 +17,9 @@ public:
     void saveToMarkdown(const QString &filePath);
     void exportToPdf(const QString &pdfPath);
 
+signals:
+    void saved();
+
 private slots:
     void updatePreview();
     void onSaveClicked();
@@ -25,7 +28,7 @@ private slots:
 
 private:
     QPlainTextEdit *editor;
-    //QWebEngineView *preview;
+    QWebEngineView *preview;
     QPushButton *saveButton;
     QPushButton *exportButton;
     QPushButton *insertImageButton;

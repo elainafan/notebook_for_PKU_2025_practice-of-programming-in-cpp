@@ -1,4 +1,7 @@
 QT += core gui widgets
+QT += widgets webenginewidgets
+QT += webenginewidgets webchannel
+QT += widgets webenginewidgets webchannel
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
