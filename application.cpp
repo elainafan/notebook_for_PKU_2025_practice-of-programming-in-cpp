@@ -3,7 +3,6 @@
 
 Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
 
-
     fileOperator= new FileOperation();
     loginWindow=new LoginWindow(fileOperator);
     promptWindow=new DailyPromptWindow();

@@ -8,6 +8,8 @@ TEMPLATE = app
 
 
 SOURCES += \
+    diarydisplaywidget.cpp \
+    newdiarylist.cpp \
     reminderwidget.cpp\
     AppWindow.cpp \
     FileOperation.cpp \
@@ -30,6 +32,8 @@ SOURCES += \
     markdowneditorwidget.cpp\
 
 HEADERS += \
+    diarydisplaywidget.h \
+    newdiarylist.h \
     reminderwidget.h\
     AppWindow.h \
     FileOperation.h \

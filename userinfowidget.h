@@ -13,12 +13,14 @@
 #include <QInputDialog>
 #include "Headers.h"
 #include"mywidget.h"
+#include"FileOperation.h"
 
 class UserInfoWidget : public QWidget
 {
     Q_OBJECT
+    FileOperation *fileOperator;
 public:
-    explicit UserInfoWidget(QWidget *parent = nullptr);
+    explicit UserInfoWidget(FileOperation *fileOpt,QWidget *parent = nullptr);
     ~UserInfoWidget();
 
     // 设置用户信息
@@ -31,11 +33,13 @@ signals:
     void logoutRequested();  // 退出登录信号
     void userNameChanged(const QString &newName);  // 用户名修改信号
     void userAvatarChanged(const QPixmap &newAvatar);  // 头像修改信号
+    void userPassChanged(const QString &newPass);
 
 private slots:
     void showMenu();  // 显示下拉菜单
     void changeUserName();  // 修改用户名
     void changeUserAvatar();  // 修改头像
+    void changeUserKey();
     void logout();  // 退出登录
 
 private:

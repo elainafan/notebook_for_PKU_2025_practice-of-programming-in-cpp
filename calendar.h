@@ -19,9 +19,9 @@ public:
     void setupUI();
     void setupStyle();
     void setupConnection();
-
+    QDate getCurDate();
 signals:
-
+    void dateUpdated();
 public slots:
     void closeWeekLine();
     void updateWeekLine();
