@@ -16,6 +16,7 @@ public:
     void setupStyle();
     void setupConnection();
 signals:
+    void searchText(QString txt);
 };
 
 #endif // SEARCHWIDGET_H

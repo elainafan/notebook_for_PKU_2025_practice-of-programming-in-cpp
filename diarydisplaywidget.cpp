@@ -10,8 +10,18 @@ void DiaryWidget::setupUI(){
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(35,35,35,35);
     mainLayout->setSpacing(0);
-    QHBoxLayout *dateTime = new QHBoxLayout(this);
-    QLabel *dateTitle = new QLabel(diary.getDate().toString("yyyy.MM.dd"),this);
+    QHBoxLayout *dateTime = new QHBoxLayout();
+    QString daystr;
+
+    if(diary.getDiaryType()=="weekly")daystr =
+            (diary.getDate().addDays(1-diary.getDate().dayOfWeek())).toString("yyyy.MM.dd") +
+            " — " +
+            (diary.getDate().addDays(7-diary.getDate().dayOfWeek())).toString("yyyy.MM.dd");
+    else if(diary.getDiaryType()=="monthly")daystr = diary.getDate().toString("yyyy.MM");
+    else if(diary.getDiaryType()=="yearly")daystr = diary.getDate().toString("yyyy");
+    else daystr= diary.getDate().toString("yyyy.MM.dd");
+
+    QLabel *dateTitle = new QLabel(daystr,this);
     dateTitle->setStyleSheet(R"(
         QLabel{
             font-family: "Yuanti SC",sans-serif;
@@ -36,7 +46,7 @@ void DiaryWidget::setupUI(){
     dateTime->setAlignment(Qt::AlignBottom);
     mainLayout->addLayout(dateTime);
     QVector<QPixmap> imgVec = diary.getImages();
-    QHBoxLayout *imgLayout = new QHBoxLayout(this);
+    QHBoxLayout *imgLayout = new QHBoxLayout();
     imgLayout->setContentsMargins(10,10,10,10);
     imgLayout->setSpacing(10);
     imgLayout->setAlignment(Qt::AlignTop);
@@ -129,7 +139,7 @@ void DiaryDisplayWidget::setupUI(){
     newDiary->setFixedSize(100,100);
     connect(newDiary,&QPushButton::released,this,&DiaryDisplayWidget::newingDiary);
 
-    QHBoxLayout *btnLayout = new QHBoxLayout(this);
+    QHBoxLayout *btnLayout = new QHBoxLayout();
     btnLayout->setAlignment(Qt::AlignCenter);
     btnLayout->addWidget(newDiary);
     btnLayout->addSpacing(170);

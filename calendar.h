@@ -20,6 +20,9 @@ public:
     void setupStyle();
     void setupConnection();
     QDate getCurDate();
+    QDate getCurWeek();
+    QDate getCurMonth();
+    QDate getCurYear();
 signals:
     void dateUpdated();
 public slots:

@@ -39,5 +39,7 @@ void SearchWidget::setupStyle(){
 }
 
 void SearchWidget::setupConnection(){
-
+    connect(searchEdit,&QLineEdit::editingFinished,this,[this](){
+        emit searchText(searchEdit->text());
+    });
 }

@@ -137,6 +137,8 @@ void AppWindow::setupConnection(){
         });
     });
 
+    connect(searchWidget,&SearchWidget::searchText,this,&AppWindow::search_refresh);
+
     connect(calendar,&Calendar::dateUpdated,this,&AppWindow::refresh);
     connect(diaryList,&DiaryListWidget::newListAdded,this,[this](){
         diaryListVec = fileOperator->allFolders();
@@ -203,6 +205,7 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
         mdEditor->show();
         //connect(mdEditor,&MarkdownEditorWidget::saved,this,&AppWindow::refresh);
     });
+
     diaryScroll->setWidget(diaryDisplay);
     diaryScroll->show();
     //diaryScroll->setStyleSheet("border:2px solid green;");
@@ -219,11 +222,45 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
 void AppWindow::refresh(){
     qDebug()<<"refresh "<<curDiaryList<<" "<<calendar->getCurDate();
     if(curDiaryList<0)return;
-    buildDiaries(
+    QString type = diaryListVec[curDiaryList].getType();
+    if(type=="daily")buildDiaries(
         fileOperator->findFileByTime(
             QDateTime(calendar->getCurDate(),QTime()),
             QDateTime(calendar->getCurDate().addDays(1),QTime()),
             diaryListVec[curDiaryList]
         )
     );
+    if(type=="weekly")buildDiaries(
+            fileOperator->findFileByTime(
+                QDateTime(calendar->getCurWeek(),QTime()),
+                QDateTime(calendar->getCurWeek().addDays(7),QTime()),
+                diaryListVec[curDiaryList]
+                )
+            );
+    if(type=="monthly")buildDiaries(
+            fileOperator->findFileByTime(
+                QDateTime(calendar->getCurMonth(),QTime()),
+                QDateTime(calendar->getCurMonth().addMonths(1),QTime()),
+                diaryListVec[curDiaryList]
+                )
+            );
+    if(type=="yearly")buildDiaries(
+            fileOperator->findFileByTime(
+                QDateTime(calendar->getCurYear(),QTime()),
+                QDateTime(calendar->getCurYear().addYears(1),QTime()),
+                diaryListVec[curDiaryList]
+                )
+            );
+}
+
+void AppWindow::search_refresh(QString txt){
+    qDebug()<<"search_refresh: "<<txt;
+    if(curDiaryList<0)return;
+    QVector<Diary> diaVec;
+    while(1){
+        Diary dia = fileOperator->findFileByContent(txt,false,diaryListVec[curDiaryList]).first;
+        if(dia.getUsername()=="")break;
+        diaVec.push_back(dia);
+    }
+    buildDiaries(diaVec);
 }

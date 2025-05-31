@@ -155,6 +155,21 @@ QDate Calendar::getCurDate(){
     return calendarWidget->selectedDate();
 }
 
+QDate Calendar::getCurWeek(){
+    QDate day=calendarWidget->selectedDate();
+    return day.addDays(1-day.dayOfWeek());
+}
+
+QDate Calendar::getCurMonth(){
+    QDate day = calendarWidget->selectedDate();
+    return QDate(day.year(),day.month(),1);
+}
+
+QDate Calendar::getCurYear(){
+    QDate day = calendarWidget->selectedDate();
+    return QDate(day.year(),1,1);
+}
+
 void Calendar::closeWeekLine(){
     for(int i = 0; i < 6; i++) {
         weekLine[i]->setStyleSheet("border-radius:12px; background-color:transparent;");
