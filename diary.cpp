@@ -45,6 +45,10 @@ QString Diary::getDiaryType() const {
     return m_diaryType;
 }
 
+QString Diary::getDateTime() const {
+    return m_dateTime.toString("yyyy_MM_dd_HH_mm_ss");
+}
+
 QString Diary::getMarkdownHtmlPreview(int lineCount) const {
     QStringList lines = m_markdownContent.split('\n');
     if (lineCount > 0 && lineCount < lines.size()) {

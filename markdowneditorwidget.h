@@ -43,6 +43,7 @@ private:
     void setupLayout();
     void setupConnections();
     void determineTargetDirectory();
+    void openMarkdownFile();
 };
 
 #endif // MARKDOWNEDITORWIDGET_H

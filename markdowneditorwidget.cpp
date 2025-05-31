@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QWebChannel>
 #include <QSplitter>
+#include <QMessageBox>
 
 MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType())
@@ -16,12 +17,13 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
-    QString timestamp = QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss");
+    QString timestamp = diary.getDateTime();
     currentMarkdownName = timestamp;
 
     setupLayout();
     setupConnections();
     determineTargetDirectory();
+    openMarkdownFile();
 
     // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
     preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
@@ -64,11 +66,51 @@ void MarkdownEditorWidget::determineTargetDirectory()
     imageDirBase = basePath + "/" + username + "/picture/" + subFolder;
 }
 
+void MarkdownEditorWidget::openMarkdownFile()
+{
+    // 构造文件路径
+    QString basePath = QCoreApplication::applicationDirPath();
+    QDir baseDir(basePath);
+    baseDir.cdUp(); // 从 debug 回到上一级（Desktop_Qt_6_9_0_MSVC2022_64bit-Debug）
+    QString subFolder;
+    if (diaryType == "daily") subFolder = "daily_日记";
+    else if (diaryType == "weekly") subFolder = "weekly_周记";
+    else if (diaryType == "monthly") subFolder = "monthly_月记";
+    else if (diaryType == "yearly") subFolder = "yearly_年记";
+    QString filePath = baseDir.absoluteFilePath(username + "/diary/" + subFolder + "/"  + currentMarkdownName + ".md");
+    qDebug() << "打开路径: " << filePath;
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "错误", "无法打开文件: " + filePath);
+        return;
+    }
+
+    QTextStream in(&file);
+    QString content = in.readAll();
+    editor->setPlainText(content);
+
+    file.close();
+
+    updatePreview();
+}
+
+
 void MarkdownEditorWidget::updatePreview()
 {
+    // 第一步：设置图片 baseHref
+
+    QString baseHref = QUrl::fromLocalFile(imageDirBase + "/" + currentMarkdownName + "/").toString();
+    QString setBaseJs = QString("setBaseHrefFromQt(\"%1\");").arg(baseHref);
+    preview->page()->runJavaScript(setBaseJs);
+
+    // 第二步：使用你原有方式转义并调用 updateMarkdown
     QString markdown = editor->toPlainText();
     QString escaped = markdown;
-    escaped.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
+    escaped.replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\n", "\\n")
+        .replace("\r", "");
     QString js = QString("updateMarkdown(\"%1\");").arg(escaped);
     preview->page()->runJavaScript(js);
 }
@@ -84,8 +126,9 @@ void MarkdownEditorWidget::onInsertImageClicked()
     QString destPath = imageSubDir + "/" + fileInfo.fileName();
 
     if (QFile::copy(filePath, destPath)) {
-        QString relativePath = QDir(targetDir).relativeFilePath(destPath);
-        QString markdownImage = QString("![%1](%2)").arg(fileInfo.fileName(), relativePath.replace("\\", "/"));
+        // 插入图片的绝对 file:// 路径
+        QString absPath = QUrl::fromLocalFile(destPath).toString();
+        QString markdownImage = QString("![%1](%2)").arg(fileInfo.fileName(), absPath);
         editor->insertPlainText("\n" + markdownImage + "\n");
     }
 }

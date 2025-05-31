@@ -24,6 +24,7 @@ public:
     QString getMarkdownHtmlPreview(int lineCount = -1) const;
     QString getUsername() const;
     QString getDiaryType() const;
+    QString getDateTime() const;
 
 private:
     QString m_notebookName;
