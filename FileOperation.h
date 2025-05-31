@@ -29,7 +29,7 @@ public:
     QVector<Diary> findFile(QDateTime start, QDateTime end, const QString& diaryType);
     QVector<Diary> findFileByTime(QDateTime start, QDateTime end, const DiaryList& diaryType=DiaryList("","",0)); //默认搜索全部笔记
 
-    QPair<Diary,QVector<int> > findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType=DiaryList("","",0));
+    QPair<Diary,QVector<int> > findFileByContent(const QString& target, bool newSearch=false, const DiaryList& diaryType=DiaryList("","",0));
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(const DiaryList& diaryType);
