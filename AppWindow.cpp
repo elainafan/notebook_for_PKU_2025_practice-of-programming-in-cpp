@@ -84,7 +84,7 @@ void AppWindow::setupStyle(){
     leftColumn->setStyleSheet(R"(
             QWidget {
                 background-color: #F3F3F3;
-                font-family: "Yuanti SC",sans-serif;
+                font-family: "Yuanti SC", "YouYuan",sans-serif;
                 /*border: 2px solid #000000;*/
             }
             QPushButton {
@@ -112,7 +112,7 @@ void AppWindow::setupStyle(){
     rightColumn->setStyleSheet(R"(
             QWidget{
                 background-color: #FFFFFA;
-                font-family: "Yuanti SC",sans-serif;
+                font-family: "Yuanti SC","YouYuan",sans-serif;
                 /*border: 2px solid #AAAAAA;*/
             }
         )");

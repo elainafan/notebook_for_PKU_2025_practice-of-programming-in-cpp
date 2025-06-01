@@ -36,7 +36,7 @@ void Guider::setupStyle(){
     setStyleSheet(R"(
             QWidget {
                 background-color: #FFFFFF;
-                font-family: "Yuanti SC",sans-serif;
+                font-family: "Yuanti SC","YouYuan",sans-serif;
             }
         )");
     welcomeLabel->setStyleSheet(R"(
@@ -51,7 +51,7 @@ void Guider::setupStyle(){
     textLabel->setWordWrap(true);
     textLabel->setStyleSheet(R"(
             QLabel {
-                font: 20px "Yuanti SC";
+                font: 20px "Yuanti SC","YouYuan";
                 color: #555555;
                 padding: 10px;
                 background: none;

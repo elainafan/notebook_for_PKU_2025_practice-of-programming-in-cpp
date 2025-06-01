@@ -4,7 +4,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
-//#include <QWebChannel>
+#include <QWebChannel>
 #include <QSplitter>
 #include <QMessageBox>
 
@@ -13,7 +13,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
 {
     setFixedSize(800,900);
     editor = new QPlainTextEdit(this);
-    //preview = new QWebEngineView(this);
+    preview = new QWebEngineView(this);
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
@@ -26,7 +26,58 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     openMarkdownFile();
 
     // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
-    //preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+    preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+
+    applyStyle();
+}
+
+void MarkdownEditorWidget::applyStyle()
+{
+    // 设置整体背景色
+    this->setStyleSheet("background-color: #f7f7fa;");
+
+    // 编辑器美化
+    editor->setStyleSheet(
+        "QPlainTextEdit {"
+        "  background: #ffffff;"
+        "  border: 1px solid #d0d0d0;"
+        "  font-size: 24px;"
+        "  font-family: 'Consolas', '微软雅黑', monospace;"
+        "  padding: 8px;"
+        "  border-radius: 6px;"
+        "}"
+    );
+
+    // 按钮统一样式
+    QString btnStyle =
+        "QPushButton {"
+        "  background-color: #7030A0;"
+        "  color: white;"
+        "  border: none;"
+        "  border-radius: 5px;"
+        "  padding: 8px 18px;"
+        "  font-size: 15px;"
+        "  margin: 4px;"
+        "}"
+        "QPushButton:hover {"
+        "  background-color: #602090;"
+        "}"
+        "QPushButton:pressed {"
+        "  background-color: #501080;"
+        "}";
+
+    saveButton->setStyleSheet(btnStyle);
+    exportButton->setStyleSheet(btnStyle);
+    insertImageButton->setStyleSheet(btnStyle);
+
+    // 预览区边框
+    preview->setStyleSheet(
+        "QWebEngineView {"
+        "  border: 1px solid #d0d0d0;"
+        "  border-radius: 6px;"
+        "  background: #fcfcfc;"
+        "}"
+    );
 }
 
 void MarkdownEditorWidget::setupLayout()
@@ -34,7 +85,7 @@ void MarkdownEditorWidget::setupLayout()
     auto *layout = new QVBoxLayout(this);
     auto *split = new QSplitter(Qt::Horizontal, this);
     split->addWidget(editor);
-    //split->addWidget(preview);
+    split->addWidget(preview);
     split->setStretchFactor(0, 1);
     split->setStretchFactor(1, 3);
 
@@ -56,7 +107,7 @@ void MarkdownEditorWidget::setupConnections()
 void MarkdownEditorWidget::determineTargetDirectory()
 {
     QString basePath = QDir(QCoreApplication::applicationDirPath()).absolutePath();
-    //basePath = QDir(basePath).absoluteFilePath("..");  // 向上一级目录
+    basePath = QDir(basePath).absoluteFilePath("..");  // 向上一级目录
     QString subFolder;
     if (diaryType == "daily") subFolder = "daily_日记";
     else if (diaryType == "weekly") subFolder = "weekly_周记";
@@ -82,7 +133,6 @@ void MarkdownEditorWidget::openMarkdownFile()
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "错误", "无法打开文件: " + filePath);
         return;
     }
 
@@ -112,7 +162,7 @@ void MarkdownEditorWidget::updatePreview()
         .replace("\n", "\\n")
         .replace("\r", "");
     QString js = QString("updateMarkdown(\"%1\");").arg(escaped);
-    //preview->page()->runJavaScript(js);
+    preview->page()->runJavaScript(js);
 }
 
 void MarkdownEditorWidget::onInsertImageClicked()
@@ -144,7 +194,7 @@ void MarkdownEditorWidget::onExportPdfClicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "*.pdf");
     if (!filePath.isEmpty()) {
-   //     preview->page()->printToPdf(filePath);
+        preview->page()->printToPdf(filePath);
     }
 }
 

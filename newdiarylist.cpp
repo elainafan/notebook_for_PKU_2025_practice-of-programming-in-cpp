@@ -42,7 +42,7 @@ void NewDiaryList::setupUI()
     // 设置整个对话框的样式
     setStyleSheet(R"(
         QWidget {
-            font-family: "Yuanti SC",sans-serif;
+            font-family: "Yuanti SC", "YouYuan",sans-serif;
             font-size: 20px;
             font-color:#7030A0;
         }

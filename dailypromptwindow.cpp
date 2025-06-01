@@ -242,12 +242,12 @@ void DailyPromptWindow::setUser(){
             int x = (w - cropW) / 2;
             img = img.copy(x, 0, cropW, h);
         } else {
-            // 图片太高，裁剪高度
+            // 图片太高，裁剪高度R
             cropH = static_cast<int>(w / targetRatio);
             int y = (h - cropH) / 2;
             img = img.copy(0, y, w, cropH);
         }
     }
-    setContent("TEST", dia.getMarkdownHtmlPreview()
+    setContent("Old Golden Days", dia.getMarkdownHtmlPreview()
                ,img);
 }

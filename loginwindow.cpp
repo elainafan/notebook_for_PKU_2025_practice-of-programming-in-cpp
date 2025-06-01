@@ -73,7 +73,7 @@ void LoginWindow::setupStyle() {//登录窗口的样式表，影响登录窗口�
     setStyleSheet(R"(
             QWidget {
                 background-color: #FFFFFF;
-                font-family: "Yuanti SC",sans-serif;
+                font-family: "Yuanti SC","YouYuan",sans-serif;
             }
             QLineEdit {
                 padding: 5px;

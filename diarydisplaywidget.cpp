@@ -25,7 +25,7 @@ void DiaryWidget::setupUI(){
     dateTitle->setStyleSheet(R"(
         QLabel{
             background:transparent;
-            font-family: "Yuanti SC",sans-serif;
+            font-family: "Yuanti SC","YouYuan",sans-serif;
             font-size: 32px;
             padding: 10px;
         }
@@ -35,7 +35,7 @@ void DiaryWidget::setupUI(){
     timeTitle->setStyleSheet(R"(
         QLabel{
             background:transparent;
-            font-family: "Yuanti SC", sans-serif;
+            font-family: "Yuanti SC","YouYuan", sans-serif;
             font-size: 20px;
             color: #777777;
             padding: 25px;

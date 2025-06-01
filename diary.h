@@ -1,4 +1,4 @@
-#ifndef DIARY_H
+ #ifndef DIARY_H
 #define DIARY_H
 
 #include <QString>
