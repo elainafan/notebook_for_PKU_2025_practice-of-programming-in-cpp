@@ -137,6 +137,15 @@ QPixmap FileOperation::getProfilePicture(){
 void FileOperation::changeUsername(QString newUsername){
     QDir(startPath).rename(username,newUsername);
     username = newUsername;
+
+    QFile userFile("username.md");  //创建markdown文件
+    if (userFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&userFile);
+        out << newUsername;
+        userFile.close();
+    } else {
+        qDebug() << "无法创建文件:" << userFile.errorString() << Qt::endl;
+    }
 }
 
 bool FileOperation::changePassword(QString newPassword){
