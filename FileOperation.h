@@ -20,7 +20,7 @@ public:
     void signOut();
     void setProfilePicture(const QPixmap& pic);
     QPixmap getProfilePicture();
-    void changeUsername(QString newUsername);
+    bool changeUsername(QString newUsername);
     bool changePassword(QString newPassword);
 
     Diary recommend();

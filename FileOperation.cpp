@@ -134,7 +134,10 @@ QPixmap FileOperation::getProfilePicture(){
     return QPixmap(QDir(username).filePath("profilePicture.png"));
 }
 
-void FileOperation::changeUsername(QString newUsername){
+bool FileOperation::changeUsername(QString newUsername){
+    if (QFileInfo(newUsername).isDir()){
+        return false;
+    }
     QDir(startPath).rename(username,newUsername);
     username = newUsername;
 
@@ -145,7 +148,9 @@ void FileOperation::changeUsername(QString newUsername){
         userFile.close();
     } else {
         qDebug() << "无法创建文件:" << userFile.errorString() << Qt::endl;
+        return false;
     }
+    return true;
 }
 
 bool FileOperation::changePassword(QString newPassword){
