@@ -165,7 +165,7 @@ bool FileOperation::changePassword(QString newPassword){
         return 0;
     }
 
-    decryptDir();
+    decryptAll();
 
     deleteFile(dir.filePath("valid.crypt"));
     QString inputPath = dir.filePath("valid.md");  //路径
