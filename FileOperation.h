@@ -34,6 +34,7 @@ public:
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(const DiaryList& diaryType);
+    bool deleteFolder(const DiaryList& diaryType);
     QVector<DiaryList> allFolders();
     bool deleteFile(const QString& filename);
     QString getBaseDir(const DiaryList& diaryType);

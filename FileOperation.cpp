@@ -309,10 +309,9 @@ Diary FileOperation::recommend(){
     }
     // 然后50%概率优先使用收藏文件
     if (!starredFiles.isEmpty() && QRandomGenerator::global()->bounded(2) == 0) {
-        // 过滤掉不存在的文件
         QStringList validFiles;
         for (const QString &filename : starredFiles) {
-            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename)) && pictureFiles.contains(filename)) {
+            if (QFile::exists(QDir(dir).filePath(filename)) && pictureFiles.contains(filename)) {
                 validFiles.append(filename);
             }
         }
@@ -324,20 +323,18 @@ Diary FileOperation::recommend(){
     }
 
     if (selectedFile.isEmpty()) {
-        // 过滤掉不存在的文件
+        // 过滤掉无图文件
         QStringList validFiles;
         for (const QString &filename : pictureFiles) {
-            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename))) {
+            if (QFile::exists(QDir(dir).filePath(filename))) {
                 validFiles.append(filename);
             }
         }
-
         if (!validFiles.isEmpty()) {
             int randomIndex = QRandomGenerator::global()->bounded(validFiles.size());
             selectedFile = validFiles.at(randomIndex);
         }
     }
-
     // 在不存在有图文件时扫描目录
     if (selectedFile.isEmpty()) {
         QDirIterator it(
@@ -360,7 +357,7 @@ Diary FileOperation::recommend(){
         selectedFile = files.at(randomIndex);
     }
     // 返回日记类
-    return fileToDiary(QDir(QDir(username).filePath("diary")).filePath(selectedFile));
+    return fileToDiary(QDir(dir).filePath(selectedFile));
 }
 
 QVector<Diary> FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
@@ -419,6 +416,30 @@ bool FileOperation::newFolder(const DiaryList& diaryType){
     out << diaryType.getColourType();
     file.close();
     return 1;
+}
+
+bool FileOperation::deleteFolder(const DiaryList& diaryType){
+    QString folderName = diaryType.getType()+"_"+diaryType.getName();
+    QString diaryPath = QDir(QDir(startPath).filePath(QDir(username).filePath("diary"))).filePath(folderName);
+    QString picPath = QDir(QDir(startPath).filePath(QDir(username).filePath("picture"))).filePath(folderName);
+
+    // 检查日记文件夹是否存在且确实是文件夹（不是文件）
+    QFileInfo diaryInfo(diaryPath);
+    if (!diaryInfo.exists() || !diaryInfo.isDir()) {
+        qDebug() << "不是有效的文件夹或文件夹不存在:" << diaryPath;
+        return false;
+    }
+    // 检查图片文件夹是否存在且确实是文件夹（不是文件）
+    QFileInfo picInfo(picPath);
+    if (!picInfo.exists() || !picInfo.isDir()) {
+        qDebug() << "不是有效的文件夹或文件夹不存在:" << picPath;
+        return false;
+    }
+
+    if (!QDir(diaryPath).removeRecursively() || !QDir(picPath).removeRecursively()){
+        return false;
+    }
+    return true;
 }
 
 QVector<DiaryList> FileOperation::allFolders(){
@@ -623,7 +644,7 @@ Diary FileOperation::fileToDiary(const QString& filePath){
         content = in.readAll();
         file.close();
     } else {
-        qDebug() << "无法读取文件内容:" << file.errorString() << Qt::endl;
+        qDebug() << "无法读取文件内容:" << file.errorString();
     }
 
     QFileInfo info(filePath);
