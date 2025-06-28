@@ -11,7 +11,7 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
-QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
+QString FileOperation::startPath=QDir(QDir::currentPath()).filePath("debug");  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
 
 FileOperation::FileOperation(QString username_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
     : QObject(parent), username(username_)
@@ -120,36 +120,41 @@ int FileOperation::signIn(QString user, QString password_){
 }
 
 void FileOperation::signOut(){  //退出登录，并加密所有未加密的日记
-    deleteFile(QDir(username).filePath("valid.md"));
-    deleteFile("username.md");
+    deleteFile(QDir(QDir(startPath).filePath(username)).filePath("valid.md"));
+    deleteFile(QDir(startPath).filePath("username.md"));
     encryptAll();
 }
 
 void FileOperation::setProfilePicture(const QPixmap& pic){
-    QDir dir(username);
+    QDir dir(QDir(startPath).filePath(username));
     pic.save(dir.filePath("profilePicture.png"));
 }
 
 QPixmap FileOperation::getProfilePicture(){
-    return QPixmap(QDir(username).filePath("profilePicture.png"));
+    return QPixmap(QDir(QDir(startPath).filePath(username)).filePath("profilePicture.png"));
 }
 
-void FileOperation::changeUsername(QString newUsername){
+bool FileOperation::changeUsername(QString newUsername){
+    if (QFileInfo(QDir(startPath).filePath(newUsername)).isDir()){
+        return false;
+    }
     QDir(startPath).rename(username,newUsername);
     username = newUsername;
 
-    QFile userFile("username.md");  //创建markdown文件
+    QFile userFile(QDir(startPath).filePath("username.md"));  //创建markdown文件
     if (userFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&userFile);
         out << newUsername;
         userFile.close();
     } else {
         qDebug() << "无法创建文件:" << userFile.errorString() << Qt::endl;
+        return false;
     }
+    return true;
 }
 
 bool FileOperation::changePassword(QString newPassword){
-    QDir dir(username);
+    QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("valid.md"));
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
@@ -160,7 +165,7 @@ bool FileOperation::changePassword(QString newPassword){
         return 0;
     }
 
-    decryptDir();
+    decryptAll();
 
     deleteFile(dir.filePath("valid.crypt"));
     QString inputPath = dir.filePath("valid.md");  //路径
@@ -175,10 +180,10 @@ bool FileOperation::changePassword(QString newPassword){
 
 void FileOperation::setStar(const QString& fileName){
     // 构造文件的绝对路径
-    QDir dir(username);
+    QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("starred.md"));
-    QString rootPath(QDir(username).filePath("diary"));
-    QDir diaryDir(QDir(username).filePath("diary"));
+    QString rootPath(dir.filePath("diary"));
+    QDir diaryDir(dir.filePath("diary"));
     QString filePath;
 
     // 创建递归迭代器
@@ -245,14 +250,15 @@ void FileOperation::setStar(const QString& fileName){
 }
 
 QVector<Diary> FileOperation::allStarred(){
+    QDir dir(QDir(startPath).filePath(username));
     QVector<Diary> starredFiles;
-    QFile starFile(QDir(username).filePath("starred.md"));
+    QFile starFile(dir.filePath("starred.md"));
     if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&starFile);
         while (!in.atEnd()) {
             QString line = in.readLine().trimmed();
             if (!line.isEmpty()) {
-                starredFiles.append(fileToDiary(QDir(QDir(username).filePath("diary")).filePath(line)));
+                starredFiles.append(fileToDiary(QDir(dir.filePath("diary")).filePath(line)));
             }
         }
         starFile.close();
@@ -261,8 +267,8 @@ QVector<Diary> FileOperation::allStarred(){
 }
 
 Diary FileOperation::recommend(){
-    QString dir = QDir(username).filePath("diary");
-    QDir parentDir(QDir(username).filePath("picture"));
+    QString dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
+    QDir parentDir(QDir(startPath).filePath(QDir(username).filePath("picture")));
 
     // 获取所有文件（排除目录和特殊条目）
     QStringList files;
@@ -290,7 +296,7 @@ Diary FileOperation::recommend(){
     }
 
     // 先读取收藏文件（总是读取，但50%概率使用）
-    QFile starFile(QDir(username).filePath("starred.md"));
+    QFile starFile(QDir(startPath).filePath(QDir(username).filePath("starred.md")));
     if (starFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&starFile);
         while (!in.atEnd()) {
@@ -303,10 +309,9 @@ Diary FileOperation::recommend(){
     }
     // 然后50%概率优先使用收藏文件
     if (!starredFiles.isEmpty() && QRandomGenerator::global()->bounded(2) == 0) {
-        // 过滤掉不存在的文件
         QStringList validFiles;
         for (const QString &filename : starredFiles) {
-            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename)) && pictureFiles.contains(filename)) {
+            if (QFile::exists(QDir(dir).filePath(filename)) && pictureFiles.contains(filename)) {
                 validFiles.append(filename);
             }
         }
@@ -318,20 +323,18 @@ Diary FileOperation::recommend(){
     }
 
     if (selectedFile.isEmpty()) {
-        // 过滤掉不存在的文件
+        // 过滤掉无图文件
         QStringList validFiles;
         for (const QString &filename : pictureFiles) {
-            if (QFile::exists(QDir(QDir(username).filePath("diary")).filePath(filename))) {
+            if (QFile::exists(QDir(dir).filePath(filename))) {
                 validFiles.append(filename);
             }
         }
-
         if (!validFiles.isEmpty()) {
             int randomIndex = QRandomGenerator::global()->bounded(validFiles.size());
             selectedFile = validFiles.at(randomIndex);
         }
     }
-
     // 在不存在有图文件时扫描目录
     if (selectedFile.isEmpty()) {
         QDirIterator it(
@@ -354,7 +357,7 @@ Diary FileOperation::recommend(){
         selectedFile = files.at(randomIndex);
     }
     // 返回日记类
-    return fileToDiary(QDir(QDir(username).filePath("diary")).filePath(selectedFile));
+    return fileToDiary(QDir(dir).filePath(selectedFile));
 }
 
 QVector<Diary> FileOperation::findFile(QDateTime start, QDateTime end, const QString& dirPath) {
@@ -385,15 +388,15 @@ QVector<Diary> FileOperation::findFileByTime(QDateTime start, QDateTime end, con
 
     QDateTime date2 = end.addSecs(-1);
 
-    QString dirPath = QDir(username).filePath("diary");
+    QString dirPath = QDir(startPath).filePath(QDir(username).filePath("diary"));
     if (diaryType.getName()!="")dirPath = QDir(dirPath).filePath(diaryType.getType()+"_"+diaryType.getName());
 
     return findFile(start, date2, dirPath);
 }
 
 bool FileOperation::newFolder(const DiaryList& diaryType){
-    QDir diaryDir = QDir(username).filePath("diary");
-    QDir picDir = QDir(username).filePath("picture");
+    QDir diaryDir = QDir(startPath).filePath(QDir(username).filePath("diary"));
+    QDir picDir = QDir(startPath).filePath(QDir(username).filePath("picture"));
     // 创建diary下的子目录
     if (!diaryDir.mkdir(diaryType.getType()+"_"+diaryType.getName())) {
         qWarning() << "无法创建diary下的子目录";
@@ -415,9 +418,33 @@ bool FileOperation::newFolder(const DiaryList& diaryType){
     return 1;
 }
 
+bool FileOperation::deleteFolder(const DiaryList& diaryType){
+    QString folderName = diaryType.getType()+"_"+diaryType.getName();
+    QString diaryPath = QDir(QDir(startPath).filePath(QDir(username).filePath("diary"))).filePath(folderName);
+    QString picPath = QDir(QDir(startPath).filePath(QDir(username).filePath("picture"))).filePath(folderName);
+
+    // 检查日记文件夹是否存在且确实是文件夹（不是文件）
+    QFileInfo diaryInfo(diaryPath);
+    if (!diaryInfo.exists() || !diaryInfo.isDir()) {
+        qDebug() << "不是有效的文件夹或文件夹不存在:" << diaryPath;
+        return false;
+    }
+    // 检查图片文件夹是否存在且确实是文件夹（不是文件）
+    QFileInfo picInfo(picPath);
+    if (!picInfo.exists() || !picInfo.isDir()) {
+        qDebug() << "不是有效的文件夹或文件夹不存在:" << picPath;
+        return false;
+    }
+
+    if (!QDir(diaryPath).removeRecursively() || !QDir(picPath).removeRecursively()){
+        return false;
+    }
+    return true;
+}
+
 QVector<DiaryList> FileOperation::allFolders(){
     QVector<DiaryList> folders;
-    QDir dir = QDir(username).filePath("diary");
+    QDir dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
     QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable);
     for (const QFileInfo &entry : entries) {
         QString folderName=entry.fileName();
@@ -440,7 +467,7 @@ QVector<DiaryList> FileOperation::allFolders(){
 }
 
 QString FileOperation::getBaseDir(const DiaryList& diaryType){
-    QDir dir = QDir(username).filePath("diary");
+    QDir dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
     if (dir.exists(diaryType.getType()+"_"+diaryType.getName())){
         return dir.filePath(diaryType.getType()+"_"+diaryType.getName());
     }
@@ -450,7 +477,7 @@ QString FileOperation::getBaseDir(const DiaryList& diaryType){
 QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& target, bool newSearch, const DiaryList& diaryType){
     //每次返回一个搜到的文件（如有），以尽可能实时输出搜索结果；返回值0:文件的相对路径;1:词在该文件中的位置
 
-    QString dir = QDir(username).filePath("diary");
+    QString dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
     if (diaryType.getName()!="")dir = QDir(dir).filePath(diaryType.getType()+"_"+diaryType.getName());
     QPair<Diary,QVector<int> > resultFiles=make_pair(Diary("",QDateTime::fromString("1970_01_01_00_00_00","yyyy_MM_dd_HH_mm_ss"),"",""),QVector<int>());
 
@@ -546,7 +573,7 @@ bool FileOperation::deleteFile(const QString& filePath){  //文件不会被放�
 }
 
 bool FileOperation::encryptDir(QString dir){
-    if(dir=="")dir = QDir(username).filePath("diary");
+    if(dir=="")dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.md" << "*.png" << "*.jpg" << "*.jpeg" << "*.bmp";
@@ -569,7 +596,7 @@ bool FileOperation::encryptDir(QString dir){
 }
 
 bool FileOperation::decryptDir(QString dir){
-    if(dir=="")dir = QDir(username).filePath("diary");
+    if(dir=="")dir = QDir(startPath).filePath(QDir(username).filePath("diary"));
     QStringList resultFiles;
     QStringList nameFilters;
     nameFilters << "*.crypt";
@@ -600,12 +627,12 @@ bool FileOperation::decryptDir(QString dir){
 
 void FileOperation::encryptAll(){
     encryptDir();
-    encryptDir(QDir(username).filePath("picture"));
+    encryptDir(QDir(startPath).filePath(QDir(username).filePath("picture")));
 }
 
 void FileOperation::decryptAll(){
     decryptDir();
-    decryptDir(QDir(username).filePath("picture"));
+    decryptDir(QDir(startPath).filePath(QDir(username).filePath("picture")));
 }
 
 Diary FileOperation::fileToDiary(const QString& filePath){
@@ -617,7 +644,7 @@ Diary FileOperation::fileToDiary(const QString& filePath){
         content = in.readAll();
         file.close();
     } else {
-        qDebug() << "无法读取文件内容:" << file.errorString() << Qt::endl;
+        qDebug() << "无法读取文件内容:" << file.errorString();
     }
 
     QFileInfo info(filePath);
@@ -630,7 +657,7 @@ Diary FileOperation::fileToDiary(const QString& filePath){
     // 获取文件夹下所有图片路径
     QVector<QPixmap> pixmaps;
     QStringList imageFiles;
-    QString picParentDir = QDir(username).filePath("picture");
+    QString picParentDir = QDir(startPath).filePath(QDir(username).filePath("picture"));
     QString picPath(QDir(QDir(picParentDir).filePath(folderName)).filePath(info.baseName()));
 
     qDebug()<<picPath;
@@ -674,7 +701,7 @@ Diary FileOperation::fileToDiary(const QString& filePath){
 }
 
 void FileOperation::setReminder(const reminder& r){
-    QDir dir(username);
+    QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("reminder.md"));
     QString time = r.time.toString("yyyy_MM_dd");
     QString task = r.task;
@@ -723,7 +750,7 @@ void FileOperation::setReminder(const reminder& r){
 }
 
 QVector<reminder> FileOperation::getReminder(){
-    QDir dir(username);
+    QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("reminder.md"));
     QVector<reminder> reminders;
 

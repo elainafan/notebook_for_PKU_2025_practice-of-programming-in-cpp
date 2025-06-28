@@ -25,6 +25,7 @@ private slots:
     void onSaveClicked();
     void onExportPdfClicked();
     void onInsertImageClicked();
+    void onDeleteDiaryClicked();
     void applyStyle();
 
 private:
@@ -33,18 +34,23 @@ private:
     QPushButton *saveButton;
     QPushButton *exportButton;
     QPushButton *insertImageButton;
+    QPushButton *deleteButton;
 
+    QStringList oldImagePaths;
     QString username;
     QString diaryType;
     QString targetDir;
     QString currentTimestamp;
     QString currentMarkdownName;  // 对应 markdown 文件名（无扩展名），用于图片子目录命名
     QString imageDirBase;         // 图片存储的 base 路径（不含最后的图片子文件夹）
+    QString NotebookName;
 
     void setupLayout();
     void setupConnections();
     void determineTargetDirectory();
     void openMarkdownFile();
+    QStringList extractImagePaths(const QString &markdownText);
+    void deleteImageFile(const QString &relativePath);
 };
 
 #endif // MARKDOWNEDITORWIDGET_H

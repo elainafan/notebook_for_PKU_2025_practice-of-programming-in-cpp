@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../reminderwidget.h"
+#include "D:/notebook_for_PKU_2025_practice-of-programming-in-cpp/reminderwidget.h"
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>

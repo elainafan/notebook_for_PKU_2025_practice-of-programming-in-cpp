@@ -20,7 +20,7 @@ public:
     void signOut();
     void setProfilePicture(const QPixmap& pic);
     QPixmap getProfilePicture();
-    void changeUsername(QString newUsername);
+    bool changeUsername(QString newUsername);
     bool changePassword(QString newPassword);
 
     Diary recommend();
@@ -34,6 +34,7 @@ public:
     QVector<int> searchInFileByContent(const QString& filePath, const QString& target);
 
     bool newFolder(const DiaryList& diaryType);
+    bool deleteFolder(const DiaryList& diaryType);
     QVector<DiaryList> allFolders();
     bool deleteFile(const QString& filename);
     QString getBaseDir(const DiaryList& diaryType);

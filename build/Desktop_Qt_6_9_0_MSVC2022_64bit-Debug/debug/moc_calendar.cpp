@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../calendar.h"
+#include "D:/notebook_for_PKU_2025_practice-of-programming-in-cpp/calendar.h"
 #include <QtGui/qtextcursor.h>
 #include <QtCore/qmetatype.h>
 

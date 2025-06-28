@@ -9,7 +9,7 @@
 #include <QMessageBox>
 
 MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
-    : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType())
+    : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType()), NotebookName(diary.getNotebookName())
 {
     setFixedSize(800,900);
     editor = new QPlainTextEdit(this);
@@ -17,6 +17,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
+    deleteButton = new QPushButton("删除日记", this);
     QString timestamp = diary.getDateTime();
     currentMarkdownName = timestamp;
 
@@ -69,6 +70,7 @@ void MarkdownEditorWidget::applyStyle()
     saveButton->setStyleSheet(btnStyle);
     exportButton->setStyleSheet(btnStyle);
     insertImageButton->setStyleSheet(btnStyle);
+    deleteButton->setStyleSheet(btnStyle);
 
     // 预览区边框
     preview->setStyleSheet(
@@ -93,6 +95,7 @@ void MarkdownEditorWidget::setupLayout()
     layout->addWidget(insertImageButton);
     layout->addWidget(saveButton);
     layout->addWidget(exportButton);
+    layout->addWidget(deleteButton);
     setLayout(layout);
 }
 
@@ -102,17 +105,18 @@ void MarkdownEditorWidget::setupConnections()
     connect(saveButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onSaveClicked);
     connect(exportButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onExportPdfClicked);
     connect(insertImageButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onInsertImageClicked);
+    connect(deleteButton, &QPushButton::clicked, this, &MarkdownEditorWidget::onDeleteDiaryClicked);
 }
 
 void MarkdownEditorWidget::determineTargetDirectory()
 {
     QString basePath = QDir(QCoreApplication::applicationDirPath()).absolutePath();
-    basePath = QDir(basePath).absoluteFilePath("..");  // 向上一级目录
     QString subFolder;
-    if (diaryType == "daily") subFolder = "daily_日记";
-    else if (diaryType == "weekly") subFolder = "weekly_周记";
-    else if (diaryType == "monthly") subFolder = "monthly_月记";
-    else if (diaryType == "yearly") subFolder = "yearly_年记";
+    if (diaryType == "daily") subFolder = "daily";
+    else if (diaryType == "weekly") subFolder = "weekly";
+    else if (diaryType == "monthly") subFolder = "monthly";
+    else if (diaryType == "yearly") subFolder = "yearly";
+    subFolder+="_"+NotebookName;
     targetDir = basePath + "/" + username + "/diary/" + subFolder;
     imageDirBase = basePath + "/" + username + "/picture/" + subFolder;
 }
@@ -122,12 +126,12 @@ void MarkdownEditorWidget::openMarkdownFile()
     // 构造文件路径
     QString basePath = QCoreApplication::applicationDirPath();
     QDir baseDir(basePath);
-    baseDir.cdUp(); // 从 debug 回到上一级（Desktop_Qt_6_9_0_MSVC2022_64bit-Debug）
     QString subFolder;
-    if (diaryType == "daily") subFolder = "daily_日记";
-    else if (diaryType == "weekly") subFolder = "weekly_周记";
-    else if (diaryType == "monthly") subFolder = "monthly_月记";
-    else if (diaryType == "yearly") subFolder = "yearly_年记";
+    if (diaryType == "daily") subFolder = "daily";
+    else if (diaryType == "weekly") subFolder = "weekly";
+    else if (diaryType == "monthly") subFolder = "monthly";
+    else if (diaryType == "yearly") subFolder = "yearly";
+    subFolder+="_"+NotebookName;
     QString filePath = baseDir.absoluteFilePath(username + "/diary/" + subFolder + "/"  + currentMarkdownName + ".md");
     qDebug() << "打开路径: " << filePath;
 
@@ -140,6 +144,12 @@ void MarkdownEditorWidget::openMarkdownFile()
     QString content = in.readAll();
     editor->setPlainText(content);
 
+    // ✅ 这里初始化图片路径
+    oldImagePaths = extractImagePaths(content);
+    qDebug() << "[初始化 oldImagePaths]";
+    for (const QString &p : oldImagePaths)
+        qDebug() << "  - " << p;
+
     file.close();
 
     updatePreview();
@@ -150,7 +160,10 @@ void MarkdownEditorWidget::updatePreview()
 {
     // 第一步：设置图片 baseHref
 
-    QString baseHref = QUrl::fromLocalFile(imageDirBase + "/" + currentMarkdownName + "/").toString();
+    QString baseHref = QUrl::fromLocalFile(QCoreApplication::applicationDirPath()).toString();  // 指向 debug/
+    if (!baseHref.endsWith("/")) {
+        baseHref += "/";
+    }
     QString setBaseJs = QString("setBaseHrefFromQt(\"%1\");").arg(baseHref);
     preview->page()->runJavaScript(setBaseJs);
 
@@ -176,15 +189,62 @@ void MarkdownEditorWidget::onInsertImageClicked()
     QString destPath = imageSubDir + "/" + fileInfo.fileName();
 
     if (QFile::copy(filePath, destPath)) {
-        // 插入图片的绝对 file:// 路径
-        QString absPath = QUrl::fromLocalFile(destPath).toString();
-        QString markdownImage = QString("![%1](%2)").arg(fileInfo.fileName(), absPath);
+        // 构造相对路径：以 debug 为起点
+        QString relativePath = QString("%1/picture/%2/%3/%4")
+                                   .arg(username)
+                                   .arg(diaryType + "_" + NotebookName)
+                                   .arg(currentMarkdownName)
+                                   .arg(fileInfo.fileName());
+
+        QString markdownImage = QString("![%1](%2)").arg(fileInfo.fileName(), relativePath);
         editor->insertPlainText("\n" + markdownImage + "\n");
     }
 }
 
-void MarkdownEditorWidget::onSaveClicked()
+QStringList MarkdownEditorWidget::extractImagePaths(const QString &markdownText)
 {
+    QStringList paths;
+    QRegularExpression re("!\\[[^\\]]*\\]\\(([^)]+)\\)");
+    QRegularExpressionMatchIterator i = re.globalMatch(markdownText);
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString path = match.captured(1);
+        paths.append(path);
+    }
+    return paths;
+}
+
+void MarkdownEditorWidget::deleteImageFile(const QString &relativePath)
+{
+    // 转换相对路径为绝对路径，以debug目录为基准
+    QString basePath = QCoreApplication::applicationDirPath()+"/";
+    qDebug()<<basePath<<Qt::endl;
+    QString absPath =basePath+relativePath;
+    qDebug()<<absPath<<Qt::endl;
+    if (QFile::exists(absPath)) {
+        bool ok = QFile::remove(absPath);
+        qDebug() << "删除图片文件:" << absPath << (ok ? "成功" : "失败");
+    }
+}
+
+void MarkdownEditorWidget::onSaveClicked()
+{   
+    QString markdownText = editor->toPlainText();
+    QStringList currentImagePaths = extractImagePaths(markdownText);
+
+    qDebug() << "[调试] 提取出的图片路径:";
+    for (const QString &p : currentImagePaths) {
+        qDebug() << "  - " << p;
+    }
+    // 删除不再引用的图片
+    for (const QString &oldPath : oldImagePaths) {
+        if (!currentImagePaths.contains(oldPath)) {
+            deleteImageFile(oldPath);
+        }
+    }
+
+    oldImagePaths = currentImagePaths;  // 更新记录
+
     QString fileName = currentMarkdownName + ".md";
     QString filePath = targetDir + "/" + fileName;
     saveToMarkdown(filePath);
@@ -214,4 +274,32 @@ void MarkdownEditorWidget::saveToMarkdown(const QString &filePath)
         qDebug()<<"saved";
     }
 }
+void MarkdownEditorWidget::onDeleteDiaryClicked()
+{
+    // 确认是否删除
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "删除确认", "确定要删除本篇日记及相关图片吗？",
+                                  QMessageBox::Yes | QMessageBox::No);
 
+    if (reply != QMessageBox::Yes)
+        return;
+
+    // 构造路径
+    QString mdFilePath = targetDir + "/" + currentMarkdownName + ".md";
+    QString imageFolderPath = imageDirBase + "/" + currentMarkdownName;
+
+    // 删除 .md 文件
+    bool mdDeleted = QFile::remove(mdFilePath);
+
+    // 删除图片文件夹（含内容）
+    QDir imgDir(imageFolderPath);
+    bool imgDeleted = imgDir.removeRecursively();
+
+    // 给出结果提示
+    if (mdDeleted || imgDeleted) {
+        QMessageBox::information(this, "删除成功", "日记文件和图片已删除。");
+        close();  // 可选：关闭当前窗口
+    } else {
+        QMessageBox::warning(this, "删除失败", "未能删除部分或全部内容。");
+    }
+}

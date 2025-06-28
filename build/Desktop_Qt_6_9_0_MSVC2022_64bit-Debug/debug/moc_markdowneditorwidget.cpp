@@ -46,6 +46,7 @@ template <> constexpr inline auto MarkdownEditorWidget::qt_create_metaobjectdata
         "onSaveClicked",
         "onExportPdfClicked",
         "onInsertImageClicked",
+        "onDeleteDiaryClicked",
         "applyStyle"
     };
 
@@ -60,8 +61,10 @@ template <> constexpr inline auto MarkdownEditorWidget::qt_create_metaobjectdata
         QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'onInsertImageClicked'
         QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'applyStyle'
+        // Slot 'onDeleteDiaryClicked'
         QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'applyStyle'
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -90,7 +93,8 @@ void MarkdownEditorWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
         case 2: _t->onSaveClicked(); break;
         case 3: _t->onExportPdfClicked(); break;
         case 4: _t->onInsertImageClicked(); break;
-        case 5: _t->applyStyle(); break;
+        case 5: _t->onDeleteDiaryClicked(); break;
+        case 6: _t->applyStyle(); break;
         default: ;
         }
     }
@@ -119,14 +123,14 @@ int MarkdownEditorWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 7;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 7)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
+        _id -= 7;
     }
     return _id;
 }
