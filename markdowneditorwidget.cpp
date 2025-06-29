@@ -4,16 +4,19 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
-#include <QWebChannel>
+//#include <QWebChannel>
 #include <QSplitter>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QRegularExpressionMatchIterator>
 
 MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     : QWidget(parent), username(diary.getUsername()), diaryType(diary.getDiaryType()), NotebookName(diary.getNotebookName())
 {
     setFixedSize(800,900);
     editor = new QPlainTextEdit(this);
-    preview = new QWebEngineView(this);
+    //preview = new QWebEngineView(this);
     saveButton = new QPushButton("保存", this);
     exportButton = new QPushButton("导出为 PDF", this);
     insertImageButton = new QPushButton("插入图片", this);
@@ -27,7 +30,7 @@ MarkdownEditorWidget::MarkdownEditorWidget(const Diary &diary, QWidget *parent)
     openMarkdownFile();
 
     // 加载本地 html 页面（内含 marked.js 和 webchannel.js）
-    preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
+    //preview->load(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/markdown.html"));
 
     applyStyle();
 }
@@ -73,13 +76,13 @@ void MarkdownEditorWidget::applyStyle()
     deleteButton->setStyleSheet(btnStyle);
 
     // 预览区边框
-    preview->setStyleSheet(
+    /*preview->setStyleSheet(
         "QWebEngineView {"
         "  border: 1px solid #d0d0d0;"
         "  border-radius: 6px;"
         "  background: #fcfcfc;"
         "}"
-    );
+    );*/
 }
 
 void MarkdownEditorWidget::setupLayout()
@@ -87,7 +90,7 @@ void MarkdownEditorWidget::setupLayout()
     auto *layout = new QVBoxLayout(this);
     auto *split = new QSplitter(Qt::Horizontal, this);
     split->addWidget(editor);
-    split->addWidget(preview);
+    //split->addWidget(preview);
     split->setStretchFactor(0, 1);
     split->setStretchFactor(1, 3);
 
@@ -165,7 +168,7 @@ void MarkdownEditorWidget::updatePreview()
         baseHref += "/";
     }
     QString setBaseJs = QString("setBaseHrefFromQt(\"%1\");").arg(baseHref);
-    preview->page()->runJavaScript(setBaseJs);
+    //preview->page()->runJavaScript(setBaseJs);
 
     // 第二步：使用你原有方式转义并调用 updateMarkdown
     QString markdown = editor->toPlainText();
@@ -175,7 +178,7 @@ void MarkdownEditorWidget::updatePreview()
         .replace("\n", "\\n")
         .replace("\r", "");
     QString js = QString("updateMarkdown(\"%1\");").arg(escaped);
-    preview->page()->runJavaScript(js);
+    //preview->page()->runJavaScript(js);
 }
 
 void MarkdownEditorWidget::onInsertImageClicked()
@@ -254,7 +257,7 @@ void MarkdownEditorWidget::onExportPdfClicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "导出为 PDF 文件", "", "*.pdf");
     if (!filePath.isEmpty()) {
-        preview->page()->printToPdf(filePath);
+        //preview->page()->printToPdf(filePath);
     }
 }
 

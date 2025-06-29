@@ -67,6 +67,7 @@ int FileOperation::signIn(QString user, QString password_){
         return -1;
 
     } else {
+        qDebug()<<user<<dir;
         if(dir.mkdir(user)) {
             QString inputPath = dir.filePath(QDir(user).filePath("valid.md"));  //路径
             QString outputPath = dir.filePath(QDir(user).filePath("valid.crypt"));
