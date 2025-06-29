@@ -1,6 +1,7 @@
 // diary.cpp
 #include "diary.h"
 #include <QTextDocument>
+#include <QRegularExpression>
 
 Diary::Diary(const QString& notebookName,
              const QDateTime& dateTime,
@@ -55,6 +56,10 @@ QString Diary::getMarkdownHtmlPreview(int lineCount) const {
         lines = lines.mid(0, lineCount);
     }
     QString partialMarkdown = lines.join('\n');
+
+    // 移除图片 Markdown 语法，例如 ![描述](路径)
+    QRegularExpression imageRegex(R"(!\[[^\]]*\]\([^\)]*\))");
+    partialMarkdown.remove(imageRegex);
 
     QTextDocument doc;
     doc.setMarkdown(partialMarkdown);  // Qt 6 专属
