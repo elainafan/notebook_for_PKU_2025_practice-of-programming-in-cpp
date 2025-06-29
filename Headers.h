@@ -3,6 +3,7 @@
 
 #include <QGraphicsOpacityEffect>
 #include <QWidget>
+#include <QEvent>
 #include<QPushButton>
 #include<QLineEdit>
 #include<QCheckBox>
@@ -20,6 +21,12 @@
 #include<vector>
 #include <QGraphicsColorizeEffect>
 #include<QScrollBar>
+#include<QCalendarWidget>
+#include<QStackedLayout>
+#include<QTableView>
+#include<QTimer>
+#include<QPainterPath>
+#include<QMouseEvent>
 using namespace std;
 #endif // HEADERS_H
 
