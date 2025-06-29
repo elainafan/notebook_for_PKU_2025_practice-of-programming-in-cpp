@@ -291,7 +291,9 @@ Diary FileOperation::recommend(){
 
         for (const QString &grandchild : grandchildDir.entryList()) {
             // 添加孙文件夹的名称到结果列表
-            pictureFiles.append(QDir(childDir).filePath(grandchild)+".md");
+            if (!QDir(QDir(parentDir.filePath(childDir)).filePath(grandchild)).isEmpty()){
+                pictureFiles.append(QDir(childDir).filePath(grandchild)+".md");
+            }
         }
     }
 
