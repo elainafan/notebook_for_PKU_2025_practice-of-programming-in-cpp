@@ -18,6 +18,7 @@
 #include<QPainter>
 #include<QScrollArea>
 #include<QFrame>
+#include<QMessageBox>
 #include<vector>
 #include<QGraphicsColorizeEffect>
 #include<QGraphicsScene>

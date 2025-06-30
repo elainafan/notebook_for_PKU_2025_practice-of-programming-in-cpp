@@ -75,8 +75,8 @@ void DiaryListEntry::mousePressEvent(QMouseEvent *event)
                 margin: 5px 0px;
             }
         )");
+        QAction *showAllAction = menu.addAction("显示全部日记");
         QAction *deleteAction = menu.addAction("删除笔记本");
-        QAction *showAllAction = menu.addAction("全部日记");
         QAction *selected = menu.exec(event->globalPos());
         if (selected == deleteAction) emit requestDelete();
         else if (selected == showAllAction) emit requestShowAll();
@@ -207,13 +207,45 @@ void DiaryListWidget::buildDiaryLists(const QVector<DiaryList> &vec){
         });
         DiaryList thisList = vec[i];
         connect(dlEntry[i], &DiaryListEntry::requestDelete, this, [this, i,thisList]() {
+            QMessageBox msgBox(this);
+            msgBox.setWindowTitle("删除确认");
+            msgBox.setText("确定要删除此日记本吗？");
+            msgBox.setIcon(QMessageBox::Warning);
+            QPushButton *yesBtn = msgBox.addButton("删除", QMessageBox::AcceptRole);
+            QPushButton *noBtn = msgBox.addButton("取消", QMessageBox::RejectRole);
+            msgBox.setDefaultButton(noBtn);
+            msgBox.setStyleSheet(R"(
+                QWidget{
+                    background: #FFFFFF;
+                    color: #202020;
+                }
+                QMessageBox {
+                    font-size: 20px;
+                }
+                QPushButton {
+                    min-width: 80px;
+                    min-height: 30px;
+                    font-size: 16px;
+                    border-radius: 6px;
+                    background: #f5f5f5;
+                }
+                QPushButton:hover {
+                    background: #ffe58f;
+                }
+                QPushButton:pressed {
+                    background: #ffd666;
+                }
+            )");
+            msgBox.exec();
+            if (msgBox.clickedButton() != yesBtn)
+                return;
             qDebug()<<"try deleting book "<<thisList.getName();
             fileOperator->deleteFolder(thisList);
             qDebug()<<"2";
             QTimer::singleShot(1,this,[this](){
                 buildDiaryLists(fileOperator->allFolders());
             });
-
+            emit deleteList();
         });
         connect(dlEntry[i], &DiaryListEntry::requestShowAll, this, [this, i]() {
             dlEntry[i]->setChecked(true);

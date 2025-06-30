@@ -53,7 +53,9 @@ public:
 signals:
     void changeList(const int &num);
     void newListAdded();
+    void deleteList();
     void showAll(const int &num);
+
 private slots:
     void hideScrollBar();
     void updateBtnState(const int &num);

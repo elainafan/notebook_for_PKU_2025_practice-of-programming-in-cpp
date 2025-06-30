@@ -19,7 +19,7 @@ public:
 
 signals:
     void saved();
-    void deleted();
+    void deleted(QString);
 
 private slots:
     void updatePreview();

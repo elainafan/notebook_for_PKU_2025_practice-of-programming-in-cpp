@@ -154,16 +154,16 @@ void DiaryWidget::setStar(bool isstarred){
 /*-------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------*/
 
-DiaryDisplayWidget::DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,QWidget *parent)
+DiaryDisplayWidget::DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,bool add,QWidget *parent)
     : MyWidget(parent),diaryVec(dVec),fileOperator(fileOpt)
 {
-    setFixedSize(DIARY_WID+200,dVec.size()*(DIARY_HEI+20)+250);
-    setupUI();
+    setFixedSize(DIARY_WID+200,dVec.size()*(DIARY_HEI+20)+250*add);
+    setupUI(add);
     setupStyle();
     setupConnection();
 }
 
-void DiaryDisplayWidget::setupUI(){
+void DiaryDisplayWidget::setupUI(bool can_add){
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins((800-DIARY_WID)/2-3,0,0,0);
@@ -190,11 +190,16 @@ void DiaryDisplayWidget::setupUI(){
             fileOperator->setStar(str);
         });
     }
+    qDebug()<<"HHHHHHHH is :"<<can_add;
+
     newDiary = new QPushButton(this);
     newDiary->setFixedSize(100,100);
     connect(newDiary,&QPushButton::released,this,&DiaryDisplayWidget::newingDiary);
 
-    QHBoxLayout *btnLayout = new QHBoxLayout();
+    if(!can_add){
+        newDiary->close();
+        return;
+    }QHBoxLayout *btnLayout = new QHBoxLayout();
     btnLayout->setAlignment(Qt::AlignCenter);
     btnLayout->addWidget(newDiary);
     btnLayout->addSpacing(170);

@@ -34,7 +34,7 @@ signals:
     void userNameChanged(const QString &newName);  // 用户名修改信号
     void userAvatarChanged(const QPixmap &newAvatar);  // 头像修改信号
     void userPassChanged(const QString &newPass);
-
+    void getAllStarred();
 private slots:
     void showMenu();  // 显示下拉菜单
     void changeUserName();  // 修改用户名
