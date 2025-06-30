@@ -33,6 +33,7 @@ public:
     void setupUI();
     void setupStyle();
     void setupConnection();
+    void setStar(bool isstarred);
 signals:
     void leftClicked(DiaryWidget* widget);    // 左键点击信号
     void rightClicked(DiaryWidget* widget);   // 右键点击信号
@@ -50,8 +51,8 @@ class DiaryDisplayWidget : public MyWidget
     QPushButton *newDiary;
     FileOperation *fileOperator;
 public:
-    explicit DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,QWidget *parent = nullptr);
-    void setupUI();
+    explicit DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,bool add,QWidget *parent = nullptr);
+    void setupUI(bool);
     void setupStyle();
     void setupConnection();
 signals:

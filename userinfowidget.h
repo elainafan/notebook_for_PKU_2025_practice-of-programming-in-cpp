@@ -25,7 +25,7 @@ public:
 
     // 设置用户信息
     void setUserName(const QString &name);
-    void setUserAvatar(const QPixmap &avatar);
+    void setUserAvatar(const QPixmap *avatar);
     QString getUserName() const;
     QPixmap getUserAvatar() const;
 
@@ -34,7 +34,7 @@ signals:
     void userNameChanged(const QString &newName);  // 用户名修改信号
     void userAvatarChanged(const QPixmap &newAvatar);  // 头像修改信号
     void userPassChanged(const QString &newPass);
-
+    void getAllStarred();
 private slots:
     void showMenu();  // 显示下拉菜单
     void changeUserName();  // 修改用户名
@@ -54,6 +54,7 @@ private:
 
     QString currentUserName;
     QPixmap currentAvatar;
+    QPixmap defaultAvatar;
 
     // 菜单尺寸
     static constexpr int AVATAR_SIZE = 30;  // 头像大小

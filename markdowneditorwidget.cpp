@@ -277,11 +277,37 @@ void MarkdownEditorWidget::saveToMarkdown(const QString &filePath)
 void MarkdownEditorWidget::onDeleteDiaryClicked()
 {
     // 确认是否删除
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "删除确认", "确定要删除本篇日记及相关图片吗？",
-                                  QMessageBox::Yes | QMessageBox::No);
-
-    if (reply != QMessageBox::Yes)
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("删除确认");
+    msgBox.setText("确定要删除本篇日记及相关图片吗？");
+    msgBox.setIcon(QMessageBox::Warning);
+    QPushButton *yesBtn = msgBox.addButton("删除", QMessageBox::AcceptRole);
+    QPushButton *noBtn = msgBox.addButton("取消", QMessageBox::RejectRole);
+    msgBox.setDefaultButton(noBtn);
+    msgBox.setStyleSheet(R"(
+                QWidget{
+                    background: #FFFFFF;
+                    color: #202020;
+                }
+                QMessageBox {
+                    font-size: 20px;
+                }
+                QPushButton {
+                    min-width: 80px;
+                    min-height: 30px;
+                    font-size: 16px;
+                    border-radius: 6px;
+                    background: #f5f5f5;
+                }
+                QPushButton:hover {
+                    background: #ffe58f;
+                }
+                QPushButton:pressed {
+                    background: #ffd666;
+                }
+            )");
+    msgBox.exec();
+    if (msgBox.clickedButton() != yesBtn)
         return;
 
     // 构造路径
@@ -299,6 +325,7 @@ void MarkdownEditorWidget::onDeleteDiaryClicked()
     if (mdDeleted || imgDeleted) {
         QMessageBox::information(this, "删除成功", "日记文件和图片已删除。");
         close();  // 可选：关闭当前窗口
+        emit deleted(currentMarkdownName+".md");
     } else {
         QMessageBox::warning(this, "删除失败", "未能删除部分或全部内容。");
     }

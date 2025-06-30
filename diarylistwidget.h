@@ -23,6 +23,10 @@ public:
 signals:
     void checkUpdated();
     void beingPressed();
+    void requestDelete();
+    void requestShowAll();
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
 };
 
 class DiaryListWidget : public QWidget
@@ -44,13 +48,19 @@ public:
     void setupStyle();
     void setupConnection();
     void buildDiaryLists(const QVector<DiaryList> &vec);
+    void setChecked(const int &,bool);
+
 signals:
     void changeList(const int &num);
     void newListAdded();
+    void deleteList();
+    void showAll(const int &num);
+
 private slots:
     void hideScrollBar();
     void updateBtnState(const int &num);
     void addNewList(const DiaryList &);
+
 };
 
 #endif // DIARYLISTWIDGET_H

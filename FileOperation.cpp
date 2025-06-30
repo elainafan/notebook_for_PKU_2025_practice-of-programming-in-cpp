@@ -67,6 +67,7 @@ int FileOperation::signIn(QString user, QString password_){
         return -1;
 
     } else {
+        qDebug()<<user<<dir;
         if(dir.mkdir(user)) {
             QString inputPath = dir.filePath(QDir(user).filePath("valid.md"));  //路径
             QString outputPath = dir.filePath(QDir(user).filePath("valid.crypt"));
@@ -180,6 +181,7 @@ bool FileOperation::changePassword(QString newPassword){
 
 void FileOperation::setStar(const QString& fileName){
     // 构造文件的绝对路径
+    qDebug()<<fileName <<" starred!";
     QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("starred.md"));
     QString rootPath(dir.filePath("diary"));
@@ -438,6 +440,7 @@ bool FileOperation::deleteFolder(const DiaryList& diaryType){
     if (!QDir(diaryPath).removeRecursively() || !QDir(picPath).removeRecursively()){
         return false;
     }
+    qDebug()<<"deleting"<<folderName;
     return true;
 }
 

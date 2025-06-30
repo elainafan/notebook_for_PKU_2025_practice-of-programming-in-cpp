@@ -54,9 +54,11 @@ signals:
 
 public slots:
     void setupUserInfo();
-    void buildDiaries(QVector<Diary> diaryVec);
+    void buildDiaries(QVector<Diary> diaryVec,bool);
     void refresh();
     void search_refresh(QString txt="");
+    void showAll_refresh();
+    void getAllStarred_refresh();
 };
 
 

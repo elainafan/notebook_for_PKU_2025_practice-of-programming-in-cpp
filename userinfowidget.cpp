@@ -8,24 +8,22 @@ UserInfoWidget::UserInfoWidget(FileOperation *fileOpt,QWidget *parent) : QWidget
     setupConnections();
 
     // 设置默认头像
-    QPixmap defaultAvatar(":/images/default_avatar.png");
-    if (defaultAvatar.isNull()) {
+    //defaultAvatar(":/images/default_avatar.png");
         // 如果没有默认头像资源，创建一个彩色圆形作为默认头像
-        defaultAvatar = QPixmap(AVATAR_SIZE, AVATAR_SIZE);
-        defaultAvatar.fill(Qt::transparent);
-        QPainter painter(&defaultAvatar);
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(100, 149, 237));  // 使用一个好看的蓝色
-        painter.drawEllipse(0, 0, AVATAR_SIZE, AVATAR_SIZE);
+    defaultAvatar = QPixmap(AVATAR_SIZE, AVATAR_SIZE);
+    defaultAvatar.fill(Qt::transparent);
+    QPainter painter(&defaultAvatar);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(100, 149, 237));  // 使用一个好看的蓝色
+    painter.drawEllipse(0, 0, AVATAR_SIZE, AVATAR_SIZE);
 
-        // 在圆形内绘制默认文本
-        painter.setPen(Qt::white);
-        painter.setFont(QFont("Arial", 16, QFont::Bold));
-        painter.drawText(defaultAvatar.rect(), Qt::AlignCenter, "U");
-    }
+    // 在圆形内绘制默认文本
+    painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 16, QFont::Bold));
+    painter.drawText(defaultAvatar.rect(), Qt::AlignCenter, "U");
 
-    setUserAvatar(defaultAvatar);
+    setUserAvatar(&defaultAvatar);
     setUserName("用户");
 }
 
@@ -58,13 +56,15 @@ void UserInfoWidget::setupUI()
     // 创建下拉菜单
     dropdownMenu = new QMenu(this);
     dropdownMenu->setFixedWidth(MENU_WIDTH);
-
+    QAction *allStarred = new QAction("我的收藏",this);
     QAction *changeNameAction = new QAction("修改用户名", this);
     QAction *changeAvatarAction = new QAction("修改头像", this);
     QAction *changeKeyAction = new QAction("修改密码",this);
     QAction *logoutAction = new QAction("退出登录", this);
 
     // 添加操作到菜单
+    dropdownMenu->addAction(allStarred);
+    dropdownMenu->addSeparator();
     dropdownMenu->addAction(changeNameAction);
     dropdownMenu->addAction(changeAvatarAction);
     dropdownMenu->addAction(changeKeyAction);
@@ -134,10 +134,11 @@ void UserInfoWidget::setupConnections()
     connect(menuButton, &QPushButton::clicked, this, &UserInfoWidget::showMenu);
 
     // 连接菜单动作信号
-    connect(dropdownMenu->actions().at(0), &QAction::triggered, this, &UserInfoWidget::changeUserName);
-    connect(dropdownMenu->actions().at(1), &QAction::triggered, this, &UserInfoWidget::changeUserAvatar);
-    connect(dropdownMenu->actions().at(2), &QAction::triggered,this, &UserInfoWidget::changeUserKey);
-    connect(dropdownMenu->actions().at(4), &QAction::triggered, this, &UserInfoWidget::logout);
+    connect(dropdownMenu->actions().at(0), &QAction::triggered, this, &UserInfoWidget::getAllStarred);
+    connect(dropdownMenu->actions().at(2), &QAction::triggered, this, &UserInfoWidget::changeUserName);
+    connect(dropdownMenu->actions().at(3), &QAction::triggered, this, &UserInfoWidget::changeUserAvatar);
+    connect(dropdownMenu->actions().at(4), &QAction::triggered,this, &UserInfoWidget::changeUserKey);
+    connect(dropdownMenu->actions().at(6), &QAction::triggered, this, &UserInfoWidget::logout);
 }
 
 void UserInfoWidget::setUserName(const QString &name)
@@ -146,12 +147,12 @@ void UserInfoWidget::setUserName(const QString &name)
     userNameLabel->setText(name);
 }
 
-void UserInfoWidget::setUserAvatar(const QPixmap &avatar)
+void UserInfoWidget::setUserAvatar(const QPixmap *avatar)
 {
-    currentAvatar = avatar;
-
+    if(!avatar) currentAvatar = defaultAvatar;
+    else currentAvatar = *avatar;
     // 创建圆形头像
-    QPixmap roundedAvatar(avatar.size());
+    QPixmap roundedAvatar(currentAvatar.size());
     roundedAvatar.fill(Qt::transparent);
 
     QPainter painter(&roundedAvatar);
@@ -159,11 +160,11 @@ void UserInfoWidget::setUserAvatar(const QPixmap &avatar)
 
     // 创建圆形裁剪路径
     QPainterPath path;
-    path.addEllipse(0, 0, avatar.width(), avatar.height());
+    path.addEllipse(0, 0, currentAvatar.width(), currentAvatar.height());
     painter.setClipPath(path);
 
     // 绘制头像
-    painter.drawPixmap(0, 0, avatar);
+    painter.drawPixmap(0, 0, currentAvatar);
 
     // 设置到标签
     avatarLabel->setPixmap(roundedAvatar);
@@ -189,6 +190,7 @@ void UserInfoWidget::showMenu()
     dropdownMenu->exec(pos);
 }
 
+
 void UserInfoWidget::changeUserName()
 {
     bool ok;
@@ -211,7 +213,7 @@ void UserInfoWidget::changeUserAvatar()
     if (!fileName.isEmpty()) {
         QPixmap newAvatar(fileName);
         if (!newAvatar.isNull()) {
-            setUserAvatar(newAvatar);
+            setUserAvatar(&newAvatar);
             fileOperator->setProfilePicture(newAvatar);
             emit userAvatarChanged(newAvatar);
         }

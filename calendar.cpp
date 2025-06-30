@@ -28,6 +28,8 @@ void Calendar::setupUI(){
     calendarWidget->setFirstDayOfWeek(Qt::Monday);
     calendarWidget->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendarWidget->setHorizontalHeaderFormat(QCalendarWidget::SingleLetterDayNames);
+    calendarWidget->setMinimumDate(QDate(1900,1,1));
+    calendarWidget->setMaximumDate(QDate(2999,12,31));
     mainLayout->addWidget(calendarWidget);
 }
 
