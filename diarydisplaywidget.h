@@ -51,8 +51,8 @@ class DiaryDisplayWidget : public MyWidget
     QPushButton *newDiary;
     FileOperation *fileOperator;
 public:
-    explicit DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,QWidget *parent = nullptr);
-    void setupUI();
+    explicit DiaryDisplayWidget(QVector<Diary> dVec,FileOperation *fileOpt,bool add,QWidget *parent = nullptr);
+    void setupUI(bool);
     void setupStyle();
     void setupConnection();
 signals:

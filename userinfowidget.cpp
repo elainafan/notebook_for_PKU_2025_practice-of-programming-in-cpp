@@ -56,13 +56,15 @@ void UserInfoWidget::setupUI()
     // 创建下拉菜单
     dropdownMenu = new QMenu(this);
     dropdownMenu->setFixedWidth(MENU_WIDTH);
-
+    QAction *allStarred = new QAction("我的收藏",this);
     QAction *changeNameAction = new QAction("修改用户名", this);
     QAction *changeAvatarAction = new QAction("修改头像", this);
     QAction *changeKeyAction = new QAction("修改密码",this);
     QAction *logoutAction = new QAction("退出登录", this);
 
     // 添加操作到菜单
+    dropdownMenu->addAction(allStarred);
+    dropdownMenu->addSeparator();
     dropdownMenu->addAction(changeNameAction);
     dropdownMenu->addAction(changeAvatarAction);
     dropdownMenu->addAction(changeKeyAction);
@@ -132,10 +134,11 @@ void UserInfoWidget::setupConnections()
     connect(menuButton, &QPushButton::clicked, this, &UserInfoWidget::showMenu);
 
     // 连接菜单动作信号
-    connect(dropdownMenu->actions().at(0), &QAction::triggered, this, &UserInfoWidget::changeUserName);
-    connect(dropdownMenu->actions().at(1), &QAction::triggered, this, &UserInfoWidget::changeUserAvatar);
-    connect(dropdownMenu->actions().at(2), &QAction::triggered,this, &UserInfoWidget::changeUserKey);
-    connect(dropdownMenu->actions().at(4), &QAction::triggered, this, &UserInfoWidget::logout);
+    connect(dropdownMenu->actions().at(0), &QAction::triggered, this, &UserInfoWidget::getAllStarred);
+    connect(dropdownMenu->actions().at(2), &QAction::triggered, this, &UserInfoWidget::changeUserName);
+    connect(dropdownMenu->actions().at(3), &QAction::triggered, this, &UserInfoWidget::changeUserAvatar);
+    connect(dropdownMenu->actions().at(4), &QAction::triggered,this, &UserInfoWidget::changeUserKey);
+    connect(dropdownMenu->actions().at(6), &QAction::triggered, this, &UserInfoWidget::logout);
 }
 
 void UserInfoWidget::setUserName(const QString &name)
@@ -186,6 +189,7 @@ void UserInfoWidget::showMenu()
     // 显示菜单
     dropdownMenu->exec(pos);
 }
+
 
 void UserInfoWidget::changeUserName()
 {
