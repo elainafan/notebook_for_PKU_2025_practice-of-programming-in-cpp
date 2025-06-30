@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/logo.png</file>
+        <file>images/logo2.png</file>
+        <file>images/enter.png</file>
+        <file>images/testImage.png</file>
+        <file>images/enter_pressed.png</file>
+        <file>images/enter_hover.png</file>
+        <file>images/textBlockForPrompt.png</file>
+        <file>images/searchIcon.png</file>
+        <file>images/diaryListIcon.png</file>
+        <file>images/diaryListIcon0.png</file>
+        <file>images/diaryListIcon1.png</file>
+        <file>images/diaryListIcon2.png</file>
+        <file>images/diaryListIcon3.png</file>
+        <file>images/diaryListIcon4.png</file>
+        <file>images/diaryListIcon5.png</file>
+        <file>images/diaryListIcon5.png.svg</file>
+        <file>images/diaryListIcon6.png</file>
+        <file>images/diaryListIcon7.png</file>
+        <file>images/diaryListIcon8.png</file>
+        <file>images/nextCalendarPage.png</file>
+        <file>images/prevCalendarPage.png</file>
+        <file>images/diaryBackground.png</file>
+        <file>images/newDiary_hover.png</file>
+        <file>images/newDiary_pressed.png</file>
+        <file>images/newDiary.png</file>
+        <file>images/defaultImage.jpg</file>
+        <file>images/starred.png</file>
+        <file>images/unstar.png</file>
+    </qresource>
+</RCC>
