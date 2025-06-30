@@ -63,5 +63,57 @@ QString Diary::getMarkdownHtmlPreview(int lineCount) const {
 
     QTextDocument doc;
     doc.setMarkdown(partialMarkdown);  // Qt 6 专属
-    return doc.toHtml();
+    QString html = doc.toHtml();
+    qDebug()<<Qt::endl<<html;
+
+    int scaleRate = 2;
+    // 1. 放大 px/pt 单位
+    QRegularExpression rePxPt(R"(font-size\s*:\s*(\d+)(px|pt))");
+    QString newHtml;
+    int lastPos = 0;
+    auto it = rePxPt.globalMatch(html);
+    while (it.hasNext()) {
+        auto match = it.next();
+        int oldSize = match.captured(1).toInt();
+        QString unit = match.captured(2);
+        int newSize = int(oldSize * scaleRate);
+        newHtml += html.mid(lastPos, match.capturedStart() - lastPos);
+        newHtml += QString("font-size:%1%2").arg(newSize).arg(unit);
+        lastPos = match.capturedEnd();
+    }
+    newHtml += html.mid(lastPos);
+    html = newHtml;
+
+    // 2. 替换 font-size: 关键字为具体 pt 值
+    QMap<QString, double> sizeMap = {
+        {"xx-small", 0.578}, {"x-small", 0.694}, {"small", 0.833}, {"medium", 1.0},
+        {"large", 1.2}, {"x-large", 1.44}, {"xx-large", 1.728}
+    };
+    double basePt = 13.0 * scaleRate; // body已放大3倍
+    QRegularExpression reKeyword(R"(font-size\s*:\s*(xx-large|x-large|large|medium|small|x-small|xx-small))", QRegularExpression::CaseInsensitiveOption);
+
+    QString result;
+    lastPos = 0;
+    auto it2 = reKeyword.globalMatch(html);
+    while (it2.hasNext()) {
+        auto match = it2.next();
+        QString key = match.captured(1).toLower();
+        double pt = basePt * sizeMap.value(key, 1.0);
+        result += html.mid(lastPos, match.capturedStart() - lastPos);
+        result += QString("font-size:%1pt").arg(int(pt));
+        lastPos = match.capturedEnd();
+    }
+    result += html.mid(lastPos);
+    html = result;
+
+    QStringList tags = {"h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"};
+    for (const QString& tag : tags) {
+        // 开始标签，保留属性
+        html.replace(QRegularExpression(QString(R"(<%1([^>]*)>)").arg(tag), QRegularExpression::CaseInsensitiveOption), "<p\\1>");
+        // 结束标签
+        html.replace(QRegularExpression(QString(R"(</%1>)").arg(tag), QRegularExpression::CaseInsensitiveOption), "</p>");
+    }
+
+    qDebug()<<Qt::endl<<html;
+    return html;
 }

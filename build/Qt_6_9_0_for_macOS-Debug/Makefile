@@ -350,6 +350,7 @@ DIST          = ../../interfaceRequirement.md \
 		/Qt/6.9.0/macos/mkspecs/features/qt_config.prf \
 		/Qt/6.9.0/macos/mkspecs/macx-clang/qmake.conf \
 		/Qt/6.9.0/macos/mkspecs/features/spec_post.prf \
+		../../.qmake.stash \
 		/Qt/6.9.0/macos/mkspecs/features/exclusive_builds.prf \
 		/Qt/6.9.0/macos/mkspecs/features/mac/sdk.prf \
 		/Qt/6.9.0/macos/mkspecs/features/toolchain.prf \
@@ -431,7 +432,7 @@ TARGET        = notebookBackend.app/Contents/MacOS/notebookBackend
 EXPORT_QMAKE_MAC_SDK = macosx
 EXPORT_QMAKE_MAC_SDK_VERSION = 15.4
 EXPORT_QMAKE_XCODE_DEVELOPER_PATH = /Applications/Xcode.app/Contents/Developer
-EXPORT__QMAKE_STASH_ = 
+EXPORT__QMAKE_STASH_ = /Users/xiaogong/qtproject/notebook_for_PKU_2025_practice-of-programming-in-cpp/build/Qt_6_9_0_for_macOS-Debug/.qmake.stash
 EXPORT_VALID_ARCHS = x86_64 arm64
 EXPORT_DEFAULT_ARCHS = arm64
 EXPORT_ARCHS = $(filter $(EXPORT_VALID_ARCHS), $(if $(ARCHS), $(ARCHS), $(if $(EXPORT_DEFAULT_ARCHS), $(EXPORT_DEFAULT_ARCHS), $(EXPORT_VALID_ARCHS))))
@@ -665,6 +666,7 @@ Makefile: ../../notebook_for_PKU_2025_practice-of-programming-in-cpp.pro ../../.
 		../../../../Qt/6.9.0/macos/mkspecs/features/qt_config.prf \
 		../../../../Qt/6.9.0/macos/mkspecs/macx-clang/qmake.conf \
 		../../../../Qt/6.9.0/macos/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../../Qt/6.9.0/macos/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt/6.9.0/macos/mkspecs/features/mac/sdk.prf \
 		../../../../Qt/6.9.0/macos/mkspecs/features/toolchain.prf \
@@ -918,6 +920,7 @@ Makefile: ../../notebook_for_PKU_2025_practice-of-programming-in-cpp.pro ../../.
 ../../../../Qt/6.9.0/macos/mkspecs/features/qt_config.prf:
 ../../../../Qt/6.9.0/macos/mkspecs/macx-clang/qmake.conf:
 ../../../../Qt/6.9.0/macos/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../../Qt/6.9.0/macos/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt/6.9.0/macos/mkspecs/features/mac/sdk.prf:
 ../../../../Qt/6.9.0/macos/mkspecs/features/toolchain.prf:
@@ -988,6 +991,7 @@ clean: compiler_clean
 
 distclean: clean 
 	-$(DEL_FILE) -r notebookBackend.app
+	-$(DEL_FILE) .qmake.stash
 	-$(DEL_FILE) Makefile
 
 
@@ -1078,6 +1082,8 @@ moc_diarydisplaywidget.cpp: ../../diarydisplaywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1167,6 +1173,8 @@ moc_newdiarylist.cpp: ../../newdiarylist.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1234,6 +1242,8 @@ moc_AppWindow.cpp: ../../AppWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1353,6 +1363,8 @@ moc_FileOperation.cpp: ../../FileOperation.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1432,6 +1444,8 @@ moc_calendar.cpp: ../../calendar.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1493,6 +1507,8 @@ moc_dailypromptwindow.cpp: ../../dailypromptwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1579,6 +1595,8 @@ moc_diarylistwidget.cpp: ../../diarylistwidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1668,6 +1686,8 @@ moc_guiderwindow.cpp: ../../guiderwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1730,6 +1750,8 @@ moc_loginwindow.cpp: ../../loginwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1809,6 +1831,8 @@ moc_mywidget.cpp: ../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1878,6 +1902,8 @@ moc_searchwidget.cpp: ../../searchwidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -1947,6 +1973,8 @@ moc_userinfowidget.cpp: ../../userinfowidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2062,6 +2090,8 @@ diarydisplaywidget.o: ../../diarydisplaywidget.cpp ../../diarydisplaywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2150,6 +2180,8 @@ newdiarylist.o: ../../newdiarylist.cpp ../../newdiarylist.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2225,6 +2257,8 @@ AppWindow.o: ../../AppWindow.cpp ../../AppWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2351,6 +2385,8 @@ FileOperation.o: ../../FileOperation.cpp ../../FileOperation.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2433,6 +2469,8 @@ application.o: ../../application.cpp ../../application.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2546,6 +2584,8 @@ calendar.o: ../../calendar.cpp ../../calendar.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2606,6 +2646,8 @@ dailypromptwindow.o: ../../dailypromptwindow.cpp ../../dailypromptwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2705,6 +2747,8 @@ diarylist.o: ../../diarylist.cpp ../../diarylist.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2765,6 +2809,8 @@ diarylistwidget.o: ../../diarylistwidget.cpp ../../diarylistwidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2853,6 +2899,8 @@ gradientoverlay.o: ../../gradientoverlay.cpp ../../gradientoverlay.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2914,6 +2962,8 @@ guiderwindow.o: ../../guiderwindow.cpp ../../guiderwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -2975,6 +3025,8 @@ loginwindow.o: ../../loginwindow.cpp ../../loginwindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -3053,6 +3105,8 @@ main.o: ../../main.cpp ../../AppWindow.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -3189,6 +3243,8 @@ mywidget.o: ../../mywidget.cpp ../../mywidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -3260,6 +3316,8 @@ searchwidget.o: ../../searchwidget.cpp ../../searchwidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
@@ -3328,6 +3386,8 @@ userinfowidget.o: ../../userinfowidget.cpp ../../UserInfoWidget.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QFrame \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qframe.h \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QMessageBox \
+		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsColorizeEffect \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		../../../../Qt/6.9.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
