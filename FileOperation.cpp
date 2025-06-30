@@ -276,7 +276,7 @@ Diary FileOperation::recommend(){
     QStringList starredFiles;
     QString selectedFile;
     QStringList pictureFiles;
-    nameFilters << "2*.md";
+    nameFilters << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md";
 
     // 设置过滤器，只获取文件夹
     parentDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
@@ -341,7 +341,7 @@ Diary FileOperation::recommend(){
     if (selectedFile.isEmpty()) {
         QDirIterator it(
             dir,
-            QStringList() << "2*.md",  // 匹配所有日记
+            QStringList() << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md",  // 匹配所有日记
             QDir::Files,
             QDirIterator::Subdirectories
             );
@@ -485,7 +485,7 @@ QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& targe
 
     if(target!=searchword||diaryType.getName()!=searchDiaryType||newSearch){
         QStringList nameFilters;
-        nameFilters << "2*.md";
+        nameFilters << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md";
 
         while (!unsearchedFiles.isEmpty()){
             unsearchedFiles.pop();
