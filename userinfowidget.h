@@ -58,7 +58,7 @@ private:
 
     // 菜单尺寸
     static constexpr int AVATAR_SIZE = 30;  // 头像大小
-    static constexpr int MENU_WIDTH = 150;  // 菜单宽度
+    static constexpr int MENU_WIDTH = 200;  // 菜单宽度
 };
 
 #endif // USERINFOWIDGET_H

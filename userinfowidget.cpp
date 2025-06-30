@@ -145,6 +145,7 @@ void UserInfoWidget::setUserName(const QString &name)
 {
     currentUserName = name;
     userNameLabel->setText(name);
+    move(1140-userNameLabel->fontMetrics().horizontalAdvance(name),0);
 }
 
 void UserInfoWidget::setUserAvatar(const QPixmap *avatar)
@@ -198,9 +199,11 @@ void UserInfoWidget::changeUserName()
                                             "请输入新的用户名:", QLineEdit::Normal,
                                             currentUserName, &ok);
     if (ok && !newName.isEmpty()) {
-        setUserName(newName);
-        fileOperator->changeUsername(newName);
-        move(1140-15*newName.length(),0);
+        if(!fileOperator->changeUsername(newName)){
+            QMessageBox::warning(this, "用户名已被占用", "此用户名已被占用！");
+            return;
+        }setUserName(newName);
+        move(1140-userNameLabel->fontMetrics().horizontalAdvance(newName),0);
         emit userNameChanged(newName);
     }
 }

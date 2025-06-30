@@ -187,7 +187,6 @@ void AppWindow::setupUserInfo(){
     if (!avatar.isNull()) {
         userInfo->setUserAvatar(&avatar);
     }else userInfo->setUserAvatar(nullptr);
-    userInfo->move(1140-15*userName.length(),0);
 }
 
 void AppWindow::buildDiaries(QVector<Diary> diaryVec,bool can_add){ //新建右侧的日记预览滚动框
