@@ -33,6 +33,7 @@ public:
     void setupUI();
     void setupStyle();
     void setupConnection();
+    void setStar(bool isstarred);
 signals:
     void leftClicked(DiaryWidget* widget);    // 左键点击信号
     void rightClicked(DiaryWidget* widget);   // 右键点击信号

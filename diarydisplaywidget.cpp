@@ -88,7 +88,6 @@ void DiaryWidget::setupUI(){
                        "}");
     mainLayout->addWidget(txt);
 
-
     star = new QPushButton(this);
     star->setCheckable(true);
     star->setFixedSize(30,30);
@@ -121,7 +120,7 @@ void DiaryWidget::setupStyle(){
 
 void DiaryWidget::setupConnection(){
     connect(star,&QPushButton::toggled,this,[this](bool checked){
-        emit toggleStar(QDateTime(diary.getDate(),diary.getTime()).toString("yyyy_MM_dd_HH_mm_ss.md"));
+        emit toggleStar(QDateTime(diary.getDate(),diary.getTime()).toString("yyyy_MM_dd_HH_mm_ss")+".md");
     });
 }
 
@@ -145,6 +144,10 @@ void DiaryWidget::mousePressEvent(QMouseEvent *event)
     QWidget::mousePressEvent(event);
 }
 
+void DiaryWidget::setStar(bool isstarred){
+    QSignalBlocker blocker(star);
+    star->setChecked(isstarred);
+}
 
 
 /*-------------------------------------------------------------------------------------------*/
@@ -165,15 +168,25 @@ void DiaryDisplayWidget::setupUI(){
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins((800-DIARY_WID)/2-3,0,0,0);
     mainLayout->setSpacing(20);
+    QVector<Diary> allStr = fileOperator->allStarred();
     for(int i=0;i<diaryVec.size();i++){
         diaWidgVec.push_back(new DiaryWidget(diaryVec[i],this));
         //diaWidgVec[i]->setStyleSheet("background:#888888;");
         mainLayout->addWidget(diaWidgVec[i]);
+        bool fl = false;
+        for(int j=0;j<allStr.size();j++){
+            if(allStr[j].getDateTime()==diaryVec[i].getDateTime()){
+                fl=true;
+                break;
+            }
+        }
+        diaWidgVec[i]->setStar(fl);
         connect(diaWidgVec[i],&DiaryWidget::leftClicked,this,[this,i](){
             qDebug()<<"openDiary";
             emit openDiary(diaryVec[i]);
         });
         connect(diaWidgVec[i],&DiaryWidget::toggleStar,this,[this,i](QString str){
+            qDebug()<<"toggle: "<<str;
             fileOperator->setStar(str);
         });
     }

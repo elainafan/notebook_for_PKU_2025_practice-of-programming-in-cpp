@@ -57,6 +57,7 @@ public slots:
     void buildDiaries(QVector<Diary> diaryVec);
     void refresh();
     void search_refresh(QString txt="");
+    void showAll_refresh();
 };
 
 

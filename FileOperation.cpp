@@ -11,7 +11,7 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
-QString FileOperation::startPath=QDir(QDir::currentPath()).filePath("debug");  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
+QString FileOperation::startPath=QDir::currentPath();  //在这里修改根目录（我认为根目录应当与类而非对象绑定）
 
 FileOperation::FileOperation(QString username_, QObject *parent)  //建议使用统一的初始化方法e.g.FileOperation f{};
     : QObject(parent), username(username_)
@@ -181,6 +181,7 @@ bool FileOperation::changePassword(QString newPassword){
 
 void FileOperation::setStar(const QString& fileName){
     // 构造文件的绝对路径
+    qDebug()<<fileName <<" starred!";
     QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("starred.md"));
     QString rootPath(dir.filePath("diary"));
@@ -188,6 +189,7 @@ void FileOperation::setStar(const QString& fileName){
     QString filePath;
 
     // 创建递归迭代器
+    qDebug()<<rootPath;
     QDirIterator it(rootPath,
                     QStringList() << fileName, // 要搜索的文件名
                     QDir::Files,               // 只查找文件
@@ -200,6 +202,7 @@ void FileOperation::setStar(const QString& fileName){
     }
 
     // 确保文件存在
+    qDebug()<<filePath;
     if (QFile::exists(filePath)) {
         QString basePath("/"+rootPath);
         QDir::toNativeSeparators(basePath);
@@ -442,6 +445,7 @@ bool FileOperation::deleteFolder(const DiaryList& diaryType){
     if (!QDir(diaryPath).removeRecursively() || !QDir(picPath).removeRecursively()){
         return false;
     }
+    qDebug()<<"deleting"<<folderName;
     return true;
 }
 

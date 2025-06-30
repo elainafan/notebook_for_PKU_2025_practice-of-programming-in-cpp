@@ -302,6 +302,7 @@ void MarkdownEditorWidget::onDeleteDiaryClicked()
     if (mdDeleted || imgDeleted) {
         QMessageBox::information(this, "删除成功", "日记文件和图片已删除。");
         close();  // 可选：关闭当前窗口
+        emit deleted();
     } else {
         QMessageBox::warning(this, "删除失败", "未能删除部分或全部内容。");
     }

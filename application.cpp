@@ -10,6 +10,8 @@ Application::Application(int& argc, char* argv[]): QApplication(argc,argv) {
     newGuider=new Guider();
     setupConnection();
     //fileOperator->signOut();
+    loginWindow->show();
+    loginWindow->close();
     if(!loginWindow->checkLogState())loginWindow->show();
     //appWindow->show();
 }
