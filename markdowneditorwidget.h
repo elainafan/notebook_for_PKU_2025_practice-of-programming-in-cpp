@@ -19,6 +19,7 @@ public:
 
 signals:
     void saved();
+    void deleted();
 
 private slots:
     void updatePreview();

@@ -25,7 +25,7 @@ public:
 
     // 设置用户信息
     void setUserName(const QString &name);
-    void setUserAvatar(const QPixmap &avatar);
+    void setUserAvatar(const QPixmap *avatar);
     QString getUserName() const;
     QPixmap getUserAvatar() const;
 
@@ -54,6 +54,7 @@ private:
 
     QString currentUserName;
     QPixmap currentAvatar;
+    QPixmap defaultAvatar;
 
     // 菜单尺寸
     static constexpr int AVATAR_SIZE = 30;  // 头像大小

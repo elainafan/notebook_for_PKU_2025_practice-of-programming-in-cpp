@@ -2,7 +2,7 @@
 #include"application.h"
 #include <QApplication>
 #include <QCoreApplication>
-#include <QWebEngineSettings>
+//#include <QWebEngineSettings>
 
 int main(int argc, char *argv[])
 {

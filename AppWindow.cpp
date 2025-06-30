@@ -127,14 +127,16 @@ void AppWindow::setupConnection(){
         //qDebug()<<"lambda...";
     });
     connect(this,&AppWindow::appeared, this, [this](){
+        if(!diaryListVec.empty())diaryList->setChecked(0,true);
+        /*
         buildDiaries(QVector<Diary>{
             Diary("test0",QDateTime(QDate::currentDate(),QTime()),"教程","## 点击左侧任意一个笔记本，开始记录你的生活")
             /*,
             Diary("test",QDateTime(QDate::currentDate(),QTime()),"TEST","## This is a piece of test text.",
                   QVector<QPixmap>{QPixmap(":/images/testImage.png"),QPixmap(":/images/testImage.png")}),
             Diary("test2",QDateTime(QDate::currentDate(),QTime()),"TEST2","## This is another piece of test text.",
-                  QVector<QPixmap>{QPixmap(":/images/testImage.png")})*/
-        });
+                  QVector<QPixmap>{QPixmap(":/images/testImage.png")})
+        });*/
     });
 
     connect(searchWidget,&SearchWidget::searchText,this,&AppWindow::search_refresh);
@@ -148,7 +150,10 @@ void AppWindow::setupConnection(){
         curDiaryList=num;
         refresh();
     });
-
+    connect(diaryList,&DiaryListWidget::showAll,this,[this](const int &num){
+        curDiaryList=num;
+        showAll_refresh();
+    });
 
     /*
     connect(calendar, &Calendar::dateUpdated, this, [this](){
@@ -171,8 +176,8 @@ void AppWindow::setupUserInfo(){
 
     userInfo->setUserName(userName);
     if (!avatar.isNull()) {
-        userInfo->setUserAvatar(avatar);
-    }
+        userInfo->setUserAvatar(&avatar);
+    }else userInfo->setUserAvatar(nullptr);
     userInfo->move(1140-15*userName.length(),0);
 }
 
@@ -195,19 +200,28 @@ void AppWindow::buildDiaries(QVector<Diary> diaryVec){ //新建右侧的日记�
         mdEditor->show();
         connect(mdEditor,&MarkdownEditorWidget::saved,this,[this](){
             qDebug()<<"refreshing...";
-            QTimer::singleShot(1000,this,SLOT(refresh()));
+            QTimer::singleShot(1,this,SLOT(refresh()));
+        });
+        connect(mdEditor,&MarkdownEditorWidget::deleted,this,[this](){
+            qDebug()<<"refreshing...";
+            QTimer::singleShot(1,this,SLOT(refresh()));
         });
     });
     connect(diaryDisplay,&DiaryDisplayWidget::newingDiary,this,[this](){
         if(mdEditor)delete mdEditor;
         mdEditor = new MarkdownEditorWidget(
-            Diary(diaryListVec[curDiaryList].getName(),QDateTime::currentDateTime(),
+            Diary(diaryListVec[curDiaryList].getName(),
+                  calendar->getCurDate()==QDate::currentDate() ? QDateTime::currentDateTime() : QDateTime(calendar->getCurDate(),QTime::currentTime()),
                   "","",QVector<QPixmap>(),
                   fileOperator->username,diaryListVec[curDiaryList].getType()
                   )
             );
         mdEditor->show();
         connect(mdEditor,&MarkdownEditorWidget::saved,this,[this](){
+            qDebug()<<"refreshing...";
+            QTimer::singleShot(1,this,SLOT(refresh()));
+        });
+        connect(mdEditor,&MarkdownEditorWidget::deleted,this,[this](){
             qDebug()<<"refreshing...";
             QTimer::singleShot(1,this,SLOT(refresh()));
         });
@@ -269,4 +283,8 @@ void AppWindow::search_refresh(QString txt){
         diaVec.push_back(dia);
     }
     buildDiaries(diaVec);
+}
+void AppWindow::showAll_refresh(){
+    qDebug()<<"show all diaries of book "<<curDiaryList;
+    buildDiaries(fileOperator->findFileByTime(QDateTime(QDate(1900,1,1),QTime()),QDateTime(QDate(3000,1,1),QTime()),diaryListVec[curDiaryList]));
 }

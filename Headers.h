@@ -19,7 +19,10 @@
 #include<QScrollArea>
 #include<QFrame>
 #include<vector>
-#include <QGraphicsColorizeEffect>
+#include<QGraphicsColorizeEffect>
+#include<QGraphicsScene>
+#include<QGraphicsView>
+#include<QSignalBlocker>
 #include<QScrollBar>
 #include<QCalendarWidget>
 #include<QStackedLayout>
@@ -27,6 +30,7 @@
 #include<QTimer>
 #include<QPainterPath>
 #include<QMouseEvent>
+#include<QMenu>
 using namespace std;
 #endif // HEADERS_H
 
