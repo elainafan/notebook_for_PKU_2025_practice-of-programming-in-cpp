@@ -185,71 +185,66 @@ void FileOperation::setStar(const QString& fileName){
     QDir dir(QDir(startPath).filePath(username));
     QFile file(dir.filePath("starred.md"));
     QString rootPath(dir.filePath("diary"));
-    QDir diaryDir(dir.filePath("diary"));
     QString filePath;
 
-    // 创建递归迭代器
-    qDebug()<<rootPath;
-    QDirIterator it(rootPath,
-                    QStringList() << fileName, // 要搜索的文件名
-                    QDir::Files,               // 只查找文件
-                    QDirIterator::Subdirectories); // 递归子目录
+    if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream in(&file);
+        QStringList entries;
+        bool found = false;
 
-    while (it.hasNext()) {
-        it.next();
-        filePath = it.filePath();
-        break;
-    }
-
-    // 确保文件存在
-    qDebug()<<filePath;
-    if (QFile::exists(filePath)) {
-        QString basePath("/"+rootPath);
-        QDir::toNativeSeparators(basePath);
-        QDir baseDir(basePath);
-
-        // 生成相对于basePath的路径
-        QString relativePath = baseDir.relativeFilePath("/"+filePath);
-        QDir::toNativeSeparators(relativePath);
-        if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
-            QTextStream in(&file);
-            QStringList entries;
-            bool found = false;
-
-            while (!in.atEnd()) {
-                QString line = in.readLine().trimmed();
-                if (!line.isEmpty()) {
-                    if (line == relativePath) {
-                        found = true;
-                    } else {
-                        entries.append(line);
-                    }
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty()) {
+                QFileInfo fi(line);
+                if (fi.fileName() == fileName) {
+                    found = true;
+                } else {
+                    entries.append(line);
                 }
             }
-
-            // 根据是否找到匹配项决定操作
-            if (found) {
-                // 取消收藏：移除匹配项
-                qDebug() << "已取消收藏文件:" << relativePath;
-            } else {
-                // 添加收藏
-                entries.append(relativePath);
-                qDebug() << "已收藏文件:" << relativePath;
-            }
-
-            // 清空文件并重新写入
-            file.resize(0);
-            file.seek(0);
-
-            QTextStream out(&file);
-            for (const QString &entry : entries) {
-                out << entry << "\n";
-            }
-
-            file.close();
-        } else {
-            qDebug() << "无法打开文件:" << file.errorString();
         }
+
+        // 根据是否找到匹配项决定操作
+        if (found) {
+            // 取消收藏：移除匹配项
+            qDebug() << "已取消收藏文件:" << fileName;
+        } else {
+            // 创建递归迭代器
+            QDirIterator it(rootPath,
+                            QStringList() << fileName, // 要搜索的文件名
+                            QDir::Files,               // 只查找文件
+                            QDirIterator::Subdirectories); // 递归子目录
+
+            while (it.hasNext()) {
+                it.next();
+                filePath = it.filePath();
+                break;
+            }
+
+            // 确保文件存在
+            if (QFile::exists(filePath)) {
+                // 添加收藏
+                QDir baseDir(rootPath);
+
+                // 生成相对于rootPath的路径
+                QString relativePath = baseDir.relativeFilePath(filePath);
+                entries.append(relativePath);
+                qDebug() << "已收藏文件:" << fileName;
+            }
+        }
+
+        // 清空文件并重新写入
+        file.resize(0);
+        file.seek(0);
+
+        QTextStream out(&file);
+        for (const QString &entry : entries) {
+            out << entry << "\n";
+        }
+
+        file.close();
+    } else {
+        qDebug() << "无法打开文件:" << file.errorString();
     }
 }
 
@@ -280,7 +275,7 @@ Diary FileOperation::recommend(){
     QStringList starredFiles;
     QString selectedFile;
     QStringList pictureFiles;
-    nameFilters << "2*.md";
+    nameFilters << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md";
 
     // 设置过滤器，只获取文件夹
     parentDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
@@ -345,7 +340,7 @@ Diary FileOperation::recommend(){
     if (selectedFile.isEmpty()) {
         QDirIterator it(
             dir,
-            QStringList() << "2*.md",  // 匹配所有日记
+            QStringList() << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md",  // 匹配所有日记
             QDir::Files,
             QDirIterator::Subdirectories
             );
@@ -490,7 +485,7 @@ QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& targe
 
     if(target!=searchword||diaryType.getName()!=searchDiaryType||newSearch){
         QStringList nameFilters;
-        nameFilters << "*.md";
+        nameFilters << "0*.md" << "1*.md" << "2*.md" << "3*.md" << "4*.md" << "5*.md" << "6*.md" << "7*.md" << "8*.md" << "9*.md";
 
         while (!unsearchedFiles.isEmpty()){
             unsearchedFiles.pop();
