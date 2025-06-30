@@ -485,7 +485,7 @@ QPair<Diary,QVector<int> > FileOperation::findFileByContent(const QString& targe
 
     if(target!=searchword||diaryType.getName()!=searchDiaryType||newSearch){
         QStringList nameFilters;
-        nameFilters << "*.md";
+        nameFilters << "2*.md";
 
         while (!unsearchedFiles.isEmpty()){
             unsearchedFiles.pop();
